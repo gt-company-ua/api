@@ -18,8 +18,14 @@ class CreateOrderTransportsTable extends Migration
             $table->foreignIdFor(\App\Models\Order::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->string('transport_type')->nullable();
-            $table->integer('transport_power')->nullable();
+            $table->foreignIdFor(\App\Models\TransportCategory::class)
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+            $table->foreignIdFor(\App\Models\TransportPower::class)
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table->string('car_mark')->nullable();
             $table->string('car_model')->nullable();
             $table->string('car_year')->nullable();
