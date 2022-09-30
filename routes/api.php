@@ -16,5 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('handbooks')->group(function () {
     Route::get('/cars', [\App\Http\Controllers\handbooks\CarController::class, 'marks']);
-    Route::get('/cars/{car_mark_id}', [\App\Http\Controllers\handbooks\CarController::class, 'models']);
+    Route::get('/cars/{car_mark_id}/models', [\App\Http\Controllers\handbooks\CarController::class, 'models']);
+
+    Route::get('/transport', [\App\Http\Controllers\handbooks\TransportController::class, 'categories']);
+    Route::get('/transport/{transport_category_id}/powers', [\App\Http\Controllers\handbooks\TransportController::class, 'powers']);
 });

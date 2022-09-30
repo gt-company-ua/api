@@ -21,6 +21,7 @@ class CreateTransportPowersTable extends Migration
             $table->string('name_ua');
             $table->string('name_ru');
             $table->string('api_id')->nullable();
+            $table->integer('ordering')->default(0);
             $table->timestamps();
         });
     }
