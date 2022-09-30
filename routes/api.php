@@ -20,4 +20,7 @@ Route::prefix('handbooks')->group(function () {
 
     Route::get('/transport', [\App\Http\Controllers\handbooks\TransportController::class, 'categories']);
     Route::get('/transport/{transport_category_id}/powers', [\App\Http\Controllers\handbooks\TransportController::class, 'powers']);
+
+    Route::get('/vzrRanges', [\App\Http\Controllers\handbooks\VzrRangeController::class, 'ranges']);
+    Route::get('/vzrRanges/{vzr_range_id}/days', [\App\Http\Controllers\handbooks\VzrRangeController::class, 'days']);
 });
