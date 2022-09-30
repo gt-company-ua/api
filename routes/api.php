@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('handbooks')->group(function () {
+    Route::get('/cars', [\App\Http\Controllers\handbooks\CarController::class, 'marks']);
+    Route::get('/cars/{car_mark_id}', [\App\Http\Controllers\handbooks\CarController::class, 'models']);
 });

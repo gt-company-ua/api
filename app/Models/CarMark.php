@@ -12,6 +12,8 @@ class CarMark extends Model
 
     protected $guarded = [];
 
+    protected $hidden = ['created_at', 'updated_at'];
+
     public function models(): HasMany
     {
         return $this->hasMany(CarMark::class);
