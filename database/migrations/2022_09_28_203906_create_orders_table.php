@@ -18,6 +18,7 @@ class CreateOrdersTable extends Migration
             $table->string('uuid', 36);
 
             $table->enum('order_type', \App\Models\Order::ORDER_TYPES);
+            $table->string('tariff')->nullable();
             $table->date('polis_start')->nullable();
             $table->date('polis_end')->nullable();
             $table->tinyInteger('foreign_check')->unsigned()->nullable();
@@ -32,6 +33,7 @@ class CreateOrdersTable extends Migration
             $table->tinyInteger('upload_docs')->unsigned()->nullable();
 
             $table->decimal('price')->unsigned()->nullable();
+            $table->decimal('insured_sum')->unsigned()->nullable();
             $table->tinyInteger('gc_plus')->unsigned()->nullable();
             $table->decimal('gc_plus_price')->unsigned()->nullable();
 

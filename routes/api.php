@@ -24,3 +24,7 @@ Route::prefix('handbooks')->group(function () {
     Route::get('/vzrRanges', [\App\Http\Controllers\handbooks\VzrRangeController::class, 'ranges']);
     Route::get('/vzrRanges/{vzr_range_id}/days', [\App\Http\Controllers\handbooks\VzrRangeController::class, 'days']);
 });
+Route::prefix('kasko')->group(function () {
+    Route::post('/', [\App\Http\Controllers\KaskoController::class, 'store']);
+    Route::post('/calculate', [\App\Http\Controllers\KaskoController::class, 'calculate']);
+});
