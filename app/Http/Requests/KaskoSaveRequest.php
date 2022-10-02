@@ -31,7 +31,7 @@ class KaskoSaveRequest extends FormRequest
             'insured_sum' => 'required|numeric|min:1',
             'is_truck' => 'boolean',
             'tariff' => 'required|exists:App\Models\KaskoTariff,alias',
-            'email' => 'nullable|string',
+            'email' => 'nullable|email',
             'transport.car_mark' => 'required|string',
             'transport.car_model' => 'required|string',
             'transport.car_year' => 'required|digits:4|integer|min:' . (date('Y') - 18) . '|max:' . date('Y'),

@@ -16,6 +16,7 @@ class CreateOrderTransportsTable extends Migration
         Schema::create('order_transports', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Order::class)
+                ->unique()
                 ->constrained()
                 ->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\TransportCategory::class)

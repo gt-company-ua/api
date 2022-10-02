@@ -12,10 +12,13 @@ class KaskoController extends Controller
 {
     use ApiResponser;
 
-    public function store(KaskoSaveRequest $request)
+    public function store(KaskoSaveRequest $request): JsonResponse
     {
         $data = $request->validated();
 
+        $order = (new KaskoService())->saveOrder($data);
+
+        return $this->sendResponse($order, 201);
     }
 
     public function calculate(KaskoCalculateRequest $request): JsonResponse
