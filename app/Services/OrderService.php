@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class OrderService
 {
@@ -18,16 +19,7 @@ class OrderService
     {
         $price = $this->order->price + $this->order->gc_plus_price;
 
-        $rand      = substr(
-            str_shuffle(
-                str_repeat(
-                    $x = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                    ceil(5 / strlen($x))
-                )
-            ), 1, 5
-        );
-
-        $order_uid = $this->order->type . '_' . $this->order->id . '_' . $rand;
+        $order_uid = $this->order->type . '_' . $this->order->uuid . '_' . Str::random(3);
 
         $invoiceParams = [
             'action'       => 'invoice_send',
