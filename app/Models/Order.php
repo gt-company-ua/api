@@ -11,12 +11,19 @@ class Order extends Model
 {
     const ORDER_TYPES = ['osago', 'zk', 'vzr', 'kasko'];
     const INSURANT_TYPES = ['physical', 'juristic'];
+    const DOC_TYPES = ['passport', 'license'];
 
     use HasFactory;
 
     protected $guarded = [];
 
     protected $with = ['transport', 'insurant'];
+
+    protected $casts = [
+        'upload_docs' => 'bool',
+        'foreign_check' => 'bool',
+        'discount_check' => 'bool'
+    ];
 
     protected static function boot()
     {

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Requests\KaskoSaveRequest;
 use App\Models\KaskoInsuranceValue;
 use App\Models\KaskoPrice;
 use App\Models\KaskoTariff;
