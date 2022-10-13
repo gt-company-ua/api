@@ -31,6 +31,9 @@ class CreateOrderInsurantsTable extends Migration
 
             $table->string('address')->nullable();
             $table->string('address_latin')->nullable();
+            $table->string('street')->nullable();
+            $table->string('house')->nullable();
+            $table->string('flat')->nullable();
 
             $table->string('inn')->nullable();
             $table->string('doc_type')->nullable();
