@@ -19,15 +19,15 @@ class OsagoTariffsSeeder extends Seeder
             [
                 'franchise' => 3200,
                 'tariff' => OsagoService::TARIFF_ECONOM,
-                'coefficient' => 0.80
+                'coefficient' => 1.00
             ],[
                 'franchise' => 1600,
                 'tariff' => OsagoService::TARIFF_STANDART,
-                'coefficient' => 0.95
+                'coefficient' => 1.20
             ],[
                 'franchise' => 0,
                 'tariff' => OsagoService::TARIFF_MAXIMUM,
-                'coefficient' => 1.00
+                'coefficient' => 1.40
             ]
         ];
 

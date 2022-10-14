@@ -27,21 +27,25 @@ class TransportSeeder extends Seeder
                         'name_ru' => 'до 1600 куб.см',
                         'api_id' => '1',
                         'ordering' => 1,
+                        'coefficient' => 1.00
                     ],[
                         'name_ua' => '1601 — 2000 см3',
                         'name_ru' => '1601 — 2000 см3',
                         'api_id' => '2',
                         'ordering' => 2,
+                        'coefficient' => 1.14
                     ],[
                         'name_ua' => '2001 — 3000 см3',
                         'name_ru' => '2001 — 3000 см3',
                         'api_id' => '3',
                         'ordering' => 3,
+                        'coefficient' => 1.18
                     ],[
                         'name_ua' => '3000 см3 і більше',
                         'name_ru' => '3000 см3 и более',
                         'api_id' => '4',
                         'ordering' => 4,
+                        'coefficient' => 1.82
                     ]
                 ]
             ],
@@ -56,21 +60,25 @@ class TransportSeeder extends Seeder
                         'name_ru' => 'до 85 кВт',
                         'api_id' => '1',
                         'ordering' => 1,
+                        'coefficient' => 1.00
                     ],[
                         'name_ua' => '86-100 кВт',
                         'name_ru' => '86-100 кВт',
                         'api_id' => '2',
                         'ordering' => 2,
+                        'coefficient' => 1.14
                     ],[
                         'name_ua' => '101-150 кВт',
                         'name_ru' => '101-150 кВт',
                         'api_id' => '3',
                         'ordering' => 3,
+                        'coefficient' => 1.18
                     ],[
                         'name_ua' => 'більше 150 кВт',
                         'name_ru' => 'больше 150 кВт',
                         'api_id' => '4',
                         'ordering' => 4,
+                        'coefficient' => 1.82
                     ]
                 ]
             ],
@@ -85,11 +93,13 @@ class TransportSeeder extends Seeder
                         'name_ru' => 'До 300 см3',
                         'api_id' => '5',
                         'ordering' => 1,
+                        'coefficient' => 0.37
                     ],[
                         'name_ua' => 'Від 300 см3 і більше',
                         'name_ru' => 'От 300 см3 и более',
                         'api_id' => '6',
                         'ordering' => 2,
+                        'coefficient' => 0.67
                     ]
                 ],
             ],
@@ -104,11 +114,13 @@ class TransportSeeder extends Seeder
                         'name_ru' => 'До 20 человек',
                         'api_id' => '9',
                         'ordering' => 1,
+                        'coefficient' => 3.30
                     ],[
                         'name_ua' => 'Від 20 осіб і більше',
                         'name_ru' => 'От 20 человек и более',
                         'api_id' => '10',
                         'ordering' => 2,
+                        'coefficient' => 4.00
                     ]
                 ],
             ],
@@ -123,11 +135,13 @@ class TransportSeeder extends Seeder
                         'name_ru' => 'До 2 тонн',
                         'api_id' => '7',
                         'ordering' => 1,
+                        'coefficient' => 2.00
                     ],[
                         'name_ua' => 'Від 2 тонн і більше',
                         'name_ru' => 'От 2 тонн и более',
                         'api_id' => '8',
                         'ordering' => 2,
+                        'coefficient' => 2.20
                     ]
                 ],
             ],
@@ -142,11 +156,13 @@ class TransportSeeder extends Seeder
                         'name_ru' => 'К легковому',
                         'api_id' => '11',
                         'ordering' => 1,
+                        'coefficient' => 0.34
                     ],[
                         'name_ua' => 'До вантажного',
                         'name_ru' => 'К грузовому',
                         'api_id' => '12',
                         'ordering' => 2,
+                        'coefficient' => 0.50
                     ]
                 ],
             ],
