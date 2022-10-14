@@ -32,6 +32,11 @@ Route::prefix('kasko')->group(function () {
     Route::post('/calculate', [\App\Http\Controllers\KaskoController::class, 'calculate']);
 });
 
+Route::prefix('osago')->group(function () {
+    Route::post('/', [\App\Http\Controllers\OsagoController::class, 'store']);
+    Route::post('/calculate', [\App\Http\Controllers\OsagoController::class, 'calculate']);
+});
+
 Route::prefix('orders')->group(function () {
     Route::post('/liqypay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
     Route::post('/liqypay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
