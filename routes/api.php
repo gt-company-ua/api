@@ -35,6 +35,7 @@ Route::prefix('kasko')->group(function () {
 Route::prefix('osago')->group(function () {
     Route::post('/', [\App\Http\Controllers\OsagoController::class, 'store']);
     Route::post('/calculate', [\App\Http\Controllers\OsagoController::class, 'calculate']);
+    Route::get('/tariffs', [\App\Http\Controllers\OsagoController::class, 'tariffs']);
 });
 
 Route::prefix('orders')->group(function () {

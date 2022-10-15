@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OsagoCalculateRequest;
+use App\Models\OsagoTariff;
 use App\Services\OsagoService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +23,13 @@ class OsagoController extends Controller
     {
         $data = $request->validated();
         $tariffs = (new OsagoService())->calculate($data);
+
+        return $this->sendResponse($tariffs);
+    }
+
+    public function tariffs()
+    {
+        $tariffs = OsagoTariff::orderBy('franchise', 'DESC')->get();
 
         return $this->sendResponse($tariffs);
     }
