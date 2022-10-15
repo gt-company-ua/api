@@ -11,4 +11,7 @@ class TransportPower extends Model
 
     protected $guarded = [];
     protected $hidden = ['created_at', 'updated_at', 'api_id', 'transport_category_id'];
+    protected $casts = [
+        'coefficient' => 'float'
+    ];
 }

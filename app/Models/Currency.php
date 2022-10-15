@@ -10,4 +10,7 @@ class Currency extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $casts = [
+        'sum' => 'float'
+    ];
 }

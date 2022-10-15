@@ -12,7 +12,10 @@ class VzrRange extends Model
 
     protected $guarded = [];
     protected $hidden = ['created_at', 'updated_at'];
-    protected $casts = ['active' => 'bool'];
+    protected $casts = [
+        'active' => 'bool',
+        'sum' => 'float'
+    ];
 
     public function days(): HasMany
     {

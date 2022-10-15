@@ -22,7 +22,10 @@ class Order extends Model
     protected $casts = [
         'upload_docs' => 'bool',
         'foreign_check' => 'bool',
-        'discount_check' => 'bool'
+        'discount_check' => 'bool',
+        'price' => 'float',
+        'insured_sum' => 'float',
+        'gc_plus_price' => 'float',
     ];
 
     protected static function boot()
