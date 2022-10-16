@@ -18,6 +18,7 @@ class CreateTransportCategoriesTable extends Migration
             $table->string('name_ua');
             $table->string('name_ru');
             $table->string('alias')->nullable();
+            $table->string('type')->nullable();
             $table->integer('ordering')->default(0);
             $table->timestamps();
         });

@@ -20,6 +20,7 @@ class TransportSeeder extends Seeder
                 'name_ua' => 'Легковий автомобіль',
                 'name_ru' => 'Легковой автомобиль',
                 'alias' => 'car',
+                'type' => 'A',
                 'ordering' => 1,
                 'powers' => [
                     [
@@ -53,6 +54,7 @@ class TransportSeeder extends Seeder
                 'name_ua' => 'Електромобіль',
                 'name_ru' => 'Электромобиль',
                 'alias' => 'ecar',
+                'type' => 'A',
                 'ordering' => 2,
                 'powers' => [
                     [
@@ -86,6 +88,7 @@ class TransportSeeder extends Seeder
                 'name_ua' => 'Мотоцикл, моторолер',
                 'name_ru' => 'Мотоцикл, мотороллер',
                 'alias' => 'moto',
+                'type' => 'B',
                 'ordering' => 3,
                 'powers' => [
                     [
@@ -107,6 +110,7 @@ class TransportSeeder extends Seeder
                 'name_ua' => 'Пасажирський автобус',
                 'name_ru' => 'Пассажирский автобус',
                 'alias' => 'bus',
+                'type' => 'E',
                 'ordering' => 4,
                 'powers' => [
                     [
@@ -128,6 +132,7 @@ class TransportSeeder extends Seeder
                 'name_ua' => 'Вантажний автомобіль',
                 'name_ru' => 'Грузовой автомобиль',
                 'alias' => 'truck',
+                'type' => 'C',
                 'ordering' => 5,
                 'powers' => [
                     [
@@ -149,6 +154,7 @@ class TransportSeeder extends Seeder
                 'name_ua' => 'Причіп, трейлер',
                 'name_ru' => 'Прицеп, трейлер',
                 'alias' => 'trailer',
+                'type' => 'F',
                 'ordering' => 6,
                 'powers' => [
                     [
