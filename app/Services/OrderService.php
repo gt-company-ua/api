@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\OrderContract;
 use App\Models\OrderInsurant;
 use App\Models\OrderTransport;
 use Illuminate\Support\Str;
@@ -14,6 +15,17 @@ class OrderService
     public function __construct(?Order $order)
     {
         $this->order = $order;
+    }
+
+    public function saveContract(array $contract)
+    {
+        if (is_null($this->order->contract)) {
+            $contract = new OrderContract($contract);
+
+            $this->order->contract()->save($contract);
+        } else {
+            $this->order->contract()->update($contract);
+        }
     }
 
     public function saveOrder(array $request, string $orderType)

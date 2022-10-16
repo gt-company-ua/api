@@ -10,4 +10,10 @@ class OrderTransport extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $hidden = ['id', 'order_id', 'created_at', 'updated_at'];
+
+    public function power(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(TransportPower::class);
+    }
 }
