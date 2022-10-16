@@ -3,16 +3,34 @@
 namespace App\Services;
 
 use App\Models\Order;
-use Illuminate\Support\Facades\Log;
+use App\Models\OrderInsurant;
+use App\Models\OrderTransport;
 use Illuminate\Support\Str;
 
 class OrderService
 {
     private $order;
 
-    public function __construct(Order $order)
+    public function __construct(?Order $order)
     {
         $this->order = $order;
+    }
+
+    public function saveOrder(array $request, string $orderType)
+    {
+        $transport = new OrderTransport($request['transport'] ?? []);
+        $insurant = new OrderInsurant($request['insurant'] ?? []);
+
+        unset($request['transport'], $request['insurant']);
+
+        $request['order_type'] = $orderType;
+
+        $order = Order::create($request);
+
+        $order->transport()->save($transport);
+        $order->insurant()->save($insurant);
+
+        return $order->load(['transport', 'insurant', 'contract'])->refresh();
     }
 
     public function createInvoice(): string

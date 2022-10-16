@@ -80,21 +80,4 @@ class KaskoService
         return $kaskoPrice->coefficient ?? 1;
     }
 
-    public function saveOrder(array $request)
-    {
-        $transport = new OrderTransport($request['transport']);
-        $insurant = new OrderInsurant($request['insurant']);
-
-        unset($request['transport'], $request['insurant']);
-
-        $request['order_type'] = 'kasko';
-
-        $order = Order::create($request);
-
-        $order->transport()->save($transport);
-        $order->insurant()->save($insurant);
-
-        return $order->load(['transport', 'insurant'])->refresh();
-    }
-
 }
