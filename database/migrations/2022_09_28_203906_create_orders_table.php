@@ -49,13 +49,12 @@ class CreateOrdersTable extends Migration
             $table->string('ga_id', 100)->nullable();
 
             $table->string('send_sms', 12)->nullable();
-            $table->string('contract_num', 100)->nullable();
-            $table->string('contract_state', 32)->nullable();
-            $table->text('contract_response')->nullable();
 
             $table->integer('crm_contact_id')->nullable();
             $table->integer('crm_deal_id')->nullable();
             $table->integer('crm_car_id')->nullable();
+
+            $table->boolean('dont_call')->default(false);
 
             $table->timestamps();
         });
