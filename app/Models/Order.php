@@ -10,8 +10,20 @@ use Illuminate\Support\Str;
 class Order extends Model
 {
     const ORDER_TYPES = ['osago', 'zk', 'vzr', 'kasko'];
-    const INSURANT_TYPES = ['physical', 'juristic'];
-    const DOC_TYPES = ['passport', 'license'];
+    const INSURANT_PHYSICAL = 'physical';
+    const INSURANT_JURISTIC = 'juristic';
+    const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];
+    const DOC_PASSPORT = 'passport';
+    const DOC_LICENSE = 'license';
+    const DOC_TYPES = [self::DOC_PASSPORT, self::DOC_LICENSE];
+    const DOC_NAMES = [
+        self::DOC_PASSPORT => 'Паспорт',
+        self::DOC_LICENSE => 'Водительское удостоверение'
+    ];
+    const DOC_API_ID = [
+        self::DOC_PASSPORT => 1,
+        self::DOC_LICENSE => 5
+    ];
 
     use HasFactory;
 
@@ -44,5 +56,10 @@ class Order extends Model
     public function insurant(): ?HasOne
     {
         return $this->hasOne(OrderInsurant::class);
+    }
+
+    public function contract(): ?HasOne
+    {
+        return $this->hasOne(OrderContract::class);
     }
 }

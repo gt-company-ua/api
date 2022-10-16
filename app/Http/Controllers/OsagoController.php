@@ -27,7 +27,7 @@ class OsagoController extends Controller
         return $this->sendResponse($tariffs);
     }
 
-    public function tariffs()
+    public function tariffs(): JsonResponse
     {
         $tariffs = OsagoTariff::orderBy('franchise', 'DESC')->get();
 
