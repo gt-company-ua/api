@@ -5,8 +5,10 @@ namespace App\Http\Controllers\handbooks;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\handbooks\CarMarkRequest;
 use App\Http\Requests\handbooks\CarModelRequest;
+use App\Http\Requests\handbooks\FindVehicleRequest;
 use App\Models\CarMark;
 use App\Models\CarModel;
+use App\Services\api\OneC;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,5 +41,14 @@ class CarController extends Controller
         }
 
         return $this->sendResponse($marks->get());
+    }
+
+    public function findVehicle(FindVehicleRequest $request)
+    {
+        $data = $request->validated();
+
+        $search = (new OneC())->findVehicle($data['search']);
+
+        return $this->sendResponse($search);
     }
 }
