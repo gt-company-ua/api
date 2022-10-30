@@ -38,7 +38,7 @@ class KaskoSaveRequest extends FormRequest
             'insurant.phone' => 'required|string|min:6',
             'insurant.surname' => 'nullable|string',
             'insurant.name' => 'nullable|string',
-            'insurant.patname' => 'nullable|string',
+            'insurant.patronymic' => 'nullable|string',
         ];
     }
 }

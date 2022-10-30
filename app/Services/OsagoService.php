@@ -2,11 +2,15 @@
 
 namespace App\Services;
 
+use App\Exceptions\FileUploadException;
+use App\Http\Requests\OsagoSaveRequest;
 use App\Models\Order;
+use App\Models\OrderFile;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
 use App\Models\TransportPower;
 use App\Services\api\Profitsoft;
+use Illuminate\Support\Str;
 
 class OsagoService
 {
@@ -99,5 +103,26 @@ class OsagoService
         }
 
         return null;
+    }
+
+    public function saveOrder(OsagoSaveRequest $request): ?Order
+    {
+        $data = $request->validated();
+
+        $prices = $this->calculate($data);
+
+        $data['price'] = $prices['prices'][$data['tariff']]['price'] ?? null;
+
+        $order = (new OrderService(null))->saveOrder($data, 'osago');
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        if ($order->upload_docs === false) {
+            (new Profitsoft())->reserve($order);
+        }
+
+        return $order;
     }
 }

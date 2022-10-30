@@ -5,6 +5,7 @@ namespace App\Services\api;
 use App\Exceptions\ProfitsoftAuthException;
 use App\Exceptions\ProfitsoftRequestException;
 use App\Models\Order;
+use App\Models\OrderTransport;
 use App\Models\OsagoTariff;
 use App\Services\OrderService;
 use App\Services\OsagoService;
@@ -136,7 +137,7 @@ class Profitsoft
 
         $discount = ($order->discount_check) ? 4: 0;
 
-        $tariff = OsagoTariff::whereAlias($order->tariff)->first();
+        $tariff = OsagoTariff::whereTariff($order->tariff)->first();
 
         $params = [
             "contractId" => env('PS_CONTRACT_ID'),
@@ -163,7 +164,7 @@ class Profitsoft
             "IdentCode" => $order->insurant->inn,
             'Surname' => $order->insurant->surname,
             'Name' => $order->insurant->name,
-            'PName' => $order->insurant->patname,
+            'PName' => $order->insurant->patronymic,
             "BirthDate" => date('Y-m-d',strtotime($order->insurant->birth)),
             "Address" => $order->insurant->address,
             'DocumentType' => Order::DOC_API_ID[$order->insurant->doc_type],
@@ -198,6 +199,8 @@ class Profitsoft
                 ];
 
                 (new OrderService($order))->saveContract($contract);
+            } else {
+                Log::debug("Reserve response", $response);
             }
         } catch (Exception $e) {
             return [];
@@ -208,6 +211,10 @@ class Profitsoft
 
     public function confirm(Order $order): array
     {
+        if (is_null($order->contract)) {
+            return [];
+        }
+
         $params = [
             'MainCode' => $order->contract->number,
             'agentId' => env('PS_AGENT_ID'),

@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Exceptions\FileUploadException;
 use App\Models\Order;
 use App\Models\OrderContract;
+use App\Models\OrderFile;
 use App\Models\OrderInsurant;
 use App\Models\OrderTransport;
 use Illuminate\Support\Str;
@@ -28,12 +30,16 @@ class OrderService
         }
     }
 
-    public function saveOrder(array $request, string $orderType)
+    public function saveOrder(array $request, string $orderType): ?Order
     {
         $transport = new OrderTransport($request['transport'] ?? []);
         $insurant = new OrderInsurant($request['insurant'] ?? []);
 
-        unset($request['transport'], $request['insurant']);
+        if (!empty($request['files'])) {
+            $files = $request['files'];
+        }
+
+        unset($request['transport'], $request['insurant'], $request['files']);
 
         $request['order_type'] = $orderType;
 
@@ -42,7 +48,17 @@ class OrderService
         $order->transport()->save($transport);
         $order->insurant()->save($insurant);
 
-        return $order->load(['transport', 'insurant', 'contract'])->refresh();
+        if (isset($files)) {
+            try {
+                $this->uploadFiles($order, $files);
+            } catch (\Exception $e) {
+                $order->delete();
+
+                return null;
+            }
+        }
+
+        return $order->load(['transport', 'insurant', 'contract', 'files'])->refresh();
     }
 
     public function createInvoice(): string
@@ -86,5 +102,40 @@ class OrderService
         ];
 
         return implode(' ', $fio);
+    }
+
+    /**
+     * @throws FileUploadException
+     */
+    private function uploadFiles(Order $order, $files)
+    {
+        if (isset($files)) {
+            $saveFiles = [];
+
+            foreach($files as $file) {
+                $name = $file->getClientOriginalName();
+                $path = '/osago/' . $order->id . '/';
+                $localPath = public_path('storage') . $path;
+                $ext = $file->getClientOriginalExtension();
+                $randName = Str::uuid() . '.' . $ext;
+
+                try {
+                    $file->move($localPath, $randName);
+                } catch (\Exception $e) {
+                    throw new FileUploadException("Ошибка при загрузке файла " . $name);
+                    return;
+                }
+
+                $saveFiles[] = new OrderFile([
+                    'name' => $name,
+                    'path' => $path . $randName,
+                    'extension' => $file->getClientOriginalExtension()
+                ]);
+            }
+
+            if (count($saveFiles) > 0) {
+                $order->files()->saveMany($saveFiles);
+            }
+        }
     }
 }
