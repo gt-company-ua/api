@@ -2,11 +2,33 @@
 
 namespace App\Services;
 
+use App\Http\Requests\GreenCardSaveRequest;
 use App\Models\TransportCategory;
+use App\Services\api\OneC;
+use App\Services\api\Profitsoft;
 
 class GreenCardService
 {
-    function calculate(array $data, $gos = false) {
+    public function saveOrder(GreenCardSaveRequest $request)
+    {
+        $data = $request->validated();
+
+        $data['price'] = $this->calculate($data);
+
+        $order = (new OrderService(null))->saveOrder($data, 'greencard');
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        if ($order->upload_docs === false) {
+            (new OneC())->saveGreenCard($order, 'Draft');
+        }
+
+        return $order;
+    }
+
+    public function calculate(array $data, $gos = false) {
         $prices = $this->loadPrices();
 
         $transportCategory = TransportCategory::whereId($data['transport']['transport_category_id'])->first();

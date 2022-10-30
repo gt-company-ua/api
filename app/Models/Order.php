@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    const ORDER_TYPES = ['osago', 'zk', 'vzr', 'kasko'];
+    const ORDER_TYPES = ['osago', 'greencard', 'vzr', 'kasko'];
     const INSURANT_PHYSICAL = 'physical';
     const INSURANT_JURISTIC = 'juristic';
     const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];

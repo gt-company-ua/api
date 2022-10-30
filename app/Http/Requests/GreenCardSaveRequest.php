@@ -9,7 +9,7 @@ use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class OsagoSaveRequest extends FormRequest
+class GreenCardSaveRequest extends FormRequest
 {
     use RequestFailedValidationResponse;
     /**
@@ -30,42 +30,33 @@ class OsagoSaveRequest extends FormRequest
     public function rules()
     {
         return [
-            'foreign_check' => ['required', new Boolean],
-            'city_id' => 'nullable|numeric|min:1',
-            'city_name' => 'nullable|required_if:foreign_check,0|string|min:1',
-            'discount_check' => ['required', new Boolean],
-            'tariff' => 'required|exists:App\Models\OsagoTariff,tariff',
-            'polis_start' => 'required|date|after:tomorrow',
+            'trip_country' => ['required', Rule::in(Order::TRIP_COUNTRIES)],
+            'trip_duration' => 'required|numeric|min:0|max:12',
             'email' => 'required|email',
+            'polis_start' => 'required|date|after:tomorrow',
+            'comment' => 'nullable|string',
+
             'upload_docs' => ['required', new Boolean],
             'files' => 'required_if:upload_docs,1|array',
             'files.*' => 'mimes:jpg,jpeg,png,bmp,pdf,zip,rar,7z',
-            'comment' => 'nullable|string',
 
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
-            'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
             'transport.car_mark' => 'nullable|required_if:upload_docs,0|string',
             'transport.car_model' => 'nullable|required_if:upload_docs,0|string',
             'transport.gov_num' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.vin' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.car_year' => 'nullable|required_if:upload_docs,0|digits:4|integer|min:1970|max:' . date('Y'),
 
-            'insurant.type' => ['required', Rule::in(Order::INSURANT_TYPES)],
-            'insurant.phone' => 'nullable|required_if:upload_docs,0|string|min:6',
+            'city_name' => 'nullable|required_if:upload_docs,0|string|min:1',
+            'insurant.phone' => 'required|string|min:6',
             'insurant.surname' => 'nullable|required_if:upload_docs,0|string',
             'insurant.name' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.patronymic' => 'nullable|nullable|string',
+            'insurant.surname_latin' => 'nullable|required_if:upload_docs,0|string',
+            'insurant.name_latin' => 'nullable|required_if:upload_docs,0|string',
+
             'insurant.inn' => ['nullable', 'required_if:upload_docs,0', new Inn],
             'insurant.birth' => 'nullable|required_if:upload_docs,0|date|before_or_equal:18 years ago',
-            'insurant.address' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.street' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.house' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.flat' => 'nullable|string',
-            'insurant.doc_type' => ['nullable', 'required_if:upload_docs,0', Rule::in(Order::DOC_TYPES)],
-            'insurant.doc_number' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.doc_series' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.doc_given' => 'nullable|required_if:upload_docs,0|string',
-            'insurant.doc_date' => 'nullable|required_if:upload_docs,0|date|before_or_equal:today',
+
         ];
     }
 }

@@ -17,4 +17,9 @@ class OrderTransport extends Model
     {
         return $this->belongsTo(TransportPower::class, 'transport_power_id', 'id');
     }
+
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(TransportCategory::class, 'transport_category_id', 'id');
+    }
 }

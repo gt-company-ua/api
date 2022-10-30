@@ -114,7 +114,7 @@ class OrderService
 
             foreach($files as $file) {
                 $name = $file->getClientOriginalName();
-                $path = '/osago/' . $order->id . '/';
+                $path = '/' . $order->order_type . '/' . $order->id . '/';
                 $localPath = public_path('storage') . $path;
                 $ext = $file->getClientOriginalExtension();
                 $randName = Str::uuid() . '.' . $ext;
@@ -137,5 +137,36 @@ class OrderService
                 $order->files()->saveMany($saveFiles);
             }
         }
+    }
+
+    public function parseInn($inn): array
+    {
+        if (empty($inn) || !preg_match('/^\d{10}$/',$inn)) return ['status' => false];
+
+        $result = [];
+        $result['inn'] = $inn;
+        $result['sex'] = (substr($inn, 8, 1) % 2) ? 'Male' : 'Female';
+
+        $split = str_split($inn);
+
+        $summ = $split[0]*(-1) + $split[1]*5 + $split[2]*7 + $split[3]*9 + $split[4]*4 + $split[5]*6 + $split[6]*10 + $split[7]*5 + $split[8]*7;
+
+        $result['control'] = (int)($summ - (11 * (int)($summ/11)));
+
+        if ($result['control'] == 10){
+            $result['control'] = 0;
+        }
+
+        $result['status'] = $result['control'] == (int)$split[9];
+
+        $inn = substr($inn, 0, 5);
+
+        $normal_date = date('d.m.Y', strtotime('01/01/1900 + ' . $inn . ' days - 1 days'));
+
+        $result['birth'] = $normal_date;
+
+        list($result['day'], $result['month'], $result['year']) = explode('.', $normal_date);
+
+        return $result;
     }
 }
