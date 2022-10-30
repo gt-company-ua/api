@@ -98,7 +98,7 @@ class Profitsoft
         }
     }
 
-    public function searchCity(string $search, $searchBy = 'name', $onlyMtsbu = true): array
+    public function searchCity(string $search, $searchBy = 'name', $onlyMtsbu = false): array
     {
         $formParams = [
             $searchBy => $search,
