@@ -43,7 +43,7 @@ class CarController extends Controller
         return $this->sendResponse($marks->get());
     }
 
-    public function findVehicle(FindVehicleRequest $request)
+    public function findVehicle(FindVehicleRequest $request): JsonResponse
     {
         $data = $request->validated();
 
