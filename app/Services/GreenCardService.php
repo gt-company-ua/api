@@ -46,20 +46,20 @@ class GreenCardService
 
     private function loadPrices(): array
     {
-        $prices_csv = storage_path('app/prices') . '/zk.csv';
+        $pricesCsv = storage_path('app/prices') . '/zk.csv';
 
-        $row_n = -1; // номер строки
+        $rowN = -1; // номер строки
         $csv = [];
-        if (($file_csv = fopen($prices_csv, "r")) !== FALSE) {
-            while (($data = fgetcsv($file_csv, 1000, ";")) !== FALSE) {
+        if (($fileCsv = fopen($pricesCsv, "r")) !== FALSE) {
+            while (($data = fgetcsv($fileCsv, 1000, ";")) !== FALSE) {
                 $row = [];
 
-                if ($row_n == -1) {  // первую пропускаем, т.к. там заголовки
-                    $row_n++; continue;
+                if ($rowN == -1) {  // первую пропускаем, т.к. там заголовки
+                    $rowN++; continue;
                 }
 
                 $num = count($data); // длина строки
-                $row_n++;
+                $rowN++;
 
                 for ($c=0; $c < $num; $c++) { // сначала собираем всё в одну строку
                     if (($data[$c] != '===') && ($data[$c] != '')) { // если значение не равно визуальному разделителю
@@ -71,7 +71,7 @@ class GreenCardService
                     $csv[$row[0] . '_' . $row[1]][] = intval(preg_replace('/\s+/', '', $row[$r])); // из первых двух формируется имя строки вида sng_auto и т.д. +++ через intval и preg_replace парсится число, если вдруг оно записано через пробел
                 }
             }
-            fclose($file_csv);
+            fclose($fileCsv);
         }
 
         return $csv;
