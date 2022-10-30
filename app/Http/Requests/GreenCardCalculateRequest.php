@@ -7,7 +7,7 @@ use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class OsagoCalculateRequest extends FormRequest
+class GreenCardCalculateRequest extends FormRequest
 {
     use RequestFailedValidationResponse;
     /**
@@ -29,15 +29,9 @@ class OsagoCalculateRequest extends FormRequest
     {
         return [
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
-            'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
 
-            'city_id' => 'required_without:city_name|numeric|min:1',
-            'city_name' => 'nullable|string|min:1',
-            'foreign_check' => 'required|boolean',
-            'discount_check' => 'required|boolean',
-
-            'insurant.type' => ['required', Rule::in(Order::INSURANT_TYPES)],
-
+            'trip_country' => ['required', Rule::in(Order::TRIP_COUNTRIES)],
+            'trip_duration' => 'required|numeric|min:0|max:12',
         ];
     }
 }

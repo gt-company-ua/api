@@ -26,6 +26,10 @@ class Order extends Model
         self::DOC_LICENSE => 5
     ];
 
+    const TRIP_COUNTRY_SNG = 'sng';
+    const TRIP_COUNTRY_EU = 'eu';
+    const TRIP_COUNTRIES = [self::TRIP_COUNTRY_SNG, self::TRIP_COUNTRY_EU];
+
     use HasFactory;
 
     protected $guarded = [];

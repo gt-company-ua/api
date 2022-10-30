@@ -38,6 +38,11 @@ Route::prefix('osago')->group(function () {
     Route::get('/tariffs', [\App\Http\Controllers\OsagoController::class, 'tariffs']);
 });
 
+Route::prefix('greencard')->group(function () {
+    Route::post('/', [\App\Http\Controllers\GreenCardController::class, 'store']);
+    Route::post('/calculate', [\App\Http\Controllers\GreenCardController::class, 'calculate']);
+});
+
 Route::prefix('orders')->group(function () {
     Route::post('/liqypay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
     Route::post('/liqypay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
