@@ -51,7 +51,7 @@ class Order extends Model
         'with_covid' => 'bool',
         'with_greencard' => 'bool',
         'epolis' => 'bool',
-        'epolis' => 'multiple_trip',
+        'multiple_trip' => 'bool',
         'price' => 'float',
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
@@ -83,5 +83,10 @@ class Order extends Model
     public function files(): HasMany
     {
         return $this->hasMany(OrderFile::class);
+    }
+
+    public function tourists(): HasMany
+    {
+        return $this->hasMany(OrderTourist::class);
     }
 }

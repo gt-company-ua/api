@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Requests\VzrSaveRequest;
 use App\Models\CovidPrice;
 use App\Models\VzrRangeDay;
 use App\Services\api\CurrencyService;
@@ -10,6 +11,25 @@ use Exception;
 class VzrService
 {
     private $prices;
+
+
+    public function saveOrder(VzrSaveRequest $request)
+    {
+        $data = $request->validated();
+
+        $price = $this->calculate($data);
+
+        $data['price'] = $price['price'];
+
+        $order = (new OrderService(null))->saveOrder($data, 'vzr');
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        return $order;
+    }
+
     /**
      * @throws Exception
      */

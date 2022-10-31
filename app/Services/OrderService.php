@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\OrderFile;
 use App\Models\OrderInsurant;
+use App\Models\OrderTourist;
 use App\Models\OrderTransport;
 use Illuminate\Support\Str;
 
@@ -34,12 +35,13 @@ class OrderService
     {
         $transport = new OrderTransport($request['transport'] ?? []);
         $insurant = new OrderInsurant($request['insurant'] ?? []);
+        $tourists = $request['tourists'] ?? [];
 
         if (!empty($request['files'])) {
             $files = $request['files'];
         }
 
-        unset($request['transport'], $request['insurant'], $request['files']);
+        unset($request['transport'], $request['insurant'], $request['files'], $request['tourists']);
 
         $request['order_type'] = $orderType;
 
@@ -47,6 +49,16 @@ class OrderService
 
         $order->transport()->save($transport);
         $order->insurant()->save($insurant);
+
+        if (count($tourists) > 0) {
+            $saveTourists = [];
+            foreach ($tourists as $tourist) {
+                $saveTourists[] = new OrderTourist($tourist);
+            }
+
+            $order->tourists()->saveMany($saveTourists);
+        }
+
 
         if (isset($files)) {
             try {
@@ -58,7 +70,7 @@ class OrderService
             }
         }
 
-        return $order->load(['transport', 'insurant', 'contract', 'files'])->refresh();
+        return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
     }
 
     public function createInvoice(): string
