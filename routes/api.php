@@ -44,6 +44,11 @@ Route::prefix('greencard')->group(function () {
     Route::post('/calculate', [\App\Http\Controllers\GreenCardController::class, 'calculate']);
 });
 
+Route::prefix('vzr')->group(function () {
+    Route::post('/', [\App\Http\Controllers\VzrController::class, 'store']);
+    Route::post('/calculate', [\App\Http\Controllers\VzrController::class, 'calculate']);
+});
+
 Route::prefix('orders')->group(function () {
     Route::post('/liqypay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
     Route::post('/liqypay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');

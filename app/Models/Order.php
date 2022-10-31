@@ -30,6 +30,14 @@ class Order extends Model
     const TRIP_COUNTRY_EU = 'eu';
     const TRIP_COUNTRIES = [self::TRIP_COUNTRY_SNG, self::TRIP_COUNTRY_EU];
 
+    const TERRITORY_EU = 'europe';
+    const TERRITORY_WORLD = 'world';
+    const TERRITORIES = [self::TERRITORY_EU, self::TERRITORY_WORLD];
+
+    const SPORTS = ['none', 'active', 'pro'];
+    const TARGETS = ['rest', 'work', 'learn'];
+    const VZR_INSURED_SUMS = [30000, 50000, 75000];
+
     use HasFactory;
 
     protected $guarded = [];
@@ -40,6 +48,10 @@ class Order extends Model
         'upload_docs' => 'bool',
         'foreign_check' => 'bool',
         'discount_check' => 'bool',
+        'with_covid' => 'bool',
+        'with_greencard' => 'bool',
+        'epolis' => 'bool',
+        'epolis' => 'multiple_trip',
         'price' => 'float',
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
