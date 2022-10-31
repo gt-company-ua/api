@@ -70,12 +70,19 @@ class OrderService
             }
         }
 
+        $this->order = $order;
+        $this->createInvoice();
+
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
     }
 
     public function createInvoice(): string
     {
         $price = $this->order->price + $this->order->gc_plus_price;
+
+        if ($price <= 0) {
+            return '';
+        }
 
         $order_uid = $this->order->type . '_' . $this->order->uuid . '_' . Str::random(3);
 
