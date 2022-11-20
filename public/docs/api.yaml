@@ -1,0 +1,609 @@
+openapi: 3.0.0
+servers:
+  - url: "https://gt-api.kartoha.online/api"
+info:
+  version: "1.0.0"
+  title: greentravel-api
+paths:
+  /handbooks/cars:
+    get:
+      tags:
+        - handbooks
+      operationId: getCars
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Справочник марок авто
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/cars'
+      x-swagger-router-controller: Cars
+  /handbooks/cars/{car_mark_id}/models:
+    get:
+      tags:
+        - handbooks
+      operationId: getCarModels
+      parameters:
+        - name: car_mark_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/search'
+      summary: Справочник моделей авто
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/carModels'
+        '404':
+          $ref: '#/components/responses/resp404'
+      x-swagger-router-controller: Cars
+  /handbooks/cars/find:
+    get:
+      tags:
+        - handbooks
+      operationId: getFindVehicle
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Поиск информации по номеру авто
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/findVehicle'
+      x-swagger-router-controller: Cars
+  /handbooks/transport:
+    get:
+      tags:
+        - handbooks
+      operationId: getTransport
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Типы авто (категории)
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transport'
+      x-swagger-router-controller: Transport
+  /handbooks/transport/{transport_category_id}/powers:
+    get:
+      tags:
+        - handbooks
+      operationId: getTransportPowers
+      parameters:
+        - name: transport_category_id
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Варианты мощности типа авто
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transportPower'
+        '404':
+          $ref: '#/components/responses/resp404'
+      x-swagger-router-controller: Transport
+  /handbooks/vzrRanges:
+    get:
+      tags:
+        - handbooks
+      operationId: getVzrRanges
+      summary: Справочник периодов для тур. страховки
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/vzrRange'
+      x-swagger-router-controller: VzrRange
+  /handbooks/vzrRanges/{vzr_range_id}/days:
+    get:
+      tags:
+        - handbooks
+      operationId: getVzrRangeDays
+      parameters:
+        - name: vzr_range_id
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Справочник дней для периода тур. страховки
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/vzrRangeDay'
+      x-swagger-router-controller: VzrRange
+  /handbooks/cities:
+    get:
+      tags:
+        - handbooks
+      operationId: getCities
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Поиск городов
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/findCity'
+      x-swagger-router-controller: Cities
+  /greencard:
+    post:
+      tags:
+        - greencard
+      summary: Сохранение черновика зеленой карты
+      operationId: postGreencardDraft
+      requestBody:
+        $ref: '#/components/requestBodies/greencard'
+      responses:
+        '200':
+          description: ok
+
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Greencard
+
+components:
+  requestBodies:
+    greencard:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - trip_country
+              - trip_duration
+              - email
+              - polis_start
+              - upload_docs
+              - insurant
+              - transport
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              trip_country:
+                $ref: '#/components/schemas/orderTripCountry'
+              trip_duration:
+                $ref: '#/components/schemas/orderTripDuration'
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              comment:
+                $ref: '#/components/schemas/comment'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_category_id
+                properties:
+                  transport_category_id:
+                    $ref: '#/components/schemas/orderTransportCategoryId'
+                  car_mark:
+                    $ref: '#/components/schemas/orderCarMark'
+                  car_model:
+                    $ref: '#/components/schemas/orderCarModel'
+                  gov_num:
+                    $ref: '#/components/schemas/orderGovNum'
+                  vin:
+                    $ref: '#/components/schemas/orderVin'
+                  car_year:
+                    $ref: '#/components/schemas/orderCarYear'
+              city_name:
+                $ref: '#/components/schemas/cityName'
+              insurant:
+                type: object
+                required:
+                  - phone
+                description: Данные страхователя
+                properties:
+                  phone:
+                    $ref: '#/components/schemas/insurantPhone'
+                  surname:
+                    $ref: '#/components/schemas/insurantSurname'
+                  name:
+                    $ref: '#/components/schemas/insurantName'
+                  surname_latin:
+                    $ref: '#/components/schemas/insurantSurnameLatin'
+                  name_latin:
+                    $ref: '#/components/schemas/insurantNameLatin'
+                  inn:
+                    $ref: '#/components/schemas/insurantInn'
+                  birth:
+                    $ref: '#/components/schemas/insurantBirth'
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - trip_country
+              - trip_duration
+              - email
+              - polis_start
+              - upload_docs
+              - insurant[phone]
+              - transport[transport_category_id]
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              trip_country:
+                $ref: '#/components/schemas/orderTripCountry'
+              trip_duration:
+                $ref: '#/components/schemas/orderTripDuration'
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              files:
+                $ref: '#/components/schemas/orderFiles'
+              comment:
+                $ref: '#/components/schemas/comment'
+              transport[transport_category_id]:
+                $ref: '#/components/schemas/orderTransportCategoryId'
+              insurant[phone]:
+                $ref: '#/components/schemas/insurantPhone'
+
+  schemas:
+    orderTripCountry:
+      type: string
+      description: Зона покрытия полиса
+      enum:
+        - sng
+        - eu
+    orderTripDuration:
+      type: number
+      description: Количество месяцев, от 1 до 12, 0 = 15 дней
+      example: 0
+    email:
+      type: string
+      format: email
+    comment:
+      type: string
+      description: Комментарий
+      nullable: true
+    orderPolisStart:
+      type: string
+      description: Начало действия полиса, не раньше, чем завтра
+      format: date
+    orderUploadDocs:
+      type: boolean
+      description: Пометка, что будут загружены документы
+    orderFiles:
+      type: array
+      description: Обязательно, если upload_docs = true
+      items:
+        type: string
+        format: binary
+    orderTransportCategoryId:
+      type: integer
+      description: ID категории транспорта (тип авто) - из справочника
+    orderCarMark:
+      type: string
+      nullable: true
+      description: Название марки авто
+    orderCarModel:
+      type: string
+      nullable: true
+      description: Название модели авто
+    orderGovNum:
+      type: string
+      nullable: true
+      description: Гос. номер авто
+    orderVin:
+      type: string
+      nullable: true
+      description: VIN авто
+    orderCarYear:
+      type: integer
+      nullable: true
+      description: Год выпуска авто (4 цифры, от 1970 до текущего года включительно)
+      example: 2010
+    cityName:
+      type: string
+      description: Название города
+    insurantPhone:
+      type: string
+      description: Телефон страхователя
+    insurantSurname:
+      type: string
+      nullable: true
+      description: Фамилия страхователя
+    insurantSurnameLatin:
+      type: string
+      nullable: true
+      description: Фамилия страхователя на латинице
+    insurantName:
+      type: string
+      nullable: true
+      description: Имя страхователя
+    insurantNameLatin:
+      type: string
+      nullable: true
+      description: Имя страхователя на латинице
+    insurantInn:
+      type: string
+      nullable: true
+      description: ИНН страхователя (10 цифр)
+    insurantBirth:
+      type: string
+      format: date
+      nullable: true
+      description: Дата рождения
+    defaultStatus:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: TRUE
+    defaultError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: Описание ошибки
+    defaultErrorArray:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: object
+          description: Ошибки
+    findVehicle:
+      type: object
+      properties:
+        LicenceNum:
+          type: string
+          example: АХ2989ЕІ
+        VIN:
+          type: string
+          example: AAAAAAA1A1A011111
+        BodyNum:
+          type: string
+          nullable: true
+        ChassisNum:
+          type: string
+          nullable: true
+        Brand:
+          type: string
+          example: MITSUBISHI
+        Model:
+          type: string
+          example: LANCER
+          nullable: true
+        MakeYear:
+          type: integer
+          example: 2007
+        PersonStatusCode:
+          type: string
+          example: P
+        Color:
+          type: string
+          example: ЗЕЛЕНИЙ
+        Kind:
+          type: string
+          example: ЛЕГКОВИЙ
+        BodyType:
+          type: string
+          example: СЕДАН-B
+        Purpose:
+          type: string
+          example: ЗАГАЛЬНИЙ
+        FuelType:
+          type: string
+          example: БЕНЗИН
+        PersonStatus:
+          type: string
+          example: Фізична особа
+        PlacesCount:
+          type: integer
+          example: 5
+        Capacity:
+          type: integer
+          example: 1584
+        OwnWeight:
+          type: integer
+          example: 1280
+        TotalWeight:
+          type: integer
+          example: 1770
+        RegAddr:
+          type: string
+          example: М. ХАРКІВ,ХАРКІВСЬКА ОБЛ.,УКРАЇНА
+        OwnAddr:
+          type: string
+          example: МОСКОВСЬКИЙ,М. ХАРКІВ,ХАРКІВСЬКА ОБЛ.,УКРАЇНА
+        PersonAge:
+          type: string
+          example: 34
+    cars:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    carModels:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        year_start:
+          type: integer
+          nullable: true
+        year_end:
+          type: integer
+          nullable: true
+    transport:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name_ua:
+          type: string
+          example: Легковий автомобіль
+        name_ru:
+          type: string
+          example: Легковой автомобиль
+        alias:
+          type: string
+          example: car
+        ordering:
+          type: integer
+          example: 1
+    transportPower:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name_ua:
+          type: string
+          example: до 1600 куб.см
+        name_ru:
+          type: string
+          example: до 1600 куб.см
+        coefficient:
+          type: number
+          example: 1.14
+        ordering:
+          type: integer
+          example: 1
+    vzrRange:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "180"
+        active:
+          type: boolean
+          example: true
+    vzrRangeDay:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        vzr_range_id:
+          type: integer
+          example: 1
+        days:
+          type: integer
+          example: 30
+        sum:
+          type: number
+          example: 13.2
+    findCity:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Одеса
+        country:
+          type: string
+          example: UA
+        region:
+          type: object
+          properties:
+            caption:
+              type: string
+              example: Одеська
+            postfix:
+              type: string
+              example: обл.
+            country:
+              type: string
+              example: UA
+        postIndex:
+          type: string
+          example: 65000
+        'type':
+          type: string
+          example: город
+        mtsbuId:
+          type: integer
+          example: 152
+        calcZone:
+          type: object
+          example: 2
+  responses:
+    resp200Status:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultStatus'
+    resp400:
+      description: Ошибка
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultError'
+    resp404:
+      description: Не найдено
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultError'
+    resp422:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultErrorArray'
+  parameters:
+    search:
+      in: query
+      name: search
+      description: Строка поиска
+      schema:
+        type: string
+        nullable: true
