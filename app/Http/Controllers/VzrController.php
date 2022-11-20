@@ -34,7 +34,7 @@ class VzrController extends Controller
             return $this->sendError($e->getMessage());
         }
 
-        return $this->sendResponse($saveOrder);
+        return $this->sendResponse($saveOrder, 201);
     }
 
 

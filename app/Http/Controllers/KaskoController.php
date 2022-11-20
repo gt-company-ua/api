@@ -28,6 +28,6 @@ class KaskoController extends Controller
 
         $calculate = (new KaskoService())->calculate($data);
 
-        return $this->sendResponse(['sum' => $calculate]);
+        return $this->sendResponse(['price' => $calculate]);
     }
 }
