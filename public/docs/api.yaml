@@ -173,15 +173,60 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/greencard'
       responses:
-        '200':
+        '201':
           description: ok
 
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
 
+  /greencard/calculate:
+    post:
+      tags:
+        - greencard
+      summary: Расчет суммы по зеленой карте
+      operationId: postGreencardCalculate
+      requestBody:
+        $ref: '#/components/requestBodies/greencardCalculate'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  price:
+                    $ref: '#/components/schemas/calculatePrice'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Greencard
+
 components:
   requestBodies:
+    greencardCalculate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - trip_country
+              - trip_duration
+              - transport
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              trip_country:
+                $ref: '#/components/schemas/orderTripCountry'
+              trip_duration:
+                $ref: '#/components/schemas/orderTripDuration'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_category_id
+                properties:
+                  transport_category_id:
+                    $ref: '#/components/schemas/orderTransportCategoryId'
     greencard:
       content:
         application/json:
@@ -282,6 +327,9 @@ components:
                 $ref: '#/components/schemas/insurantPhone'
 
   schemas:
+    calculatePrice:
+      type: number
+      description: Сумма
     orderTripCountry:
       type: string
       description: Зона покрытия полиса
