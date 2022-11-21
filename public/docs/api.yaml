@@ -72,7 +72,7 @@ paths:
         - handbooks
       operationId: getTransport
       parameters:
-        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/calcType'
       summary: Типы авто (категории)
       responses:
         '200':
@@ -655,3 +655,12 @@ components:
       schema:
         type: string
         nullable: true
+    calcType:
+      in: query
+      name: calc_type
+      description: Тип калькулятора
+      schema:
+        type: string
+        enum:
+          - osago
+          - zk

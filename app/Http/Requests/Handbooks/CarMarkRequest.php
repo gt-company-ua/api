@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\handbooks;
+namespace App\Http\Requests\Handbooks;
 
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SearchCityRequest extends FormRequest
+class CarMarkRequest extends FormRequest
 {
     use RequestFailedValidationResponse;
     /**
@@ -26,7 +26,7 @@ class SearchCityRequest extends FormRequest
     public function rules()
     {
         return [
-            'search' => 'required|string|min:1'
+            'search' => 'nullable|string'
         ];
     }
 }

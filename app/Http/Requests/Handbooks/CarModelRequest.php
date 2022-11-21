@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\handbooks;
+namespace App\Http\Requests\Handbooks;
 
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CarMarkRequest extends FormRequest
+class CarModelRequest extends FormRequest
 {
     use RequestFailedValidationResponse;
     /**

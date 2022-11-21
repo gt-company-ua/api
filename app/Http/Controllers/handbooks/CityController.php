@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\handbooks;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\handbooks\SearchCityRequest;
+use App\Http\Requests\Handbooks\SearchCityRequest;
 use App\Services\api\Profitsoft;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;

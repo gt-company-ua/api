@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Requests\handbooks;
+namespace App\Http\Requests\Handbooks;
 
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class FindVehicleRequest extends FormRequest
+class TransportFilterRequest extends FormRequest
 {
     use RequestFailedValidationResponse;
     /**
@@ -26,7 +27,7 @@ class FindVehicleRequest extends FormRequest
     public function rules()
     {
         return [
-            'search' => 'required|string|min:8'
+            'calc_type' => [Rule::in(['osago', 'zk'])]
         ];
     }
 }
