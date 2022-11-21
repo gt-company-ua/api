@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\handbooks;
+namespace App\Http\Controllers\Handbooks;
 
 use App\Http\Controllers\Controller;
 use App\Models\VzrRange;
