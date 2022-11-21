@@ -53,3 +53,7 @@ Route::prefix('orders')->group(function () {
     Route::post('/liqypay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
     Route::post('/liqypay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
 });
+
+Route::prefix('data')->group(function () {
+    Route::get('/inn', [\App\Http\Controllers\DataController::class, 'innInfo'])->name('data.inn');
+});

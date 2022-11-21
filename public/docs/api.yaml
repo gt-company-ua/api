@@ -5,6 +5,24 @@ info:
   version: "1.0.0"
   title: greentravel-api
 paths:
+  /data/inn:
+    get:
+      tags:
+        - data
+      operationId: getInnInfo
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Типы авто (категории)
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/innInfo'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Inn
   /handbooks/cars:
     get:
       tags:
@@ -22,6 +40,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/cars'
+        '422':
+          $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Cars
   /handbooks/cars/{car_mark_id}/models:
     get:
@@ -622,6 +642,34 @@ components:
         calcZone:
           type: object
           example: 2
+    innInfo:
+      type: object
+      properties:
+        inn:
+          type: string
+        sex:
+          type: string
+          enum:
+            - Male
+            - Female
+        control:
+          type: integer
+          description: Контрольное число
+        status:
+          type: boolean
+          description: Статус, прошел ли номер проверку, если статус `false`, то номер указан неправильно
+        birth:
+          type: string
+          format: date
+        day:
+          type: string
+          description: День рождения
+        month:
+          type: string
+          description: Месяц рождения
+        year:
+          type: string
+          description: Год рождения
   responses:
     resp200Status:
       description: OK

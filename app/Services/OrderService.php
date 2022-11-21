@@ -180,11 +180,11 @@ class OrderService
 
         $inn = substr($inn, 0, 5);
 
-        $normal_date = date('d.m.Y', strtotime('01/01/1900 + ' . $inn . ' days - 1 days'));
+        $normalDate = date('Y-m-d', strtotime('01/01/1900 + ' . $inn . ' days - 1 days'));
 
-        $result['birth'] = $normal_date;
+        $result['birth'] = $normalDate;
 
-        list($result['day'], $result['month'], $result['year']) = explode('.', $normal_date);
+        list($result['year'], $result['month'], $result['day']) = explode('-', $normalDate);
 
         return $result;
     }
