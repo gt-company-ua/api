@@ -11,6 +11,8 @@ tags:
     description: Справочники
   - name: greencard
     description: Оформление и расчет полиса GreenCard
+  - name: orders
+    description: Действия с сохраненными полисами
 paths:
   /data/inn:
     get:
@@ -202,7 +204,10 @@ paths:
       responses:
         '201':
           description: ok
-
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
@@ -228,7 +233,63 @@ paths:
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
-
+  /orders/{uuid}:
+    get:
+      tags:
+        - orders
+      summary: Получение информации о полисе
+      operationId: getOrder
+      parameters:
+        - $ref: '#/components/parameters/orderUuid'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Orders
+  /orders/{uuid}/sms/send:
+    post:
+      tags:
+        - orders
+      summary: Отправка кода СМС для подтверждения
+      operationId: sendSmsOrder
+      parameters:
+        - $ref: '#/components/parameters/orderUuid'
+      responses:
+        '200':
+          $ref: '#/components/responses/resp200Status'
+        '400':
+          $ref: '#/components/responses/resp400'
+      x-swagger-router-controller: Sms
+  /orders/{uuid}/sms/confirm:
+    post:
+      tags:
+        - orders
+      summary: Подтверждение СМС
+      operationId: confirmSmsOrder
+      parameters:
+        - $ref: '#/components/parameters/orderUuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  example: UA123456
+      responses:
+        '200':
+          $ref: '#/components/responses/resp200Status'
+        '400':
+          $ref: '#/components/responses/resp400'
+      x-swagger-router-controller: Sms
 components:
   requestBodies:
     greencardCalculate:
@@ -357,19 +418,27 @@ components:
     calculatePrice:
       type: number
       description: Сумма
+    insuredSum:
+      type: number
+      nullable: true
+      description: Страховая сумма
     orderTripCountry:
       type: string
       description: Зона покрытия полиса
+      nullable: true
       enum:
         - sng
         - eu
     orderTripDuration:
       type: number
       description: Количество месяцев, от 1 до 12, 0 = 15 дней
+      nullable: true
       example: 0
     email:
       type: string
       format: email
+    cityId:
+      type: integer
     comment:
       type: string
       description: Комментарий
@@ -378,9 +447,26 @@ components:
       type: string
       description: Начало действия полиса, не раньше, чем завтра
       format: date
+    orderPolisEnd:
+      type: string
+      description: Окончание действия полиса
+      nullable: true
+      format: date
     orderUploadDocs:
       type: boolean
       description: Пометка, что будут загружены документы
+    foreignCheck:
+      type: boolean
+      description: Пометка, что иностранная регистрация
+    discountCheck:
+      type: boolean
+      description: Пометка, что есть льгота
+    gc_plus:
+      type: boolean
+      description: Пометка, что включен GreenCard +
+    gc_plus_price:
+      type: number
+      description: Сумма за GreenCard +
     orderFiles:
       type: array
       description: Обязательно, если upload_docs = true
@@ -442,6 +528,12 @@ components:
       format: date
       nullable: true
       description: Дата рождения
+    created_at:
+      type: string
+      format: datetime
+    updated_at:
+      type: string
+      format: datetime
     defaultStatus:
       type: object
       properties:
@@ -677,6 +769,102 @@ components:
         year:
           type: string
           description: Год рождения
+    order:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 67eb225a-5f53-48ad-901a-54eb183c13b4
+        order_type:
+          type: string
+          enum:
+            - greencard
+            - osago
+            - vzr
+            - kasko
+        tariff:
+          type: string
+          nullable: true
+        polis_start:
+          $ref: '#/components/schemas/orderPolisStart'
+        polis_end:
+          $ref: '#/components/schemas/orderPolisEnd'
+        foreign_check:
+          $ref: '#/components/schemas/foreignCheck'
+        discount_check:
+          $ref: '#/components/schemas/discountCheck'
+        trip_country:
+          $ref: '#/components/schemas/orderTripCountry'
+        trip_duration:
+          $ref: '#/components/schemas/orderTripDuration'
+        email:
+          $ref: '#/components/schemas/email'
+        city_id:
+          $ref: '#/components/schemas/cityId'
+        city_name:
+          $ref: '#/components/schemas/cityName'
+        upload_docs:
+          $ref: '#/components/schemas/orderUploadDocs'
+        price:
+          $ref: '#/components/schemas/calculatePrice'
+        insured_sum:
+          $ref: '#/components/schemas/insuredSum'
+        gc_plus:
+          $ref: '#/components/schemas/gc_plus'
+        gc_plus_price:
+          $ref: '#/components/schemas/gc_plus_price'
+        payment_type:
+          type: string
+          example: liqpay
+        payment_status:
+          type: string
+          example: invoice_wait
+        payment_url:
+          type: string
+          example: https://www.liqpay.ua
+        comment:
+          $ref: '#/components/schemas/comment'
+        created_at:
+          $ref: '#/components/schemas/created_at'
+        updated_at:
+          $ref: '#/components/schemas/updated_at'
+        transport:
+          type: object
+          description: Данные траспортного средства
+          nullable: true
+          properties:
+            transport_category_id:
+              $ref: '#/components/schemas/orderTransportCategoryId'
+            car_mark:
+              $ref: '#/components/schemas/orderCarMark'
+            car_model:
+              $ref: '#/components/schemas/orderCarModel'
+            gov_num:
+              $ref: '#/components/schemas/orderGovNum'
+            vin:
+              $ref: '#/components/schemas/orderVin'
+            car_year:
+              $ref: '#/components/schemas/orderCarYear'
+
+        insurant:
+          type: object
+          nullable: true
+          description: Данные страхователя
+          properties:
+            phone:
+              $ref: '#/components/schemas/insurantPhone'
+            surname:
+              $ref: '#/components/schemas/insurantSurname'
+            name:
+              $ref: '#/components/schemas/insurantName'
+            surname_latin:
+              $ref: '#/components/schemas/insurantSurnameLatin'
+            name_latin:
+              $ref: '#/components/schemas/insurantNameLatin'
+            inn:
+              $ref: '#/components/schemas/insurantInn'
+            birth:
+              $ref: '#/components/schemas/insurantBirth'
   responses:
     resp200Status:
       description: OK
@@ -719,3 +907,11 @@ components:
         enum:
           - osago
           - zk
+    orderUuid:
+      in: path
+      required: true
+      name: uuid
+      description: UUID полиса
+      schema:
+        type: string
+        example: 67eb225a-5f53-48ad-901a-54eb183c13b4

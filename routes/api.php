@@ -51,6 +51,8 @@ Route::prefix('vzr')->group(function () {
 
 Route::prefix('orders')->group(function () {
     Route::get('/{uuid}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/{uuid}/sms/send', [\App\Http\Controllers\OrderController::class, 'sendSms'])->name('orders.sendSms');
+    Route::post('/{uuid}/sms/confirm', [\App\Http\Controllers\OrderController::class, 'confirmSms'])->name('orders.confirmSms');
     Route::post('/liqpay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
     Route::post('/liqpay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
 });

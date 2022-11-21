@@ -10,7 +10,9 @@ use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    const ORDER_TYPES = ['osago', 'greencard', 'vzr', 'kasko'];
+    const ORDER_TYPE_GC = 'greencard';
+    const ORDER_TYPE_OSAGO = 'osago';
+    const ORDER_TYPES = [self::ORDER_TYPE_OSAGO, self::ORDER_TYPE_GC, 'vzr', 'kasko'];
     const INSURANT_PHYSICAL = 'physical';
     const INSURANT_JURISTIC = 'juristic';
     const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];
@@ -56,6 +58,7 @@ class Order extends Model
         'with_greencard' => 'bool',
         'epolis' => 'bool',
         'multiple_trip' => 'bool',
+        'gc_plus' => 'bool',
         'price' => 'float',
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
