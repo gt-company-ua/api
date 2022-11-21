@@ -50,8 +50,9 @@ Route::prefix('vzr')->group(function () {
 });
 
 Route::prefix('orders')->group(function () {
-    Route::post('/liqypay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
-    Route::post('/liqypay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
+    Route::get('/{uuid}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/liqpay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
+    Route::post('/liqpay/result', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
 });
 
 Route::prefix('data')->group(function () {

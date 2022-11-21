@@ -43,6 +43,10 @@ class Order extends Model
     protected $guarded = [];
 
     protected $with = ['transport', 'insurant'];
+    protected $hidden = [
+        'id', 'send_sms', 'contract_response', 'crm_contact_id', 'crm_deal_id',
+        'crm_car_id', 'ga_id'
+    ];
 
     protected $casts = [
         'upload_docs' => 'bool',
