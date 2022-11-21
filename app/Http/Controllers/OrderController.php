@@ -11,17 +11,6 @@ class OrderController extends Controller
 {
     use ApiResponser;
 
-    public function index()
-    {
-        //
-    }
-
-
-    public function store(Request $request)
-    {
-        //
-    }
-
 
     public function show(string $uuid): JsonResponse
     {
@@ -30,11 +19,6 @@ class OrderController extends Controller
         return $this->sendResponse($order);
     }
 
-
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
     public function liqPayStatus(Request $request)
     {
