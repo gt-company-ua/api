@@ -4,6 +4,13 @@ servers:
 info:
   version: "1.0.0"
   title: greentravel-api
+tags:
+  - name: data
+    description: Проверка или получение данных
+  - name: handbooks
+    description: Справочники
+  - name: greencard
+    description: Оформление и расчет полиса GreenCard
 paths:
   /data/inn:
     get:
@@ -12,7 +19,7 @@ paths:
       operationId: getInnInfo
       parameters:
         - $ref: '#/components/parameters/search'
-      summary: Типы авто (категории)
+      summary: Проверка и расшифровка ИНН
       responses:
         '200':
           description: response
