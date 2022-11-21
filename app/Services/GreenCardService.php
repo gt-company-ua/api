@@ -33,13 +33,12 @@ class GreenCardService
 
         $transportCategory = TransportCategory::whereId($data['transport']['transport_category_id'])->first();
 
-        $transportType = $data['transport']['transport_category_id'];
         if($transportCategory->alias === 'car'){
-            $transportType = 'auto';
+            $transportCategory->alias = 'auto';
         }
 
         $prefix = $gos ? 'gos_' : '';
-        $basePrice = round($prices[$prefix . $data['trip_country'] . '_' . $transportType][$data['trip_duration']]);
+        $basePrice = round($prices[$prefix . $data['trip_country'] . '_' . $transportCategory->alias][$data['trip_duration']]);
 
         return floor($basePrice);
     }
