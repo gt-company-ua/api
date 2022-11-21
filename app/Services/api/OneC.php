@@ -66,6 +66,11 @@ class OneC
         }
     }
 
+    private function internalId($orderId): string
+    {
+        return "api-id-" . $orderId;
+    }
+
     public function saveGreenCard(Order $order, $status = 'Signed'): array
     {
         $parseInn = (new OrderService(null))->parseInn($order->insurant->inn);
@@ -91,7 +96,7 @@ class OneC
 
         $params = [
             'Product' => 'ZK',
-            'ID' => $order->id,
+            'ID' => $this->internalId($order->id),
             'Status' => $status,
             'BMR' => ($order->trip_country === Order::TRIP_COUNTRY_SNG),
             'Date' => date('Y-m-d\TH:i:s'),
@@ -146,6 +151,7 @@ class OneC
             if (isset($response['result']) && $response['result']) {
                 $contract = [
                     'number' => $response['BlankNumber'],
+                    'external_id' => $response['Number'],
                     'state' => $status,
                     'end_date' => $response['EndDate'],
                     'policy_link' => $response['MTIBULink']
@@ -232,7 +238,7 @@ class OneC
     public function sendOTP($id, $number): array
     {
         $params = [
-            'ID' => $id,
+            'ID' => $this->internalId($id),
             'Number' => $number,
         ];
 
