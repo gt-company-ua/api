@@ -42,7 +42,6 @@ class CreateOrdersTable extends Migration
             $table->string('payment_url')->nullable();
             $table->string('payment_url_short')->nullable();
 
-            $table->tinyInteger('dont_call')->unsigned()->nullable();
             $table->string('bonus')->nullable();
 
             $table->text('comment')->nullable();

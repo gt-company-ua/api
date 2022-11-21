@@ -23,8 +23,8 @@ class CarController extends Controller
 
         $marks = CarMark::orderBy('name');
 
-        if (!empty($filter->search)) {
-            $marks->where('name', 'like', $filter->search . '%');
+        if (!empty($filter['search'])) {
+            $marks->where('name', 'like', $filter['search'] . '%');
         }
 
         return $this->sendResponse($marks->get());
@@ -36,8 +36,8 @@ class CarController extends Controller
 
         $marks = CarModel::where('car_mark_id', $carMarkId);
 
-        if (!empty($filter->search)) {
-            $marks->where('name', 'like', $filter->search . '%');
+        if (!empty($filter['search'])) {
+            $marks->where('name', 'like', $filter['search'] . '%');
         }
 
         return $this->sendResponse($marks->get());
