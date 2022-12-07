@@ -230,6 +230,8 @@ paths:
                 properties:
                   price:
                     $ref: '#/components/schemas/calculatePrice'
+                  price_gos:
+                    $ref: '#/components/schemas/calculatePrice'
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard

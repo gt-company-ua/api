@@ -17,8 +17,9 @@ class GreenCardController extends Controller
     {
         $data = $request->validated();
         $price = (new GreenCardService())->calculate($data);
+        $priceGos = (new GreenCardService())->calculate($data, true);
 
-        return $this->sendResponse(['price' => $price]);
+        return $this->sendResponse(['price' => $price, 'price_gos' => $priceGos]);
     }
 
     public function store(GreenCardSaveRequest $request): JsonResponse
