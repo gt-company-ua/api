@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ConfirmSmsRequest;
 use App\Models\Order;
 use App\Services\api\OneC;
+use App\Services\LiqPay;
+use App\Services\OrderService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,7 +62,23 @@ class OrderController extends Controller
 
     public function liqPayStatus(Request $request)
     {
-        //
+        $liqpay = new LiqPay();
+
+        $signature = $liqpay->str_to_sign($request->post('data'));
+
+        if ($signature === $request->post('signature')) {
+            $data = $liqpay->decode_params($request->post('data'));
+
+            $orderId = explode('_', $data['order_id']);
+            $orderUuid = $orderId[1];
+
+            $order = Order::where('uuid', $orderUuid)->firstOrFail();
+
+            $order->payment_status = $data['status'];
+            $order->save();
+
+            (new OrderService($order))->actionsAfterPayment();
+        }
     }
 
     public function liqPayResult(Request $request)

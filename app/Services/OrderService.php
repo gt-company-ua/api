@@ -9,11 +9,16 @@ use App\Models\OrderFile;
 use App\Models\OrderInsurant;
 use App\Models\OrderTourist;
 use App\Models\OrderTransport;
+use App\Services\api\GoogleAnalytics;
+use App\Services\api\OneC;
+use App\Services\api\Profitsoft;
 use Illuminate\Support\Str;
 
 class OrderService
 {
     private $order;
+
+    const PAYMENT_STATUS_OK = 'success';
 
     public function __construct(?Order $order)
     {
@@ -73,6 +78,8 @@ class OrderService
         $this->order = $order;
         $this->createInvoice();
 
+        (new CrmService($this->order))->sendCrm();
+
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
     }
 
@@ -84,7 +91,7 @@ class OrderService
             return '';
         }
 
-        $order_uid = $this->order->type . '_' . $this->order->uuid . '_' . Str::random(3);
+        $orderUid = $this->order->type . '_' . $this->order->uuid . '_' . Str::random(3);
 
         $invoiceParams = [
             'action'       => 'invoice_send',
@@ -93,8 +100,8 @@ class OrderService
             'amount'       => $price,
             'currency'     => 'UAH',
             'server_url'   => route('orders.liqpay.status'),
-            'result_url'   => route('orders.liqpay.result'),
-            'order_id'     => $order_uid,
+            'result_url'   => route('orders.liqpay.result', ['order' => $this->order->uuid]),
+            'order_id'     => $orderUid,
             'expired_date' => date('Y-m-d H:i:s', strtotime('+1 day')),
             'description'  => $this->getInsurantFullName() . ', ІПН: '
                 . $this->order->insurant->inn,
@@ -106,6 +113,7 @@ class OrderService
             $this->order->payment_type = 'liqpay';
             $this->order->payment_status = $sendInvoice->status;
             $this->order->payment_url = $sendInvoice->href;
+            $this->order->ga_id = (new GoogleAnalytics())->getGaId();
             $this->order->save();
         }
 
@@ -187,5 +195,46 @@ class OrderService
         list($result['year'], $result['month'], $result['day']) = explode('-', $normalDate);
 
         return $result;
+    }
+
+    public function actionsAfterPayment()
+    {
+        if ($this->order->payment_status != self::PAYMENT_STATUS_OK) {
+            return;
+        }
+
+        (new CrmService($this->order))->updateDeal();
+
+        (new GoogleAnalytics())->transaction($this->order);
+
+        if ($this->order->type === Order::ORDER_TYPE_GC) {
+            $this->saveGreenCard1C();
+        } else if ($this->order->type === Order::ORDER_TYPE_OSAGO) {
+            $this->saveOsago1C();
+        }
+    }
+
+    private function saveOsago1C()
+    {
+        $save1c = (new Profitsoft())->confirm($this->order);
+    }
+
+    private function saveGreenCard1C()
+    {
+        $save1c = (new OneC())->saveGreenCard($this->order);
+
+        if ( ! empty($save1c['Number'])) {
+            $filename = (new OneC())->getPrintForm(
+                $this->order->id, $save1c['Number']
+            );
+            if ( ! empty($filename)) {
+                $filePath = storage_path('app/public/greencard')
+                    . DIRECTORY_SEPARATOR . $filename;
+
+                /*$this->sendEmailPolicy(
+                    $save1c['Number'], $filePath, $order['email']
+                );*/ //TODO Сделать отправку полиса клиенту
+            }
+        }
     }
 }
