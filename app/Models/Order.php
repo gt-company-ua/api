@@ -12,7 +12,8 @@ class Order extends Model
 {
     const ORDER_TYPE_GC = 'greencard';
     const ORDER_TYPE_OSAGO = 'osago';
-    const ORDER_TYPES = [self::ORDER_TYPE_OSAGO, self::ORDER_TYPE_GC, 'vzr', 'kasko'];
+    const ORDER_TYPE_VZR = 'vzr';
+    const ORDER_TYPES = [self::ORDER_TYPE_OSAGO, self::ORDER_TYPE_GC, self::ORDER_TYPE_VZR, 'kasko'];
     const INSURANT_PHYSICAL = 'physical';
     const INSURANT_JURISTIC = 'juristic';
     const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];
