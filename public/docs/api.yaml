@@ -292,6 +292,28 @@ paths:
         '400':
           $ref: '#/components/responses/resp400'
       x-swagger-router-controller: Sms
+  /orders/promocode:
+    get:
+      tags:
+        - orders
+      summary: Проверка промокода
+      operationId: getPromocode
+      parameters:
+        - $ref: '#/components/parameters/polisType'
+        - $ref: '#/components/parameters/promocode'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/promocodeObject'
+        '404':
+          $ref: '#/components/responses/resp404'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Orders
+
 components:
   requestBodies:
     greencardCalculate:
@@ -780,6 +802,24 @@ components:
         year:
           type: string
           description: Год рождения
+    promocodeObject:
+      type: object
+      properties:
+        code:
+          type: string
+        type:
+          type: string
+          description: Тип скидки - процент или сумма
+          enum:
+            - amount
+            - percent
+        discount:
+          type: number
+          description: Размер скидки
+        expired_at:
+          type: string
+          nullable: true
+          format: date
     order:
       type: object
       properties:
@@ -928,3 +968,23 @@ components:
       schema:
         type: string
         example: 67eb225a-5f53-48ad-901a-54eb183c13b4
+
+    polisType:
+      in: query
+      name: polis_type
+      description: Тип полиса
+      required: true
+      schema:
+        type: string
+        enum:
+          - osago
+          - greencard
+          - kasko
+          - vzr
+    promocode:
+      in: query
+      name: promocode
+      description: Промокод
+      required: true
+      schema:
+        type: string

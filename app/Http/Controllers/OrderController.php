@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConfirmSmsRequest;
+use App\Http\Requests\PromocodeRequest;
 use App\Models\Order;
+use App\Models\Promocode;
 use App\Services\api\OneC;
 use App\Services\LiqPay;
 use App\Services\OrderService;
@@ -84,5 +86,19 @@ class OrderController extends Controller
     public function liqPayResult(Request $request)
     {
         //
+    }
+
+    public function promocode(PromocodeRequest $request)
+    {
+        $promocode = Promocode::where('code', $request->get('code'))
+            ->active($request->get('polis_type'))
+            ->firstOrFail();
+
+        return $this->sendResponse([
+            'code' => $promocode->code,
+            'type' => $promocode->type,
+            'discount' => $promocode->discount,
+            'expired_at' => $promocode->expired_at
+        ]);
     }
 }

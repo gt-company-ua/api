@@ -18,6 +18,7 @@ class Promocode extends Model
         'osago' => 'bool',
         'kasko' => 'bool',
         'vzr' => 'bool',
+        'discount' => 'float'
     ];
 
     public function scopeActive(Builder $query, string $orderType)
