@@ -90,7 +90,7 @@ class OrderController extends Controller
 
     public function promocode(PromocodeRequest $request)
     {
-        $promocode = Promocode::where('code', $request->get('code'))
+        $promocode = Promocode::where('code', $request->get('promocode'))
             ->active($request->get('polis_type'))
             ->firstOrFail();
 

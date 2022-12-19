@@ -28,7 +28,7 @@ class PromocodeRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string',
+            'promocode' => 'required|string',
             'polis_type' => ['required', Rule::in(Order::ORDER_TYPES)],
         ];
     }
