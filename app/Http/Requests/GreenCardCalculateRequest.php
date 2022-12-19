@@ -29,7 +29,7 @@ class GreenCardCalculateRequest extends FormRequest
     {
         return [
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
-
+            'promocode' => 'nullable|string',
             'trip_country' => ['required', Rule::in(Order::TRIP_COUNTRIES)],
             'trip_duration' => 'required|numeric|min:0|max:12',
         ];

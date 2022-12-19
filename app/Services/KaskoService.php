@@ -12,11 +12,17 @@ use Illuminate\Database\Eloquent\Builder;
 
 class KaskoService
 {
-    public function calculate(array $data): float
+    public function calculate(array $data, $usePromocode = true): float
     {
         $coefficent = $this->calculateCoefficent($data);
 
-        return round($data['insured_sum'] / 100 * $coefficent, 2);
+        $price = round($data['insured_sum'] / 100 * $coefficent, 2);
+
+        if ($usePromocode === true) {
+            $price = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $price, Order::ORDER_TYPE_KASKO);
+        }
+
+        return $price;
     }
 
     private function findInsuranceValueByPrice(int $price)

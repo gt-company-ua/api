@@ -13,7 +13,8 @@ class Order extends Model
     const ORDER_TYPE_GC = 'greencard';
     const ORDER_TYPE_OSAGO = 'osago';
     const ORDER_TYPE_VZR = 'vzr';
-    const ORDER_TYPES = [self::ORDER_TYPE_OSAGO, self::ORDER_TYPE_GC, self::ORDER_TYPE_VZR, 'kasko'];
+    const ORDER_TYPE_KASKO = 'kasko';
+    const ORDER_TYPES = [self::ORDER_TYPE_OSAGO, self::ORDER_TYPE_GC, self::ORDER_TYPE_VZR, self::ORDER_TYPE_KASKO];
     const INSURANT_PHYSICAL = 'physical';
     const INSURANT_JURISTIC = 'juristic';
     const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];
@@ -48,7 +49,7 @@ class Order extends Model
     protected $with = ['transport', 'insurant'];
     protected $hidden = [
         'id', 'send_sms', 'contract_response', 'crm_contact_id', 'crm_deal_id',
-        'crm_car_id', 'ga_id'
+        'crm_car_id', 'ga_id', 'promocode_id'
     ];
 
     protected $casts = [
@@ -61,6 +62,7 @@ class Order extends Model
         'multiple_trip' => 'bool',
         'gc_plus' => 'bool',
         'price' => 'float',
+        'full_price' => 'float',
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
     ];

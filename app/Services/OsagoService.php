@@ -23,7 +23,7 @@ class OsagoService
         self::TARIFF_MAXIMUM,
     ];
 
-    public function calculate(array $data): array
+    public function calculate(array $data, $usePromocode = true): array
     {
         $power = TransportPower::where('id', $data['transport']['transport_power_id'])->first();
 
@@ -64,6 +64,10 @@ class OsagoService
 
             if ($tariff->tariff == self::TARIFF_MAXIMUM) {
                 $price += 320;
+            }
+
+            if ($usePromocode === true) {
+                $price = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $price, Order::ORDER_TYPE_OSAGO);
             }
 
             $prices[$tariff->tariff] = [
@@ -109,11 +113,11 @@ class OsagoService
     {
         $data = $request->validated();
 
-        $prices = $this->calculate($data);
+        $prices = $this->calculate($data, false);
 
         $data['price'] = $prices['prices'][$data['tariff']]['price'] ?? null;
 
-        $order = (new OrderService(null))->saveOrder($data, 'osago');
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_OSAGO);
 
         if (is_null($order)) {
             return null;

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\VzrSaveRequest;
 use App\Models\CovidPrice;
+use App\Models\Order;
 use App\Models\VzrRangeDay;
 use App\Services\api\CurrencyService;
 use Exception;
@@ -13,15 +14,18 @@ class VzrService
     private $prices;
 
 
-    public function saveOrder(VzrSaveRequest $request)
+    /**
+     * @throws Exception
+     */
+    public function saveOrder(VzrSaveRequest $request): ?\App\Models\Order
     {
         $data = $request->validated();
 
-        $price = $this->calculate($data);
+        $price = $this->calculate($data, false);
 
         $data['price'] = $price['price'];
 
-        $order = (new OrderService(null))->saveOrder($data, 'vzr');
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_VZR);
 
         if (is_null($order)) {
             return null;
@@ -33,7 +37,7 @@ class VzrService
     /**
      * @throws Exception
      */
-    public function calculate(array $data): ?array
+    public function calculate(array $data, $usePromocode = true): ?array
     {
         $this->loadPrices();
 
@@ -77,6 +81,10 @@ class VzrService
 
         if($data['epolis'] === false && $data['with_greencard'] === false){
             $allPrice += 40;
+        }
+
+        if ($usePromocode === true) {
+            $allPrice = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $allPrice, Order::ORDER_TYPE_VZR);
         }
 
         return [

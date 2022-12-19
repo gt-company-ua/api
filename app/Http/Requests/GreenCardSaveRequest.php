@@ -35,6 +35,7 @@ class GreenCardSaveRequest extends FormRequest
             'email' => 'required|email',
             'polis_start' => 'required|date|after:tomorrow',
             'comment' => 'nullable|string',
+            'promocode' => 'nullable|string',
 
             'upload_docs' => ['required', new Boolean],
             'files' => 'required_if:upload_docs,1|array',

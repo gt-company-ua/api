@@ -32,6 +32,7 @@ class KaskoCalculateRequest extends FormRequest
             'is_truck' => 'boolean',
             'tariff' => 'required|exists:App\Models\KaskoTariff,alias',
             'transport.car_year' => 'required|digits:4|integer|min:' . (date('Y') - 18) . '|max:' . date('Y'),
+            'promocode' => 'nullable|string',
         ];
     }
 }

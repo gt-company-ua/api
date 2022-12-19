@@ -3,19 +3,20 @@
 namespace App\Services;
 
 use App\Http\Requests\GreenCardSaveRequest;
+use App\Models\Order;
 use App\Models\TransportCategory;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 
 class GreenCardService
 {
-    public function saveOrder(GreenCardSaveRequest $request)
+    public function saveOrder(GreenCardSaveRequest $request): ?Order
     {
         $data = $request->validated();
 
-        $data['price'] = $this->calculate($data);
+        $data['price'] = $this->calculate($data, false, false);
 
-        $order = (new OrderService(null))->saveOrder($data, 'greencard');
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
 
         if (is_null($order)) {
             return null;
@@ -28,7 +29,7 @@ class GreenCardService
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
     }
 
-    public function calculate(array $data, $gos = false) {
+    public function calculate(array $data, $gos = false, $usePromocode = true) {
         $prices = $this->loadPrices();
 
         $transportCategory = TransportCategory::whereId($data['transport']['transport_category_id'])->first();
@@ -39,6 +40,10 @@ class GreenCardService
 
         $prefix = $gos ? 'gos_' : '';
         $basePrice = round($prices[$prefix . $data['trip_country'] . '_' . $transportCategory->alias][$data['trip_duration']]);
+
+        if ($gos === false && $usePromocode === true) {
+            $basePrice = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $basePrice, Order::ORDER_TYPE_GC);
+        }
 
         return floor($basePrice);
     }

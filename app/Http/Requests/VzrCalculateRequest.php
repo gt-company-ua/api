@@ -40,7 +40,8 @@ class VzrCalculateRequest extends FormRequest
             'target' => ['required', Rule::in(Order::TARGETS)],
             'insured_sum' => ['required', Rule::in(Order::VZR_INSURED_SUMS)],
             'tourists' => 'required|array',
-            'tourists.*.birth' => 'required|date|before:today'
+            'tourists.*.birth' => 'required|date|before:today',
+            'promocode' => 'nullable|string',
         ];
     }
 }

@@ -50,6 +50,7 @@ class VzrSaveRequest extends FormRequest
             'insurant.inn' => ['required', new Inn],
             'insurant.surname' => 'nullable|string',
             'insurant.name' => 'nullable|string',
+            'promocode' => 'nullable|string',
         ];
     }
 }

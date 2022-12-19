@@ -9,6 +9,7 @@ use App\Models\OrderFile;
 use App\Models\OrderInsurant;
 use App\Models\OrderTourist;
 use App\Models\OrderTransport;
+use App\Models\Promocode;
 use App\Services\api\GoogleAnalytics;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
@@ -46,9 +47,14 @@ class OrderService
             $files = $request['files'];
         }
 
-        unset($request['transport'], $request['insurant'], $request['files'], $request['tourists']);
+        $promocode = $request['promocode'] ?? null;
+
+        unset($request['transport'], $request['insurant'], $request['files'], $request['tourists'], $request['promocode']);
 
         $request['order_type'] = $orderType;
+        $request['full_price'] = $request['price'];
+
+        $request['price'] = $this->usePromocode($promocode, $request['price'], $orderType);
 
         $order = Order::create($request);
 
@@ -76,6 +82,9 @@ class OrderService
         }
 
         $this->order = $order;
+
+        $this->savePromocode($promocode, $orderType);
+
         $this->createInvoice();
 
         (new CrmService($this->order))->sendCrm();
@@ -236,5 +245,40 @@ class OrderService
                 );*/ //TODO Сделать отправку полиса клиенту
             }
         }
+    }
+
+    public function usePromocode(?string $code, float $basePrice, string $orderType)
+    {
+        if (empty($code)) {
+            return $basePrice;
+        }
+
+        $promocode = Promocode::where('code', $code)->active($orderType)->first();
+
+        if ( ! is_null($promocode)
+            && (is_null($promocode->max_uses)
+                || $promocode->max_uses > $promocode->used)
+        ) {
+            if ($promocode->type === 'percent') {
+                $discount = $basePrice / 100 * $promocode->discount;
+            } else {
+                $discount = $basePrice - $promocode->discount;
+            }
+
+            $basePrice -= $discount;
+        }
+
+        return ceil($basePrice);
+    }
+
+    private function savePromocode(?string $code, string $orderType)
+    {
+        if (empty($this->order) || empty($code)) {
+            return;
+        }
+
+        $promocode = Promocode::where('code', $code)->active($orderType)->first();
+
+        $this->order->promocode_id = $promocode->id ?? null;
     }
 }

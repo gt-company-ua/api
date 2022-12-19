@@ -309,6 +309,8 @@ components:
                 $ref: '#/components/schemas/orderTripCountry'
               trip_duration:
                 $ref: '#/components/schemas/orderTripDuration'
+              promocode:
+                $ref: '#/components/schemas/promocode'
               transport:
                 type: object
                 description: Данные траспортного средства
@@ -344,6 +346,8 @@ components:
                 $ref: '#/components/schemas/orderUploadDocs'
               comment:
                 $ref: '#/components/schemas/comment'
+              promocode:
+                $ref: '#/components/schemas/promocode'
               transport:
                 type: object
                 description: Данные траспортного средства
@@ -436,6 +440,11 @@ components:
       description: Количество месяцев, от 1 до 12, 0 = 15 дней
       nullable: true
       example: 0
+    promocode:
+      type: string
+      description: Промокод
+      nullable: true
+      example: SALE10
     email:
       type: string
       format: email
@@ -808,6 +817,8 @@ components:
         upload_docs:
           $ref: '#/components/schemas/orderUploadDocs'
         price:
+          $ref: '#/components/schemas/calculatePrice'
+        full_price:
           $ref: '#/components/schemas/calculatePrice'
         insured_sum:
           $ref: '#/components/schemas/insuredSum'

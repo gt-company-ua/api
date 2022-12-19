@@ -66,6 +66,7 @@ class OsagoSaveRequest extends FormRequest
             'insurant.doc_series' => 'nullable|required_if:upload_docs,0|string',
             'insurant.doc_given' => 'nullable|required_if:upload_docs,0|string',
             'insurant.doc_date' => 'nullable|required_if:upload_docs,0|date|before_or_equal:today',
+            'promocode' => 'nullable|string',
         ];
     }
 }

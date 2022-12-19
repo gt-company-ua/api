@@ -91,10 +91,12 @@ class CrmApi
 
         if ( ! $result){
             Log::error('CRM curl error ' . $url . ':' . curl_error($curl). ' Request: '. json_encode($params, JSON_UNESCAPED_UNICODE));
+        } else {
+            Log::debug('CRM response: ' .  $result);
         }
 
         curl_close($curl);
 
-        return json_decode($result, 1);
+        return json_decode($result, true);
     }
 }

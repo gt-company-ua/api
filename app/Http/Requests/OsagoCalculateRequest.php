@@ -37,7 +37,7 @@ class OsagoCalculateRequest extends FormRequest
             'discount_check' => 'required|boolean',
 
             'insurant.type' => ['required', Rule::in(Order::INSURANT_TYPES)],
-
+            'promocode' => 'nullable|string',
         ];
     }
 }
