@@ -53,7 +53,7 @@ class CreateOrdersTable extends Migration
             $table->integer('crm_deal_id')->nullable();
             $table->integer('crm_car_id')->nullable();
 
-            $table->boolean('dont_call')->default(true);
+            $table->boolean('dont_call')->default(false);
 
             $table->timestamps();
         });
