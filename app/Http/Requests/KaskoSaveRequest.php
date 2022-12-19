@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\KaskoService;
+use App\Rules\Boolean;
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,6 +33,7 @@ class KaskoSaveRequest extends FormRequest
             'is_truck' => 'boolean',
             'tariff' => 'required|exists:App\Models\KaskoTariff,alias',
             'email' => 'nullable|email',
+            'dont_call' => ['nullable', new Boolean],
             'transport.car_mark' => 'required|string',
             'transport.car_model' => 'required|string',
             'transport.car_year' => 'required|digits:4|integer|min:' . (date('Y') - 18) . '|max:' . date('Y'),

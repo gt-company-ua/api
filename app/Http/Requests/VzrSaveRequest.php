@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Order;
+use App\Rules\Boolean;
 use App\Rules\Inn;
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
@@ -34,6 +35,7 @@ class VzrSaveRequest extends FormRequest
             'epolis' => 'required|boolean',
             'with_covid' => 'required|boolean',
             'with_greencard' => 'required|boolean',
+            'dont_call' => ['nullable', new Boolean],
             'polis_end' => 'required_if:multiple_trip,false|date|after:polis_start',
             'vzr_range_day_id' => 'nullable|required_if:multiple_trip,true|exists:App\Models\VzrRangeDay,id',
             'territory' => ['required', Rule::in(Order::TERRITORIES)],

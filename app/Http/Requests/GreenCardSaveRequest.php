@@ -33,9 +33,10 @@ class GreenCardSaveRequest extends FormRequest
             'trip_country' => ['required', Rule::in(Order::TRIP_COUNTRIES)],
             'trip_duration' => 'required|numeric|min:0|max:12',
             'email' => 'required|email',
-            'polis_start' => 'required|date|after:tomorrow',
+            'polis_start' => 'required|date|after:yesterday',
             'comment' => 'nullable|string',
             'promocode' => 'nullable|string',
+            'dont_call' => ['nullable', new Boolean],
 
             'upload_docs' => ['required', new Boolean],
             'files' => 'required_if:upload_docs,1|array',

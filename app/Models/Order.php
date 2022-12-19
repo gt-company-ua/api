@@ -53,6 +53,7 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'dont_call' => 'bool',
         'upload_docs' => 'bool',
         'foreign_check' => 'bool',
         'discount_check' => 'bool',

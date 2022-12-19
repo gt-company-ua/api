@@ -370,6 +370,8 @@ components:
                 $ref: '#/components/schemas/comment'
               promocode:
                 $ref: '#/components/schemas/promocode'
+              dont_call:
+                $ref: '#/components/schemas/dont_call'
               transport:
                 type: object
                 description: Данные траспортного средства
@@ -497,6 +499,9 @@ components:
     gc_plus:
       type: boolean
       description: Пометка, что включен GreenCard +
+    dont_call:
+      type: boolean
+      description: Пометка не перезванивать
     gc_plus_price:
       type: number
       description: Сумма за GreenCard +

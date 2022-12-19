@@ -41,6 +41,7 @@ class OsagoSaveRequest extends FormRequest
             'files' => 'required_if:upload_docs,1|array',
             'files.*' => 'mimes:jpg,jpeg,png,bmp,pdf,zip,rar,7z',
             'comment' => 'nullable|string',
+            'dont_call' => ['nullable', new Boolean],
 
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
             'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
