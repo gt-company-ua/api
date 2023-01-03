@@ -233,9 +233,9 @@ class CrmService
 
         if ( ! is_null($this->order->files)){
             foreach ($this->order->files as $file){
-                $fileGet = Storage::get($file->path);
+                $fileGet = Storage::disk('public')->get($file->path);
                 $fields['UF_CRM_1540210623'][] = [
-                    'fileData' => [$file, base64_encode($fileGet)]
+                    'fileData' => [$file, $fileGet]
                 ];
             }
         }

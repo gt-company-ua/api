@@ -13,6 +13,7 @@ use App\Models\Promocode;
 use App\Services\api\GoogleAnalytics;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -75,6 +76,7 @@ class OrderService
             try {
                 $this->uploadFiles($order, $files);
             } catch (\Exception $e) {
+                Log::error('Upload error:' . $e->getMessage());
                 $order->delete();
 
                 return null;
@@ -150,7 +152,7 @@ class OrderService
 
             foreach($files as $file) {
                 $name = $file->getClientOriginalName();
-                $path = '/' . $order->order_type . '/' . $order->id . '/';
+                $path = '/' . $order->order_type . '/' . $order->id;
                 $localPath = public_path('storage') . $path;
                 $ext = $file->getClientOriginalExtension();
                 $randName = Str::uuid() . '.' . $ext;
@@ -158,13 +160,13 @@ class OrderService
                 try {
                     $file->move($localPath, $randName);
                 } catch (\Exception $e) {
-                    throw new FileUploadException("Ошибка при загрузке файла " . $name);
+                    throw new FileUploadException("Ошибка при загрузке файла " . $name . ' Error: '. $e->getMessage());
                     return;
                 }
 
                 $saveFiles[] = new OrderFile([
                     'name' => $name,
-                    'path' => $path . $randName,
+                    'path' => $path .'/'. $randName,
                     'extension' => $file->getClientOriginalExtension()
                 ]);
             }
