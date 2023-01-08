@@ -46,7 +46,7 @@ class OrderController extends Controller
             }
         }
 
-        return $this->sendError("По этому полису отправка СМС невозможна");
+        return $this->sendError("За цим полісом відправка СМС неможлива");
     }
 
     public function confirmSms(ConfirmSmsRequest $request, $uuid): JsonResponse
@@ -58,7 +58,7 @@ class OrderController extends Controller
             return $this->sendSuccess();
         }
 
-        return $this->sendError("Неправильный код СМС");
+        return $this->sendError("Введений код не вірний. Перевірте та спробуйте ще раз. Це дозволить отримати поліс автоматично. Або перейдіть до сплати без коду, менеджер зв'яжеться одразу після оплати та сформує поліс в ручну");
     }
 
 
