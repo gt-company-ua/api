@@ -11,6 +11,8 @@ tags:
     description: Справочники
   - name: greencard
     description: Оформление и расчет полиса GreenCard
+  - name: osago
+    description: Оформление и расчет полиса ОСАГО
   - name: orders
     description: Действия с сохраненными полисами
 paths:
@@ -235,6 +237,83 @@ paths:
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
+
+  /osago:
+    post:
+      tags:
+        - osago
+      summary: Сохранение полиса ОСАГО
+      operationId: postOsago
+      requestBody:
+        $ref: '#/components/requestBodies/osago'
+      responses:
+        '201':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Osago
+
+  /osago/calculate:
+    post:
+      tags:
+        - osago
+      summary: Расчет суммы по ОСАГО
+      operationId: postOsagoCalculate
+      requestBody:
+        $ref: '#/components/requestBodies/osagoCalculate'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tariff:
+                          $ref: '#/components/schemas/tariff'
+                        price:
+                          type: number
+                          description: Сумма
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Osago
+
+  /osago/tariffs:
+    get:
+      tags:
+        - osago
+      summary: Получение тарифов по ОСАГО
+      operationId: getOsagoTariffs
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    franchise:
+                      type: number
+                      description: Размер франшизы
+                    tariff:
+                      $ref: '#/components/schemas/tariff'
+                    coefficient:
+                      type: number
+      x-swagger-router-controller: Osago
+
   /orders/{uuid}:
     get:
       tags:
@@ -253,6 +332,7 @@ paths:
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Orders
+
   /orders/{uuid}/sms/send:
     post:
       tags:
@@ -267,6 +347,7 @@ paths:
         '400':
           $ref: '#/components/responses/resp400'
       x-swagger-router-controller: Sms
+
   /orders/{uuid}/sms/confirm:
     post:
       tags:
@@ -292,6 +373,7 @@ paths:
         '400':
           $ref: '#/components/responses/resp400'
       x-swagger-router-controller: Sms
+
   /orders/promocode:
     get:
       tags:
@@ -341,6 +423,48 @@ components:
                 properties:
                   transport_category_id:
                     $ref: '#/components/schemas/orderTransportCategoryId'
+    osagoCalculate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - foreign_check
+              - discount_check
+              - transport
+              - insurant
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              city_id:
+                $ref: '#/components/schemas/cityId'
+              city_name:
+                $ref: '#/components/schemas/cityName'
+              foreign_check:
+                $ref: '#/components/schemas/foreignCheck'
+              discount_check:
+                $ref: '#/components/schemas/discountCheck'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_category_id
+                  - transport_power_id
+                properties:
+                  transport_category_id:
+                    $ref: '#/components/schemas/orderTransportCategoryId'
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
+              insurant:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - type
+                properties:
+                  type:
+                    $ref: '#/components/schemas/insurantType'
+
     greencard:
       content:
         application/json:
@@ -443,6 +567,145 @@ components:
                 $ref: '#/components/schemas/orderTransportCategoryId'
               insurant[phone]:
                 $ref: '#/components/schemas/insurantPhone'
+    osago:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - tariff
+              - foreign_check
+              - discount_check
+              - email
+              - polis_start
+              - upload_docs
+              - insurant
+              - transport
+            description: Если upload_docs = false, обязательны все поля, кроме comment, files, insurant.flat, promocode
+            properties:
+              city_id:
+                $ref: '#/components/schemas/cityId'
+              city_name:
+                $ref: '#/components/schemas/cityName'
+              foreign_check:
+                $ref: '#/components/schemas/foreignCheck'
+              discount_check:
+                $ref: '#/components/schemas/discountCheck'
+              tariff:
+                $ref: '#/components/schemas/tariff'
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              comment:
+                $ref: '#/components/schemas/comment'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              dont_call:
+                $ref: '#/components/schemas/dont_call'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_category_id
+                  - transport_power_id
+                properties:
+                  transport_category_id:
+                    $ref: '#/components/schemas/orderTransportCategoryId'
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
+                  car_mark:
+                    $ref: '#/components/schemas/orderCarMark'
+                  car_model:
+                    $ref: '#/components/schemas/orderCarModel'
+                  gov_num:
+                    $ref: '#/components/schemas/orderGovNum'
+                  vin:
+                    $ref: '#/components/schemas/orderVin'
+                  car_year:
+                    $ref: '#/components/schemas/orderCarYear'
+              insurant:
+                type: object
+                required:
+                  - type
+                  - phone
+                description: Данные страхователя
+                properties:
+                  type:
+                    $ref: '#/components/schemas/insurantType'
+                  phone:
+                    $ref: '#/components/schemas/insurantPhone'
+                  surname:
+                    $ref: '#/components/schemas/insurantSurname'
+                  name:
+                    $ref: '#/components/schemas/insurantName'
+                  patronymic:
+                    $ref: '#/components/schemas/insurantPatronymic'
+                  inn:
+                    $ref: '#/components/schemas/insurantInn'
+                  birth:
+                    $ref: '#/components/schemas/insurantBirth'
+                  address:
+                    $ref: '#/components/schemas/insurantAddress'
+                  street:
+                    $ref: '#/components/schemas/insurantStreet'
+                  house:
+                    $ref: '#/components/schemas/insurantHouse'
+                  flat:
+                    $ref: '#/components/schemas/insurantFlat'
+                  doc_type:
+                    $ref: '#/components/schemas/insurantDocType'
+                  doc_number:
+                    $ref: '#/components/schemas/insurantDocNumber'
+                  doc_series:
+                    $ref: '#/components/schemas/insurantDocSeries'
+                  doc_given:
+                    $ref: '#/components/schemas/insurantDocGiven'
+                  doc_date:
+                    $ref: '#/components/schemas/insurantDocDate'
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - tariff
+              - foreign_check
+              - discount_check
+              - email
+              - polis_start
+              - upload_docs
+              - insurant[type]
+              - insurant[phone]
+              - transport[transport_category_id]
+              - transport[transport_power_id]
+            properties:
+              tariff:
+                $ref: '#/components/schemas/tariff'
+              foreign_check:
+                $ref: '#/components/schemas/foreignCheck'
+              discount_check:
+                $ref: '#/components/schemas/discountCheck'
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              files:
+                $ref: '#/components/schemas/orderFiles'
+              comment:
+                $ref: '#/components/schemas/comment'
+              transport[transport_category_id]:
+                $ref: '#/components/schemas/orderTransportCategoryId'
+              transport[transport_power_id]:
+                $ref: '#/components/schemas/orderTransportPowerId'
+              insurant[type]:
+                $ref: '#/components/schemas/insurantType'
+              insurant[phone]:
+                $ref: '#/components/schemas/insurantPhone'
+              promocode:
+                $ref: '#/components/schemas/promocode'
 
   schemas:
     calculatePrice:
@@ -472,6 +735,10 @@ components:
     email:
       type: string
       format: email
+    tariff:
+      type: string
+      description: Тариф
+      example: econom
     cityId:
       type: integer
     comment:
@@ -514,6 +781,9 @@ components:
     orderTransportCategoryId:
       type: integer
       description: ID категории транспорта (тип авто) - из справочника
+    orderTransportPowerId:
+      type: integer
+      description: ID мощности транспорта - из справочника
     orderCarMark:
       type: string
       nullable: true
@@ -553,6 +823,26 @@ components:
       type: string
       nullable: true
       description: Имя страхователя
+    insurantPatronymic:
+      type: string
+      nullable: true
+      description: Отчество страхователя
+    insurantAddress:
+      type: string
+      nullable: true
+      description: Адрес страхователя
+    insurantStreet:
+      type: string
+      nullable: true
+      description: Улица страхователя
+    insurantHouse:
+      type: string
+      nullable: true
+      description: Номер дома
+    insurantFlat:
+      type: string
+      nullable: true
+      description: Номер квартиры
     insurantNameLatin:
       type: string
       nullable: true
@@ -566,6 +856,36 @@ components:
       format: date
       nullable: true
       description: Дата рождения
+    insurantType:
+      type: string
+      description: Юридическое или физическое лицо
+      enum:
+        - physical
+        - juristic
+    insurantDocType:
+      type: string
+      nullable: true
+      description: Тип документа
+      enum:
+        - passport
+        - license
+    insurantDocNumber:
+      type: string
+      nullable: true
+      description: Номер документа
+    insurantDocSeries:
+      type: string
+      nullable: true
+      description: Серия документа
+    insurantDocGiven:
+      type: string
+      nullable: true
+      description: Кем выдан
+    insurantDocDate:
+      type: string
+      nullable: true
+      format: date
+      description: Дата выдачи
     created_at:
       type: string
       format: datetime
