@@ -31,7 +31,7 @@ class OsagoCalculateRequest extends FormRequest
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
             'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
 
-            'city_id' => 'required_without:city_name|numeric|min:1',
+            'city_id' => 'nullable|numeric|min:1',
             'city_name' => 'nullable|string|min:1',
             'foreign_check' => 'required|boolean',
             'discount_check' => 'required|boolean',

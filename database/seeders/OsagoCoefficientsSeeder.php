@@ -26,10 +26,6 @@ class OsagoCoefficientsSeeder extends Seeder
                 'coefficient' => 1.00
             ],[
                 'name' => 'Физ. лицо',
-                'alias' => 'physical',
-                'coefficient' => 0.57
-            ],[
-                'name' => 'Юр. лицо',
                 'alias' => 'juristic',
                 'coefficient' => 1.76
             ],[
