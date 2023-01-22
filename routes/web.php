@@ -13,6 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/liqpay/result/{order}', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');

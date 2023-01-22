@@ -83,9 +83,26 @@ class OrderController extends Controller
         }
     }
 
-    public function liqPayResult(Request $request)
+    public function liqPayResult(string $uuid)
     {
-        //
+        $liqpay = new LiqPay();
+
+        $order = Order::where('uuid', $uuid)->firstOrFail();
+
+        $data = $liqpay->api("request", array(
+            'action'        => 'status',
+            'version'       => '3',
+            'order_id'      => $order->payment_id
+        ));
+
+        if ($data->status !== 'error' && $order->status === 'invoice_wait') {
+            $order->payment_status = $data->status;
+            $order->save();
+
+            (new OrderService($order))->actionsAfterPayment();
+        }
+
+        return redirect(env('LIQPAY_REDIRECT_URL') . '?order=' . $uuid);
     }
 
     public function promocode(PromocodeRequest $request)

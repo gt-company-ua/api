@@ -102,7 +102,7 @@ class OrderService
             return '';
         }
 
-        $orderUid = $this->order->type . '_' . $this->order->uuid . '_' . Str::random(3);
+        $orderUid = $this->order->order_type . '_' . $this->order->id . '_' . Str::random(3);
 
         $invoiceParams = [
             'action'       => 'invoice_send',
@@ -110,7 +110,7 @@ class OrderService
             'email'        => $this->order->email,
             'amount'       => $price,
             'currency'     => 'UAH',
-            'server_url'   => route('orders.liqpay.status'),
+            'server_url'   => route('orders.liqpay.status', ['order' => $this->order->uuid]),
             'result_url'   => route('orders.liqpay.result', ['order' => $this->order->uuid]),
             'order_id'     => $orderUid,
             'expired_date' => date('Y-m-d H:i:s', strtotime('+1 day')),
@@ -124,6 +124,7 @@ class OrderService
             $this->order->payment_type = 'liqpay';
             $this->order->payment_status = $sendInvoice->status;
             $this->order->payment_url = $sendInvoice->href;
+            $this->order->payment_id = $sendInvoice->order_id;
             $this->order->ga_id = (new GoogleAnalytics())->getGaId();
             $this->order->save();
         }
