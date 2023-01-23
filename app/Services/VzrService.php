@@ -42,15 +42,14 @@ class VzrService
         $this->loadPrices();
 
         $currencies = (new CurrencyService())->getCurrencies();
+        $multiCoefficient = 1;
 
         if($data['multiple_trip'] === true){
             $duration = VzrRangeDay::find($data['vzr_range_day_id']);
 
             $days = $duration->days;
 
-            $basePrice = $duration->sum;
-
-            $basePrice *= $currencies[CurrencyService::EUR];
+            $multiCoefficient = 1.05;
         } else {
             $start = new \DateTime($data['polis_start']);
             $end   = new \DateTime($data['polis_end']);
@@ -58,9 +57,13 @@ class VzrService
             $interval = $end->diff($start);
 
             $days = $interval->format('%a') + 1;
-
-            $basePrice = $this->prices['days_' . $days] * $currencies[CurrencyService::USD];
         }
+
+        $countRate = $this->getRateInsuredCount(count($data['tourists'] ?? []));
+
+        $keyDays = ($data['insured_sum'] == '30000') ? 1 : 2;
+
+        $basePrice = $this->prices['days_' . $days][$keyDays] * $multiCoefficient * $countRate;
 
         $allPrice = 0;
 
@@ -87,10 +90,32 @@ class VzrService
             $allPrice = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $allPrice, Order::ORDER_TYPE_VZR);
         }
 
+        $currency = ($data['territory'] == 'world') ? CurrencyService::USD : CurrencyService::EUR;
+
+        $allPrice *= $currencies[$currency];
+
         return [
             'price' => round($allPrice),
             'days' => intval($days)
         ];
+    }
+
+    private function getRateInsuredCount($count)
+    {
+
+        if($count >= 0 && $count <= 3) {
+            $range = '0-3';
+        } else if($count >= 4 && $count <= 10) {
+            $range = '4-10';
+        } else if($count >= 11 && $count <= 20) {
+            $range = '11-20';
+        } else if($count >= 21) {
+            $range = '21';
+        } else {
+            return 1;
+        }
+
+        return round($this->prices['insured_' . $range][1], 2) ?? 1;
     }
 
     private function searchCovidPrice($days): float
@@ -118,32 +143,32 @@ class VzrService
 
         $age = intval($interval->format('%y'));
 
-        if($age >= 0 && $age < 1) {
+        if($age >= 0 && $age <= 3) {
             $ageRate = '0';
-        } else if($age >= 1 && $age <= 59) {
-            $ageRate = '1-59';
-        } else if($age >= 60 && $age <= 65) {
-            $ageRate = '60-65';
+        } else if($age >= 4 && $age <= 15) {
+            $ageRate = '4-15';
+        } else if($age >= 16 && $age <= 18) {
+            $ageRate = '16-18';
+        } else if($age >= 19 && $age <= 60) {
+            $ageRate = '19-60';
+        } else if($age >= 61 && $age <= 65) {
+            $ageRate = '61-65';
         } else if($age >= 66 && $age <= 75) {
             $ageRate = '66-75';
         } else {
             return false;
         }
 
-        $rate = 1;
+        $rate = $this->prices['age_' . $ageRate][1];
 
-        $rate *= $this->prices['terra_' . $data['territory']];
+        $rate *= $this->prices['target_' . $data['target']][1];
 
-        $rate *= $this->prices['sport_' . $data['sport']];
+        $rate *= $this->prices['terra_' . $data['territory']][1];
 
-        $rate *= $this->prices['target_' . $data['target']];
-
-        $rate *= $this->prices['insurance_' . $data['insured_sum']];
-
-        $rate *= $this->prices['age_' . $ageRate];
+        $rate *= $this->prices['sport_' . $data['sport']][1];
 
         if($rate < 1){
-            $rate = 0;
+            $rate = 1;
         }
 
         return $rate;
@@ -156,7 +181,7 @@ class VzrService
         $csv = [];
         if (($fileCsv = fopen($pricesCsv, "r")) !== FALSE) {
             while (($data = fgetcsv($fileCsv, 1000, ";")) !== FALSE) {
-                $csv[$data[0]] = $data[1];
+                $csv[$data[0]] = $data;
             }
             fclose($fileCsv);
         }
