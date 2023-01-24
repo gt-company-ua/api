@@ -81,7 +81,12 @@ class Handler extends ExceptionHandler
             $status = 404;
         }
 
+        if($request->is('api/*')){
+            return $this->sendError($response, $status);
+        }
+
+        return parent::render($request, $exception);
         // Return a JSON response with the response array and status code
-        return $this->sendError($response, $status);
+
     }
 }

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/liqpay/result/{order}', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
 
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::prefix('admin')->group(function () {
+    Auth::routes();
+    Route::middleware('auth')->group(function () {
+        Route::view('/home', 'home');
+    });
+});
