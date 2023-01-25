@@ -66,6 +66,7 @@ class Order extends Model
         'full_price' => 'float',
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
+        'cashback_amount' => 'float',
     ];
 
     protected static function boot()

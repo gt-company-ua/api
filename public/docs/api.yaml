@@ -234,6 +234,8 @@ paths:
                     $ref: '#/components/schemas/calculatePrice'
                   price_gos:
                     $ref: '#/components/schemas/calculatePrice'
+                  cashback_amount:
+                    $ref: '#/components/schemas/cashback_amount'
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
@@ -496,6 +498,10 @@ components:
                 $ref: '#/components/schemas/promocode'
               dont_call:
                 $ref: '#/components/schemas/dont_call'
+              cashback_phone:
+                type: string
+                nullable: true
+                description: Телефон для Cashback
               transport:
                 type: object
                 description: Данные траспортного средства
@@ -711,6 +717,10 @@ components:
     calculatePrice:
       type: number
       description: Сумма
+    cashback_amount:
+      type: number
+      nullable: true
+      description: Сумма Cashback
     insuredSum:
       type: number
       nullable: true
@@ -1206,6 +1216,12 @@ components:
           $ref: '#/components/schemas/created_at'
         updated_at:
           $ref: '#/components/schemas/updated_at'
+        cashback_phone:
+          type: string
+          nullable: true
+          description: Телефон для Cashback
+        cashback_amount:
+          $ref: '#/components/schemas/cashback_amount'
         transport:
           type: object
           description: Данные траспортного средства

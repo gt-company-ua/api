@@ -36,6 +36,7 @@ class GreenCardSaveRequest extends FormRequest
             'polis_start' => 'required|date|after:yesterday',
             'comment' => 'nullable|string',
             'promocode' => 'nullable|string',
+            'cashback_phone' => 'nullable|string',
             'dont_call' => ['nullable', new Boolean],
 
             'upload_docs' => ['required', new Boolean],
