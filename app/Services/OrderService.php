@@ -56,6 +56,7 @@ class OrderService
         $request['full_price'] = $request['price'];
 
         $request['price'] = $this->usePromocode($promocode, $request['price'], $orderType);
+        $request['dont_call'] = (isset($request['dont_call']) && $request['dont_call']);
 
         $order = Order::create($request);
 

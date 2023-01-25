@@ -40,7 +40,7 @@ class GreenCardSaveRequest extends FormRequest
 
             'upload_docs' => ['required', new Boolean],
             'files' => 'required_if:upload_docs,1|array',
-            'files.*' => 'mimes:jpg,jpeg,png,bmp,pdf,zip,rar,7z',
+            'files.*' => 'mimes:jpg,jpeg,png,bmp,pdf,zip,rar,7z,heic',
 
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
             'transport.car_mark' => 'nullable|required_if:upload_docs,0|string',
