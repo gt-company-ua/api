@@ -39,7 +39,7 @@ class OsagoSaveRequest extends FormRequest
             'email' => 'required|email',
             'upload_docs' => ['required', new Boolean],
             'files' => 'required_if:upload_docs,1|array',
-            'files.*' => 'mimes:jpg,jpeg,png,bmp,pdf,zip,rar,7z,heic',
+            'files.*' => 'mimes:jpg,jpeg,png,bmp,pdf,zip,rar,7z,heic,heif,hevc,hevf',
             'comment' => 'nullable|string',
             'dont_call' => ['nullable', new Boolean],
 
