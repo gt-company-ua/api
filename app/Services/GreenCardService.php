@@ -17,7 +17,7 @@ class GreenCardService
         $price = $this->calculate($data, false, false);
         $priceGos = $this->calculate($data, true, false);
 
-        $data['price'] = $price;
+        $data['price'] = $priceGos;
         $data['cashback_amount'] = round($priceGos - $price);
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
