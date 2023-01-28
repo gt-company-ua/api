@@ -57,7 +57,7 @@ class GreenCardSaveRequest extends FormRequest
             'insurant.surname_latin' => 'nullable|required_if:upload_docs,0|string',
             'insurant.name_latin' => 'nullable|required_if:upload_docs,0|string',
 
-            'insurant.inn' => ['nullable', 'required_if:upload_docs,0', new Inn],
+            'insurant.inn' => ['nullable', new Inn],
             'insurant.birth' => 'nullable|required_if:upload_docs,0|date|before_or_equal:18 years ago',
 
         ];

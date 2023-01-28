@@ -115,7 +115,7 @@ class OneC
             'LastName' => $order->insurant->surname,
             'MiddleName' => '',
             'BirthDate' => date('Y-m-d', strtotime($order->insurant->birth)),
-            'Gender' => $parseInn['sex'],
+            'Gender' => $parseInn['sex'] ?? 'Male',
             'Address' => $order->city_name,
             'Phone' => $order->insurant->phone,
             'NameLat' => $order->insurant->name_latin . ' ' . $order->insurant->surname_latin,
