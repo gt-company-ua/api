@@ -19,5 +19,6 @@ Route::prefix('admin')->group(function () {
     Auth::routes();
     Route::middleware('auth')->group(function () {
         Route::view('/home', 'home');
+        Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index']);
     });
 });
