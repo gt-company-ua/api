@@ -12,6 +12,7 @@ use App\Services\OrderService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -67,6 +68,8 @@ class OrderController extends Controller
         $liqpay = new LiqPay();
 
         $signature = $liqpay->str_to_sign($request->post('data'));
+
+        Log::debug('Liqpay status request', $request->all());
 
         if ($signature === $request->post('signature')) {
             $data = $liqpay->decode_params($request->post('data'));
