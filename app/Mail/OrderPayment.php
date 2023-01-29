@@ -30,6 +30,6 @@ class OrderPayment extends Mailable
      */
     public function build()
     {
-        return $this->view('mails.order-payment')->subject("Електронний поліс")->attach($this->filepath);
+        return $this->view('mails.orders.payment')->subject("Електронний поліс")->attach($this->filepath);
     }
 }

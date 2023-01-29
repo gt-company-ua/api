@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\FileUploadException;
+use App\Mail\OrderCreated;
 use App\Mail\OrderPayment;
 use App\Models\Order;
 use App\Models\OrderContract;
@@ -86,7 +87,7 @@ class OrderService
             }
         }
 
-        $this->order = $order;
+        $this->order = $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
 
         $this->savePromocode($promocode, $orderType);
 
@@ -94,7 +95,9 @@ class OrderService
 
         (new CrmService($this->order))->sendCrm();
 
-        return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
+        Mail::send(new OrderCreated($this->order));
+
+        return $this->order;
     }
 
     public function createInvoice(): string
