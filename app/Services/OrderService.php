@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\FileUploadException;
+use App\Mail\OrderPayment;
 use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\OrderFile;
@@ -14,6 +15,7 @@ use App\Services\api\GoogleAnalytics;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -244,9 +246,7 @@ class OrderService
                 $filePath = storage_path('app/public/greencard')
                     . DIRECTORY_SEPARATOR . $filename;
 
-                /*$this->sendEmailPolicy(
-                    $save1c['Number'], $filePath, $order['email']
-                );*/ //TODO Сделать отправку полиса клиенту
+                Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($filePath));
             }
         }
     }
