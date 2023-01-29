@@ -45,6 +45,6 @@ class OrderCreated extends Mailable
         }
 
         return $letter->to(env('MAIL_OFFICE'))
-            ->subject("Новый заказ");
+            ->subject("Новый заказ №" . $this->order->id);
     }
 }
