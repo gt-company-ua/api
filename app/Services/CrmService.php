@@ -182,10 +182,10 @@ class CrmService
                 //$fields['UF_CRM_1570025120707'] = $this->registrationTypeBitrix[$raw['registrationType']]; // Тип регистрации авто
                 $fields['UF_CRM_1570024598189'] = $this->order->transport->power->name_ua; // Объём двигателя
 
-                $fields['UF_CRM_5BC772FD90BCA'] = $this->order->polis_start->format('Y-m-d'); // Дата начала действия
+                $fields['UF_CRM_5BC772FD90BCA'] = $this->order->polis_start; // Дата начала действия
 
                 if (! is_null($this->order->polis_end)) {
-                    $fields['UF_CRM_5BC772FDAC7AA'] = $this->order->polis_end->format('Y-m-d'); // Дата завершения действия
+                    $fields['UF_CRM_5BC772FDAC7AA'] = $this->order->polis_end; // Дата завершения действия
                 }
 
 
@@ -199,7 +199,7 @@ class CrmService
                 /**
                  * [{"NAME":"не выбрано","VALUE":""},{"NAME":"Стандарт","VALUE":318},{"NAME":"Экспресс","VALUE":319},{"NAME":"Все включено","VALUE":320}]
                  */
-                $fields['UF_CRM_1538409076468'] = $this->order->polis_start->format('Y-m-d'); // Дата начала действия полиса (ГРИН) - date
+                $fields['UF_CRM_1538409076468'] = $this->order->polis_start; // Дата начала действия полиса (ГРИН) - date
 
                 $getTrip = $this->getTripDuration($this->order->trip_duration);
 
@@ -221,8 +221,8 @@ class CrmService
             //$fields['UF_CRM_1538483726245'] = $raw['recipientSurname'].' '.$raw['recipientName']; // Куда и кому доставить - string
 
             $fields['UF_CRM_1538408525914'] = ($this->order->territory == Order::TERRITORY_EU) ? 334 : 333; // Зона покрытия ВЗР, идентификатор значения из списка соответствия
-            $fields['UF_CRM_1538408575218'] = $this->order->polis_start->format('Y-m-d'); // Дата начала действия ВЗР - date
-            $fields['UF_CRM_1538408588107'] = $this->order->polis_end->format('Y-m-d'); // Дата завершения действия ВЗР - date
+            $fields['UF_CRM_1538408575218'] = $this->order->polis_start; // Дата начала действия ВЗР - date
+            $fields['UF_CRM_1538408588107'] = $this->order->polis_end; // Дата завершения действия ВЗР - date
             $fields['UF_CRM_1538641702047'] = $this->order->sport; // Занятия спортом ВЗР - string
             $fields['UF_CRM_1538641665539'] = $this->order->target; // Цель поездки ВЗР - string
             $fields['UF_CRM_1538484216016'] = $this->order->insured_sum; // Страховая сумма ВЗР - string
