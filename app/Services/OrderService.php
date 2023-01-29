@@ -220,9 +220,9 @@ class OrderService
 
         (new GoogleAnalytics())->transaction($this->order);
 
-        if ($this->order->type === Order::ORDER_TYPE_GC) {
+        if ($this->order->order_type === Order::ORDER_TYPE_GC) {
             $this->saveGreenCard1C();
-        } else if ($this->order->type === Order::ORDER_TYPE_OSAGO) {
+        } else if ($this->order->order_type === Order::ORDER_TYPE_OSAGO) {
             $this->saveOsago1C();
         }
     }

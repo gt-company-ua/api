@@ -45,7 +45,7 @@ class CrmService
             return false;
         }
 
-        if ($this->order->type === Order::ORDER_TYPE_OSAGO) {
+        if ($this->order->order_type === Order::ORDER_TYPE_OSAGO) {
             $fields['STAGE_ID'] = '2';
         } else {
             $fields['STAGE_ID'] = 'C5:EXECUTING';
@@ -90,7 +90,7 @@ class CrmService
                 'BIRTHDATE' => $this->order->insurant->birth, // Дата рождения - date(Y-m-d)
                 'UF_CRM_1538481374886' => $this->order->insurant->inn, // ИНН - string
 
-                'UF_CRM_1538481286020' => ($this->order->type === Order::ORDER_TYPE_GC) ?  $this->order->insurant->surname_latin . ' ' . $this->order->insurant->name_latin : '', // ФИО (латиница) - string
+                'UF_CRM_1538481286020' => ($this->order->order_type === Order::ORDER_TYPE_GC) ?  $this->order->insurant->surname_latin . ' ' . $this->order->insurant->name_latin : '', // ФИО (латиница) - string
 
                 'UF_CRM_1552406481309' => $this->order->insurant->surname_latin, // ЛАТ - фамилия - string
                 'UF_CRM_1552406504749' => $this->order->insurant->name_latin, // ЛАТ - имя - string
@@ -130,8 +130,8 @@ class CrmService
             'ASSIGNED_BY_ID' => [7238, 9958, 10436], // Идентификатор ответственного - int|array
             'TITLE' => $fio.' '.date('d.m.Y H:i:s'), // ФИО - дата создания - строка
             'CONTACT_ID' => $contactId, // Идентификатор контакта
-            'CATEGORY_ID' => ($this->order->type === Order::ORDER_TYPE_OSAGO) ? 0 : 5,
-            'STAGE_ID' => ($this->order->type === Order::ORDER_TYPE_OSAGO) ? 'NEW' : 'C5:PREPARATION', // Стадия сделки
+            'CATEGORY_ID' => ($this->order->order_type === Order::ORDER_TYPE_OSAGO) ? 0 : 5,
+            'STAGE_ID' => ($this->order->order_type === Order::ORDER_TYPE_OSAGO) ? 'NEW' : 'C5:PREPARATION', // Стадия сделки
             'COMMENTS' => (string) $this->order->comment, // Примечание к заказу
             'OPPORTUNITY' => $price, // Стоимость тарифа
 
@@ -149,7 +149,7 @@ class CrmService
             'UF_CRM_1538482354207' => 'epolis' // Доставка по Украине (1 день бесплатно) string
         ];
 
-        if ($this->order->type === Order::ORDER_TYPE_OSAGO || $this->order->type === Order::ORDER_TYPE_GC){
+        if ($this->order->order_type === Order::ORDER_TYPE_OSAGO || $this->order->order_type === Order::ORDER_TYPE_GC){
             $fields['UF_CRM_5BC76EACF1061'] = $this->order->transport->vin; // VIN код авто
             $fields['UF_CRM_5BC76EACD53DF'] = $this->order->transport->car_model; // Модель авто
             $fields['UF_CRM_5BC76EACB9024'] = $this->order->transport->car_mark; // Марка авто
@@ -158,7 +158,7 @@ class CrmService
             $fields['UF_CRM_1552293395'] = ($this->order->dont_call) ? 591 : 592; // Не перезванивать?
             $fields['UF_CRM_5BC76EAC79329'] = [$this->transportTypesBitrix[$this->order->transport->category->alias]]; //Транспортное средство
 
-            if ($this->order->type === Order::ORDER_TYPE_OSAGO){
+            if ($this->order->order_type === Order::ORDER_TYPE_OSAGO){
 
                 $franchise = 613;
                 if($this->order->tariff === 'standart') {
@@ -217,7 +217,7 @@ class CrmService
                 $fields['UF_CRM_1538409173204'] = ($this->order->payment_type === 'cash') ? 'N' : 'Y'; // Онлайн оплата любой картой мира ГРИН - string (Y - да , N - нет)
 
             }
-        } else if($this->order->type === Order::ORDER_TYPE_VZR){
+        } else if($this->order->order_type === Order::ORDER_TYPE_VZR){
             //$fields['UF_CRM_1538483726245'] = $raw['recipientSurname'].' '.$raw['recipientName']; // Куда и кому доставить - string
 
             $fields['UF_CRM_1538408525914'] = ($this->order->territory == Order::TERRITORY_EU) ? 334 : 333; // Зона покрытия ВЗР, идентификатор значения из списка соответствия
@@ -251,7 +251,7 @@ class CrmService
         if (array_key_exists('result', $response) && intval($response['result']) > 0) {
             $dealId = intval($response['result']);
 
-            if($this->order->type === Order::ORDER_TYPE_VZR){
+            if($this->order->order_type === Order::ORDER_TYPE_VZR){
                 $this->sendTourists();
             }
 
@@ -320,7 +320,7 @@ class CrmService
 
     private function addCar(): ?int
     {
-        if($this->order->type === Order::ORDER_TYPE_VZR) {
+        if($this->order->order_type === Order::ORDER_TYPE_VZR) {
             return null;
         }
 
