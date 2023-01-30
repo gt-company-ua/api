@@ -45,6 +45,35 @@ class OrderCreated extends Mailable
         }
 
         return $letter->to(env('MAIL_OFFICE'))
-            ->subject("Новый заказ №" . $this->order->id);
+            ->subject($this->mailTitle());
+    }
+
+    private function mailTitle(): string
+    {
+        $title = [];
+
+        switch ($this->order->order_type){
+        case Order::ORDER_TYPE_GC:
+            $title[] = 'ЗК-УКР';
+            break;
+        case Order::ORDER_TYPE_VZR:
+            $title[] = 'ВЗР';
+            break;
+        case Order::ORDER_TYPE_OSAGO:
+            $title[] = 'ОСАГО';
+            break;
+        case Order::ORDER_TYPE_KASKO:
+            $title[] = 'КАСКО';
+            break;
+        default:
+            break;
+        }
+
+        $title[] = '№ ' . $this->order->id;
+        $title[] = $this->order->insurant->fullname;
+        $title[] = 'Статус оплаты ' . $this->order->payment_status;
+        $title[] = $this->order->price . ' грн.';
+
+        return implode(' | ', $title);
     }
 }

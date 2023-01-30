@@ -11,4 +11,11 @@ class OrderInsurant extends Model
 
     protected $guarded = [];
     protected $hidden = ['id', 'order_id', 'created_at', 'updated_at'];
+
+    public function getFullnameAttribute()
+    {
+        $fullname = [$this->surname, $this->name, $this->patronymic];
+
+        return implode(' ', $fullname);
+    }
 }

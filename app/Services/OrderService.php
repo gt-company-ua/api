@@ -233,6 +233,7 @@ class OrderService
             }
         }
 
+        Mail::send(new OrderCreated($this->order));
     }
 
     private function saveOsago1C()

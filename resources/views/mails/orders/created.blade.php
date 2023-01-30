@@ -1,5 +1,5 @@
 @component('mail::message')
-# Новый заказ №{{ $order->id }}
+# Заказ №{{ $order->id }}
 
 @component('mail::table')
 | Поле       | Значение     |
