@@ -86,7 +86,7 @@ class OneC
         $price = (new GreenCardService())->calculate($calculateParams, true);
 
         $date = date('Y-m-d', strtotime('+1 day'));
-        $startDate = date('Y-m-d', strtotime($order->polisStart));
+        $startDate = date('Y-m-d', strtotime($order->polis_start));
 
         if ($startDate < $date) {
             $startDate = $date;
