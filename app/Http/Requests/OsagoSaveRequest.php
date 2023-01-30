@@ -35,7 +35,7 @@ class OsagoSaveRequest extends FormRequest
             'city_name' => 'nullable|required_if:foreign_check,0|string|min:1',
             'discount_check' => ['required', new Boolean],
             'tariff' => 'required|exists:App\Models\OsagoTariff,tariff',
-            'polis_start' => 'required|date|after:tomorrow',
+            'polis_start' => 'required|date|after:today',
             'email' => 'required|email',
             'upload_docs' => ['required', new Boolean],
             'files' => 'required_if:upload_docs,1|array',
