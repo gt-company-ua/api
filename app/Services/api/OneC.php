@@ -171,7 +171,7 @@ class OneC
     public function getPrintForm($id, $number)
     {
         $params = [
-            'ID' => $id,
+            'ID' => $this->internalId($id),
             'Number' => $number
         ];
 
