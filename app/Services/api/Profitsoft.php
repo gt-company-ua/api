@@ -201,6 +201,7 @@ class Profitsoft
                 (new OrderService($order))->saveContract($contract);
             } else {
                 Log::debug("Reserve response", $response);
+                Log::debug("Reserve request", $params);
             }
         } catch (Exception $e) {
             return [];
