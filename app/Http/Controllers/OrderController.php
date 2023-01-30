@@ -70,20 +70,22 @@ class OrderController extends Controller
         $signature = $liqpay->str_to_sign($request->post('data'));
 
         Log::debug('Liqpay status request', $request->all());
+        Log::debug('Liqpay signature ' . $signature);
 
-        if ($signature === $request->post('signature')) {
-            $data = $liqpay->decode_params($request->post('data'));
+        $data = $liqpay->decode_params($request->post('data'));
+        Log::debug('Liqpay data', $data);
 
-            $orderId = explode('_', $data['order_id']);
-            $orderUuid = $orderId[1];
+        $orderId = explode('_', $data['order_id']);
+        $orderUuid = $orderId[1];
 
-            $order = Order::where('uuid', $orderUuid)->firstOrFail();
+        $order = Order::where('id', $orderUuid)->firstOrFail();
 
-            $order->payment_status = $data['status'];
-            $order->save();
+        $order->payment_status = $data['status'];
+        $order->save();
 
-            (new OrderService($order))->actionsAfterPayment();
-        }
+        Log::debug('Liqpay order ID '. $orderUuid . ' Status: ' . $data['status']);
+
+        (new OrderService($order))->actionsAfterPayment();
     }
 
     public function liqPayResult(string $uuid)
