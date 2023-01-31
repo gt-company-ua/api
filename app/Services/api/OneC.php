@@ -146,6 +146,7 @@ class OneC
 
         try {
             $response = $this->request('Save', $params);
+            Log::debug("Save GreenCard request", $params);
             Log::debug("Save GreenCard response", $response);
 
             if (isset($response['result']) && $response['result']) {
