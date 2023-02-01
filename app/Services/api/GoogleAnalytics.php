@@ -39,7 +39,7 @@ class GoogleAnalytics
         $price = $order->price + $order->gc_plus_price;
 
         $send = [
-            'cid' => ($order->ga_id != '') ? $order->ga_id : 555,
+            'cid' => ($order->ga_id != '') ? $this->getGaId($order->ga_id) : 555,
             't' => 'transaction',
             'ti' => $order->uuid,
             'ta' => 'liqpay',
@@ -52,18 +52,16 @@ class GoogleAnalytics
         return $this->request($send);
     }
 
-    function getGaId()
+    function getGaId($gaIdFull)
     {
-        $id = request()->cookie('_ga');
-
-        if($id != ''){
-            $id = explode('.', $id);
+        if($gaIdFull != ''){
+            $id = explode('.', $gaIdFull);
 
             unset($id[0], $id[1]);
 
-            $id = implode('.', $id);
+            return implode('.', $id);
         }
 
-        return $id;
+        return $gaIdFull;
     }
 }
