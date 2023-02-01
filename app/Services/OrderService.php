@@ -131,7 +131,7 @@ class OrderService
             $this->order->payment_status = $sendInvoice->status;
             $this->order->payment_url = $sendInvoice->href;
             $this->order->payment_id = $sendInvoice->order_id;
-            $this->order->ga_id = (new GoogleAnalytics())->getGaId();
+            //$this->order->ga_id = (new GoogleAnalytics())->getGaId();
             $this->order->save();
         }
 

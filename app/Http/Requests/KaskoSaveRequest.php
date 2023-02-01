@@ -42,6 +42,8 @@ class KaskoSaveRequest extends FormRequest
             'insurant.name' => 'nullable|string',
             'insurant.patronymic' => 'nullable|string',
             'promocode' => 'nullable|string',
+
+            'ga_id' => 'nullable'
         ];
     }
 }
