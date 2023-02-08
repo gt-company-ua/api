@@ -58,6 +58,10 @@ class OrderService
         $request['order_type'] = $orderType;
         $request['full_price'] = $request['price'];
 
+        if (empty($request['city_name'])) {
+            $request['city_name'] = 'Київ';
+        }
+
         $request['price'] = $this->usePromocode($promocode, $request['price'], $orderType);
         $request['dont_call'] = (isset($request['dont_call']) && $request['dont_call']);
 
