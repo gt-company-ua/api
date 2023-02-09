@@ -71,7 +71,7 @@ class OneC
         return "api-id-" . $orderId;
     }
 
-    public function saveGreenCard(Order $order, $status = 'Signed'): array
+    public function saveGreenCard(Order $order, $status = 'Signed'): ?array
     {
         $parseInn = (new OrderService(null))->parseInn($order->insurant->inn);
 
