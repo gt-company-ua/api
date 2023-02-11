@@ -16,6 +16,6 @@ class PricesController extends Controller
 
     public function download(string $filename): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return Storage::download(storage_path('app/prices/') . $filename);
+        return Storage::download('prices/' . $filename);
     }
 }

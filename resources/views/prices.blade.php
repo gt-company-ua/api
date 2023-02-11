@@ -13,14 +13,14 @@
         @php
             $columns = ['Прайс', 'Дата изменения', 'Скачать'];
             $config = ['ordering' => false];
-            $zk = storage_path('app/prices/') . 'zk.csv'
+            $zk = 'prices/zk.csv'
         @endphp
 
         <x-adminlte-datatable id="table-prices" :heads="$columns" :config="$config">
             <tr>
                 <td>Зеленая карта</td>
-                <td>{{ \Illuminate\Support\Facades\Storage::lastModified($zk)->format('d.m.Y H:i:s') }}</td>
-                <td>{{ route('prices.download', ['filename' => 'zk.csv']) }}</td>
+                <td>{{ date('d.m.Y H:i:s', \Illuminate\Support\Facades\Storage::disk('local')->lastModified($zk)) }}</td>
+                <td><a href="{{ route('prices.download', ['filename' => 'zk.csv']) }}"><i class="fa fa-download"></i></a></td>
             </tr>
         </x-adminlte-datatable>
     </x-adminlte-card>
