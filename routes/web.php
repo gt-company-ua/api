@@ -20,6 +20,8 @@ Route::prefix('admin')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::view('/home', 'home');
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index']);
+        Route::get('/osago', [\App\Http\Controllers\Admin\OsagoController::class, 'index']);
+        Route::put('/osago/k1', [\App\Http\Controllers\Admin\OsagoController::class, 'updateK1'])->name('osago.k1');
         Route::get('/prices', [\App\Http\Controllers\Admin\PricesController::class, 'index'])->name('prices.index');
         Route::get('/prices/download/{filename}', [\App\Http\Controllers\Admin\PricesController::class, 'download'])->name('prices.download');
         Route::post('/prices/upload', [\App\Http\Controllers\Admin\PricesController::class, 'upload'])->name('prices.upload');
