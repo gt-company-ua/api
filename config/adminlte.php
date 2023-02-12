@@ -305,6 +305,11 @@ return [
             'url'  => 'admin/prices',
             'icon' => 'fa fa-file-upload',
         ],
+        [
+            'text' => 'ОСАГО',
+            'url'  => 'admin/osago',
+            'icon' => 'fas fa-calculator',
+        ],
     ],
 
     /*

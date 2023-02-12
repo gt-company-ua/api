@@ -35,7 +35,7 @@
                         <a class="nav-link active" id="k1-tab" data-toggle="pill" href="#k1-content" role="tab" aria-controls="k1-content" aria-selected="true">К1 (Тип транспортного средства)</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="k3-tab" data-toggle="pill" href="#k3-content" role="tab" aria-controls="k3-content" aria-selected="false">К3 (Сфера использования)</a>
+                        <a class="nav-link" id="k3-tab" data-toggle="pill" href="#k2-content" role="tab" aria-controls="k2-content" aria-selected="false">К2, К4, Льготы</a>
                     </li>
                 </ul>
             </div>
@@ -82,7 +82,93 @@
                             </section>
                         </form>
                     </div>
-                    <div class="tab-pane fade" id="k3-content" role="tabpanel" aria-labelledby="k3-tab"></div>
+                    <div class="tab-pane fade" id="k2-content" role="tabpanel" aria-labelledby="k2-tab">
+                        <form action="{{ route('osago.k2') }}" method="post">
+                            @csrf
+                            @method('PUT')
+                            <section class="col-lg-12">
+                                <div class="row">
+                                    <section class="col-lg-6">
+                                        <h4>К2 (Место регистрации транспортного средства)</h4>
+                                        <table class="table table-striped">
+                                            <thead>
+                                            <tr class="info">
+                                                <th class="col-md-6">Зона</th>
+                                                <th class="col-md-2">Коэфф.</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($coefficients as $coefficient)
+                                                @php
+                                                if ( ! substr_count($coefficient->alias, 'zone')) continue;
+                                                @endphp
+                                                <tr>
+                                                    <td class="info">{{ $coefficient->name }}</td>
+                                                    <td class="success">
+                                                        <input type="hidden" name="id[{{ $coefficient->id }}]" value="{{ $coefficient->id }}">
+                                                        <input type="text" name="coefficient[{{ $coefficient->id }}]" class="form-control" value="{{ $coefficient->coefficient }}">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </section>
+                                    <section class="col-lg-6">
+                                        <h4>К4 (Физ лицо / Юр Лицо)</h4>
+                                        <table class="table table-striped">
+                                            <thead>
+                                            <tr class="info">
+                                                <th class="col-md-6">Тип</th>
+                                                <th class="col-md-2">Коэфф.</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($coefficients as $coefficient)
+                                                @php
+                                                if ( ! in_array($coefficient->alias, \App\Models\Order::INSURANT_TYPES)) continue;
+                                                @endphp
+                                                <tr>
+                                                    <td class="info">{{ $coefficient->name }}</td>
+                                                    <td class="success">
+                                                        <input type="hidden" name="id[{{ $coefficient->id }}]" value="{{ $coefficient->id }}">
+                                                        <input type="text" name="coefficient[{{ $coefficient->id }}]" class="form-control" value="{{ $coefficient->coefficient }}">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+
+                                        <h4>Льгота</h4>
+                                        <table class="table table-striped">
+                                            <thead>
+                                            <tr class="info">
+                                                <th class="col-md-6">Льгота</th>
+                                                <th class="col-md-2">Коэфф.</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($coefficients as $coefficient)
+                                                @php
+                                                if ( ! substr_count($coefficient->alias, 'discount')) continue;
+                                                @endphp
+                                                <tr>
+                                                    <td class="info">{{ $coefficient->name }}</td>
+                                                    <td class="success">
+                                                        <input type="hidden" name="id[{{ $coefficient->id }}]" value="{{ $coefficient->id }}">
+                                                        <input type="text" name="coefficient[{{ $coefficient->id }}]" class="form-control" value="{{ $coefficient->coefficient }}">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </section>
+                                </div>
+                                <div class="row mt-3">
+                                    <button type="submit" class="btn btn-primary">Сохранить К2, К4, Льготы</button>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
