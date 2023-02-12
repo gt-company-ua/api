@@ -37,6 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link" id="k3-tab" data-toggle="pill" href="#k2-content" role="tab" aria-controls="k2-content" aria-selected="false">К2, К4, Льготы</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tariffs-tab" data-toggle="pill" href="#tariffs-content" role="tab" aria-controls="tariffs-content" aria-selected="false">Тарифы</a>
+                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -165,6 +168,44 @@
                                 </div>
                                 <div class="row mt-3">
                                     <button type="submit" class="btn btn-primary">Сохранить К2, К4, Льготы</button>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="tariffs-content" role="tabpanel" aria-labelledby="tariffs-tab">
+                        <form action="{{ route('osago.tariffs') }}" method="post">
+                            @csrf
+                            @method('PUT')
+                            <section class="col-lg-12">
+                                <div class="row">
+                                    <section class="col-lg-12">
+                                        <table class="table table-striped">
+                                            <thead>
+                                            <tr class="info">
+                                                <th class="col-md-4">Тариф</th>
+                                                <th class="col-md-4">Франшиза</th>
+                                                <th class="col-md-4">Коэффициент</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($tariffs as $tariff)
+                                                <tr>
+                                                    <td class="info">{{ $tariff->tariff }}</td>
+                                                    <td class="success">
+                                                        <input type="hidden" name="id[{{ $tariff->id }}]" value="{{ $tariff->id }}">
+                                                        <input type="text" name="franchise[{{ $tariff->id }}]" class="form-control" value="{{ $tariff->franchise }}">
+                                                    </td>
+                                                    <td class="success">
+                                                        <input type="text" name="coefficient[{{ $tariff->id }}]" class="form-control" value="{{ $tariff->coefficient }}">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </section>
+                                </div>
+                                <div class="row mt-3">
+                                    <button type="submit" class="btn btn-primary">Сохранить тарифы</button>
                                 </div>
                             </section>
                         </form>
