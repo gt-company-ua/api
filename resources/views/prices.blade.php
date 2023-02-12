@@ -10,6 +10,61 @@
 
 @section('content')
     <x-adminlte-card theme-mode="outline">
+        <form action="{{ route('prices.upload') }}" enctype="multipart/form-data" method="post">
+            @csrf
+            <div class="row">
+                <div class="col-sm-5">
+                    @if ($message = \Illuminate\Support\Facades\Session::get('success'))
+                        <div class="alert alert-success">
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
+                    @if (count($errors) > 0)
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="inputFile">Калькулятор</label>
+                        <div class="input-group">
+                            <select name="filename" class="form-control" id="filename" required>
+                                <option value="zk.csv">Зеленая карта</option>
+                                <option value="vzr.csv">ВЗР</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="inputFile">Файл</label>
+                        <div class="input-group">
+                            <div class="custom-file row">
+                                <input type="file" name="file" class="custom-file-input" id="inputFile" required>
+                                <label class="custom-file-label" for="inputImage">Выбрать файл</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div class="input-group">
+                            <button type="submit" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
         @php
             $columns = ['Прайс', 'Дата изменения', 'Скачать'];
             $config = ['ordering' => false];

@@ -20,7 +20,8 @@ Route::prefix('admin')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::view('/home', 'home');
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index']);
-        Route::get('/prices', [\App\Http\Controllers\Admin\PricesController::class, 'index']);
+        Route::get('/prices', [\App\Http\Controllers\Admin\PricesController::class, 'index'])->name('prices.index');
         Route::get('/prices/download/{filename}', [\App\Http\Controllers\Admin\PricesController::class, 'download'])->name('prices.download');
+        Route::post('/prices/upload', [\App\Http\Controllers\Admin\PricesController::class, 'upload'])->name('prices.upload');
     });
 });
