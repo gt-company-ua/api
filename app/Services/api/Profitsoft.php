@@ -127,6 +127,8 @@ class Profitsoft
 
     public function reserve(Order $order): array
     {
+        return [];
+
         $calculate = (new OsagoService())->calculate($order->toArray());
 
         if($order->foreign_check){
@@ -212,6 +214,8 @@ class Profitsoft
 
     public function confirm(Order $order): array
     {
+        return [];
+
         if (is_null($order->contract)) {
             return [];
         }
