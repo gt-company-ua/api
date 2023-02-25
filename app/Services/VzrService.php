@@ -77,10 +77,10 @@ class VzrService
             $allPrice += $basePrice * $rate;
         }
 
-        if($data['with_covid'] === true){
-            $price_covid = $this->searchCovidPrice($days);
-            $allPrice += $price_covid * count($data['tourists']);
-        }
+//        if($data['with_covid'] === true){
+//            $price_covid = $this->searchCovidPrice($days);
+//            $allPrice += $price_covid * count($data['tourists']);
+//        }
 
         if($data['epolis'] === false && $data['with_greencard'] === false){
             $allPrice += 40;

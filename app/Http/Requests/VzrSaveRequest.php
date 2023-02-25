@@ -33,7 +33,7 @@ class VzrSaveRequest extends FormRequest
             'polis_start' => 'required|date|after:today',
             'multiple_trip' => 'required|boolean',
             'epolis' => 'required|boolean',
-            'with_covid' => 'required|boolean',
+            //'with_covid' => 'required|boolean',
             'with_greencard' => 'required|boolean',
             'dont_call' => ['nullable', new Boolean],
             'polis_end' => 'required_if:multiple_trip,false|date|after:polis_start',

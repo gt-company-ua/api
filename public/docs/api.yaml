@@ -13,6 +13,8 @@ tags:
     description: Оформление и расчет полиса GreenCard
   - name: osago
     description: Оформление и расчет полиса ОСАГО
+  - name: vzr
+    description: Оформление и расчет полиса ВЗР
   - name: orders
     description: Действия с сохраненными полисами
 paths:
@@ -240,6 +242,51 @@ paths:
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
 
+  /vzr:
+    post:
+      tags:
+        - vzr
+      summary: Сохранение полиса ВЗР
+      operationId: postVzr
+      requestBody:
+        $ref: '#/components/requestBodies/vzrSave'
+      responses:
+        '201':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: VZR
+
+  /vzr/calculate:
+    post:
+      tags:
+        - vzr
+      summary: Расчет суммы по ВЗР
+      operationId: postVzrCalculate
+      requestBody:
+        $ref: '#/components/requestBodies/vzrCalculate'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  price:
+                    $ref: '#/components/schemas/calculatePrice'
+                  price_gos:
+                    $ref: '#/components/schemas/calculatePrice'
+                  cashback_amount:
+                    $ref: '#/components/schemas/cashback_amount'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: VZR
+
   /osago:
     post:
       tags:
@@ -425,6 +472,115 @@ components:
                 properties:
                   transport_category_id:
                     $ref: '#/components/schemas/orderTransportCategoryId'
+    vzrCalculate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - polis_start
+              - multiple_trip
+              - epolis
+              - with_greencard
+              - territory
+              - sport
+              - target
+              - insured_sum
+              - tourists
+            description: Если multiple_trip = true, то к обязательным добавляются `polis_end` и `vzr_range_day_id`
+            properties:
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              multiple_trip:
+                $ref: '#/components/schemas/multiple_trip'
+              epolis:
+                $ref: '#/components/schemas/epolis'
+              with_greencard:
+                $ref: '#/components/schemas/with_greencard'
+              polis_end:
+                $ref: '#/components/schemas/orderPolisEnd'
+              vzr_range_day_id:
+                $ref: '#/components/schemas/vzr_range_day_id'
+              territory:
+                $ref: '#/components/schemas/territory'
+              sport:
+                $ref: '#/components/schemas/sport'
+              target:
+                $ref: '#/components/schemas/target'
+              insured_sum:
+                $ref: '#/components/schemas/insured_sum'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              tourists:
+                type: array
+                required:
+                  - birth
+                items:
+                  $ref: '#/components/schemas/tourist'
+    vzrSave:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - polis_start
+              - multiple_trip
+              - epolis
+              - with_greencard
+              - territory
+              - sport
+              - target
+              - insured_sum
+              - tourists
+            description: Если multiple_trip = true, то к обязательным добавляются `polis_end` и `vzr_range_day_id`
+            properties:
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              multiple_trip:
+                $ref: '#/components/schemas/multiple_trip'
+              epolis:
+                $ref: '#/components/schemas/epolis'
+              with_greencard:
+                $ref: '#/components/schemas/with_greencard'
+              polis_end:
+                $ref: '#/components/schemas/orderPolisEnd'
+              vzr_range_day_id:
+                $ref: '#/components/schemas/vzr_range_day_id'
+              territory:
+                $ref: '#/components/schemas/territory'
+              sport:
+                $ref: '#/components/schemas/sport'
+              target:
+                $ref: '#/components/schemas/target'
+              insured_sum:
+                $ref: '#/components/schemas/insured_sum'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              dont_call:
+                $ref: '#/components/schemas/dont_call'
+              tourists:
+                type: array
+                items:
+                  $ref: '#/components/schemas/tourist'
+              insurant:
+                type: object
+                required:
+                  - phone
+                  - inn
+                description: Данные страхователя
+                properties:
+                  phone:
+                    $ref: '#/components/schemas/insurantPhone'
+                  surname:
+                    $ref: '#/components/schemas/insurantSurname'
+                  name:
+                    $ref: '#/components/schemas/insurantName'
+                  inn:
+                    $ref: '#/components/schemas/insurantInn'
+
     osagoCalculate:
       content:
         application/json:
@@ -902,6 +1058,61 @@ components:
     updated_at:
       type: string
       format: datetime
+    vzr_range_day_id:
+      type: integer
+      description: ID количества дней пногоразовой поездки. Обязательно, при `multiple_trip = true`
+    multiple_trip:
+      type: boolean
+      description: Флаг многоразовой поездки
+    epolis:
+      type: boolean
+      description: Флаг электронного полиса
+    with_greencard:
+      type: boolean
+      description: Флаг, что полис покупается вместе с полисом Greencard
+    territory:
+      type: string
+      enum:
+        - europe
+        - world
+      description: Территория действия
+    sport:
+      type: string
+      enum:
+        - none
+        - active
+        - pro
+      description: Занятия спортом
+    target:
+      type: string
+      enum:
+        - rest
+        - work
+        - learn
+      description: Цель поездки
+    insured_sum:
+      type: number
+      enum:
+        - 30000
+        - 50000
+        - 75000
+    full_name:
+      type: string
+      description: ФИО
+    tourist:
+      type: object
+      required:
+        - birth
+        - full_name
+        - doc_number
+      properties:
+        birth:
+          $ref: '#/components/schemas/insurantBirth'
+        full_name:
+          $ref: '#/components/schemas/full_name'
+        doc_number:
+          $ref: '#/components/schemas/insurantDocNumber'
+
     defaultStatus:
       type: object
       properties:
@@ -1222,6 +1433,18 @@ components:
           description: Телефон для Cashback
         cashback_amount:
           $ref: '#/components/schemas/cashback_amount'
+        multiple_trip:
+          $ref: '#/components/schemas/multiple_trip'
+        with_greencard:
+          $ref: '#/components/schemas/with_greencard'
+        vzr_range_day_id:
+          $ref: '#/components/schemas/vzr_range_day_id'
+        territory:
+          $ref: '#/components/schemas/territory'
+        sport:
+          $ref: '#/components/schemas/sport'
+        target:
+          $ref: '#/components/schemas/target'
         transport:
           type: object
           description: Данные траспортного средства
@@ -1259,6 +1482,11 @@ components:
               $ref: '#/components/schemas/insurantInn'
             birth:
               $ref: '#/components/schemas/insurantBirth'
+        tourists:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/tourist'
   responses:
     resp200Status:
       description: OK
