@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: "https://gt-api.kartoha.online/api"
+  - url: "https://api.greentravel.ua/api"
 info:
   version: "1.0.0"
   title: greentravel-api
