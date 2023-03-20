@@ -40,7 +40,7 @@ class Order extends Model
     const TERRITORIES = [self::TERRITORY_EU, self::TERRITORY_WORLD];
 
     const SPORTS = ['none', 'active', 'pro'];
-    const TARGETS = ['rest', 'work', 'learn'];
+    const TARGETS = ['rest', 'work', 'learn', 'sport'];
     const VZR_INSURED_SUMS = [30000, 50000, 75000];
 
     use HasFactory;

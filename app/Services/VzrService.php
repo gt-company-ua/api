@@ -161,7 +161,9 @@ class VzrService
 
         $rate = $this->prices['age_' . $ageRate][1];
 
-        $rate *= $this->prices['target_' . $data['target']][1];
+        if (isset($this->prices['target_' . $data['target']])) {
+            $rate *= $this->prices['target_' . $data['target']][1];
+        }
 
         $rate *= $this->prices['terra_' . $data['territory']][1];
 
