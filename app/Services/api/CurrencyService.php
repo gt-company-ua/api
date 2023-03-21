@@ -22,7 +22,7 @@ class CurrencyService
 
         $currencies = Currency::whereDate('updated_at', '>=', $date)->get()->pluck('sum', 'code');
 
-        if (count($currencies) === 0) {
+        if (count($currencies) < 2) {
             $this->updateCurrencies();
 
             $currencies = Currency::all()->pluck('sum', 'code');
