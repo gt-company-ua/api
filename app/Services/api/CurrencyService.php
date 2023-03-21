@@ -24,9 +24,9 @@ class CurrencyService
 
         if (count($currencies) < 2) {
             $this->updateCurrencies();
-
-            $currencies = Currency::all()->pluck('sum', 'code');
         }
+
+        $currencies = Currency::all()->pluck('sum', 'code');
 
         return $currencies;
     }
