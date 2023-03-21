@@ -26,9 +26,7 @@ class CurrencyService
             $this->updateCurrencies();
         }
 
-        $currencies = Currency::all()->pluck('sum', 'code');
-
-        return $currencies;
+        return Currency::all()->pluck('sum', 'code');
     }
 
     private function updateCurrencies()
