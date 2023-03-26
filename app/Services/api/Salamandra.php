@@ -4,7 +4,9 @@ namespace App\Services\api;
 
 use App\Exceptions\OneCRequestException;
 use App\Models\City;
+use App\Models\Order;
 use App\Models\TransportPower;
+use App\Services\OrderService;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -61,7 +63,7 @@ class Salamandra
         return $response['data'];
     }
 
-    public function calculate(array $data, $all = false): ?array
+    private function dataForCalculator($data): ?array
     {
         $info = $this->info();
         if (is_null($info)) {
@@ -71,7 +73,7 @@ class Salamandra
         $power = TransportPower::find($data['transport']['transport_power_id']);
         $city = City::find($data['city_id']);
 
-        $params = [
+        return [
             'productId' => $info['productId'],
             'cityId' => $city->external_id,
             'vehicleTypeId' => $power->api_id,
@@ -80,6 +82,14 @@ class Salamandra
             'isPu' => $data['is_pu'] ?? false,
             'isDms' => $data['is_dms'] ?? false,
         ];
+    }
+
+    public function calculate(array $data, $all = false): ?array
+    {
+        $params = $this->dataForCalculator($data);
+        if (is_null($params)) {
+            return null;
+        }
 
         $url = 'agent/osago/calculate';
 
@@ -88,5 +98,76 @@ class Salamandra
         }
 
         return $this->request($url, $params);
+    }
+
+    public function order(Order $order)
+    {
+        $calculator = $this->dataForCalculator([
+            'franchise' => $order->franchise,
+            'dgo_limit' => $order->dgo_limit,
+            'is_pu' => $order->is_pu,
+            'is_dms' => $order->is_dms,
+            'transport'=> ['transport_power_id' => $order->transport->power->id]
+
+        ]);
+
+        $city = City::find($order->city_id);
+
+        $insurer = [
+            'phone' => $order->insurant->phone,
+            'email' => $order->email,
+            'firstname' => $order->insurant->name,
+            'lastname' => $order->insurant->surname,
+            'midname' => $order->insurant->patronymic,
+            'identnum' => $order->insurant->inn,
+            'birthday' => date('d.m.Y',strtotime($order->insurant->birth)),
+            'documentType' => Order::DOC_SALAMANDRA_API_ID[$order->insurant->doc_type],
+            'documentNumber' => preg_replace('/\D/', '', $order->insurant->doc_number),
+            'documentSeries' => $order->insurant->doc_type === Order::DOC_ID ? null : $order->insurant->doc_series,
+            'documentDate' => date('d.m.Y',strtotime($order->insurant->doc_date)),
+            'documentIssuedBy' => $order->insurant->doc_given,
+            'cityName' => $city->name,
+            'street' => $order->insurant->street,
+            'house' => $order->insurant->house,
+            'apartment' => $order->insurant->flat,
+        ];
+
+        $insuranceObject = [
+            'carVIN' => $order->transport->vin,
+            'carYear' => $order->transport->car_year,
+            'carBrand' => $order->transport->car_mark,
+            'carModel' => $order->transport->car_model,
+            'carNumber' => $order->transport->gov_num,
+        ];
+
+        $params = [
+            'calculator' => $calculator,
+            'insurer' => $insurer,
+            'insuranceObject' => $insuranceObject,
+            'dateStart' => date('d.m.Y', strtotime($order->polis_start))
+        ];
+
+        $response = $this->request('agent/osago/order', $params);
+
+        if (isset($response['success']) && $response['success']) {
+            $number = null;
+
+            if (isset($response['data']['splitPolicies']['osago'])) {
+                $number = $response['data']['splitPolicies']['osago']['prefix']
+                    . ' '
+                    . $response['data']['splitPolicies']['osago']['number'];
+            }
+
+            $contract = [
+                'number' => $number,
+                'external_id' => $response['data']['id'],
+                'state' => 'draft'
+            ];
+
+            (new OrderService($order))->saveContract($contract);
+        } else {
+            Log::debug("Reserve response", $response);
+            Log::debug("Reserve request", $params);
+        }
     }
 }

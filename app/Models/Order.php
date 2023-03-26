@@ -21,14 +21,22 @@ class Order extends Model
     const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];
     const DOC_PASSPORT = 'passport';
     const DOC_LICENSE = 'license';
-    const DOC_TYPES = [self::DOC_PASSPORT, self::DOC_LICENSE];
+    const DOC_ID = 'id';
+    const DOC_TYPES = [self::DOC_PASSPORT, self::DOC_LICENSE, self::DOC_ID];
     const DOC_NAMES = [
         self::DOC_PASSPORT => 'Паспорт',
-        self::DOC_LICENSE => 'Водительское удостоверение'
+        self::DOC_LICENSE => 'Водительское удостоверение',
+        self::DOC_ID => 'ID'
     ];
     const DOC_API_ID = [
         self::DOC_PASSPORT => 1,
         self::DOC_LICENSE => 5
+    ];
+
+    const DOC_SALAMANDRA_API_ID = [
+        self::DOC_PASSPORT => 'Passport',
+        self::DOC_LICENSE => 'DriverLicense',
+        self::DOC_ID => 'ID',
     ];
 
     const TRIP_COUNTRY_SNG = 'sng';
@@ -54,6 +62,8 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'is_pu' => 'bool',
+        'is_dms' => 'bool',
         'dont_call' => 'bool',
         'upload_docs' => 'bool',
         'foreign_check' => 'bool',
