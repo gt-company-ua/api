@@ -34,7 +34,7 @@ class SalamandraCalculateRequest extends FormRequest
             'is_dms' => 'nullable|boolean',
             'dgo_limit' => 'nullable|integer',
 
-            'franchise' => 'required|exists:App\Models\OsagoTariff,franchise',
+            'franchise' => 'required|integer',
             'promocode' => 'nullable|string',
         ];
     }

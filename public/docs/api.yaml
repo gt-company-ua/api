@@ -757,10 +757,15 @@ components:
             required:
               - transport
               - city_id
+              - franchise
             description: Если upload_docs = false, обязательны все поля, кроме comment и files
             properties:
               city_id:
                 $ref: '#/components/schemas/salamandraCityId'
+              franchise:
+                type: integer
+                description: Вариант размера франшизы из `POST /osago/salamandra/tariffs`
+                example: 2600
               dgo_limit:
                 type: integer
                 nullable: true
