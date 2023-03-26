@@ -13,6 +13,8 @@ tags:
     description: Оформление и расчет полиса GreenCard
   - name: osago
     description: Оформление и расчет полиса ОСАГО
+  - name: osago-salamandra
+    description: Оформление и расчет полиса ОСАГО через "Саламандра"
   - name: vzr
     description: Оформление и расчет полиса ВЗР
   - name: orders
@@ -197,6 +199,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/findCity'
       x-swagger-router-controller: Cities
+  /handbooks/cities/local:
+    get:
+      tags:
+        - handbooks
+      operationId: getCitiesLocal
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Поиск городов по локальной БД
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/findCityLocal'
+      x-swagger-router-controller: Cities
   /greencard:
     post:
       tags:
@@ -362,6 +382,113 @@ paths:
                     coefficient:
                       type: number
       x-swagger-router-controller: Osago
+
+  /osago/salamandra/calculate:
+    post:
+      tags:
+        - osago-salamandra
+      summary: Расчет суммы по ОСАГО
+      operationId: postOsagoSalamandraCalculate
+      requestBody:
+        $ref: '#/components/requestBodies/osagoSalamandraCalculate'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      totalPayment:
+                        type: number
+                      prices:
+                        type: object
+                        description: Детализация
+                        properties:
+                          osago:
+                            type: number
+                            description: Сумма за полис ОСАГО
+                          pu:
+                            type: number
+                            nullable: true
+                            description: Сумма за "Пряме врегулювання"
+                          dgo:
+                            type: number
+                            nullable: true
+                            description: Сумма за "Додаткові розширення ліміту"
+                          dms:
+                            type: number
+                            nullable: true
+                            description: Сумма за "Медична допомога при ДТП"
+
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: OsagoSalamandra
+
+  /osago/salamandra/tariffs:
+    post:
+      tags:
+        - osago-salamandra
+      summary: Получение тарифов по ОСАГО
+      operationId: postOsagoSalamandraTariffs
+      requestBody:
+        $ref: '#/components/requestBodies/osagoSalamandraTariffs'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      prices:
+                        type: object
+                        description: Детализация
+                        properties:
+                          osago:
+                            type: object
+                            description: Список франшиз с их стоимостю, где ключ - это размер франшизы, а значение - сумма
+                            example: {
+                              "1500": 877,
+                              "2600": 678,
+                              "3200": 668
+                            }
+                          pu:
+                            type: object
+                            description: Суммы за "Пряме врегулювання", где ключ - это размер франшизы, а значение - сумма
+                            example: {
+                              "1500": 571,
+                              "2600": 441,
+                              "3200": 435
+                            }
+                          dgo:
+                            type: object
+                            nullable: true
+                            description: Сумма за "Додаткові розширення ліміту", где ключ - это размер расширения лимита, а значение - сумма
+                            example: {
+                              "1000000": 800,
+                              "500000": 500,
+                              "300000": 330,
+                              "200000": 280,
+                              "100000": 180
+                            }
+                          dms:
+                            type: number
+                            description: Сумма за "Медична допомога при ДТП"
+                            example: 300
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: OsagoSalamandra
 
   /orders/{uuid}:
     get:
@@ -622,6 +749,61 @@ components:
                 properties:
                   type:
                     $ref: '#/components/schemas/insurantType'
+    osagoSalamandraCalculate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - transport
+              - city_id
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              city_id:
+                $ref: '#/components/schemas/salamandraCityId'
+              dgo_limit:
+                type: integer
+                nullable: true
+                description: Дополнительная услуга "Додаткові розширення ліміту"
+                example: 100000
+              is_pu:
+                type: boolean
+                nullable: true
+                description: Дополнительная услуга "Пряме врегулювання"
+              is_dms:
+                type: boolean
+                nullable: true
+                description: Дополнительная услуга "Медична допомога при ДТП"
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_power_id
+                properties:
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
+    osagoSalamandraTariffs:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - transport
+              - city_id
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              city_id:
+                $ref: '#/components/schemas/salamandraCityId'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_power_id
+                properties:
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
 
     greencard:
       content:
@@ -907,6 +1089,9 @@ components:
       example: econom
     cityId:
       type: integer
+    salamandraCityId:
+      type: integer
+      description: ID города из поиска `GET /handbooks/cities/local`
     comment:
       type: string
       description: Комментарий
@@ -1287,6 +1472,20 @@ components:
         sum:
           type: number
           example: 13.2
+    findCityLocal:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: Одеса
+        name_eng:
+          type: string
+          example: Odesa
+        region_name:
+          type: string
+          description: Одеська область
     findCity:
       type: object
       properties:

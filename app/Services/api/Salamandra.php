@@ -3,15 +3,14 @@
 namespace App\Services\api;
 
 use App\Exceptions\OneCRequestException;
+use App\Models\City;
+use App\Models\TransportPower;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class Salamandra
 {
-    /**
-     * @throws OneCRequestException
-     */
     private function request(string $uri, $params = [], $sendPost = true): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
@@ -49,5 +48,45 @@ class Salamandra
     public function cities(): array
     {
         return $this->request('agent/cities', [], false);
+    }
+
+    private function info()
+    {
+        $response = $this->request('agent/osago/info', [], false);
+
+        if ( ! isset($response['success']) || $response['success'] !== true) {
+            return null;
+        }
+
+        return $response['data'];
+    }
+
+    public function calculate(array $data, $all = false): ?array
+    {
+        $info = $this->info();
+        if (is_null($info)) {
+            return null;
+        }
+
+        $power = TransportPower::find($data['transport']['transport_power_id']);
+        $city = City::find($data['city_id']);
+
+        $params = [
+            'productId' => $info['productId'],
+            'cityId' => $city->external_id,
+            'vehicleTypeId' => $power->api_id,
+            'franchise' => $data['franchise'] ?? 0,
+            'dgoLimit' => $data['dgo_limit'] ?? 0,
+            'isPu' => $data['is_pu'] ?? false,
+            'isDms' => $data['is_dms'] ?? false,
+        ];
+
+        $url = 'agent/osago/calculate';
+
+        if ($all) {
+            $url .= '/all';
+        }
+
+        return $this->request($url, $params);
     }
 }

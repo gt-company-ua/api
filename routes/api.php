@@ -26,6 +26,7 @@ Route::prefix('handbooks')->group(function () {
     Route::get('/vzrRanges/{vzr_range_id}/days', [\App\Http\Controllers\Handbooks\VzrRangeController::class, 'days']);
 
     Route::get('/cities', [\App\Http\Controllers\Handbooks\CityController::class, 'searchMtsbu']);
+    Route::get('/cities/local', [\App\Http\Controllers\Handbooks\CityController::class, 'searchLocal']);
 });
 
 Route::prefix('kasko')->group(function () {
@@ -37,6 +38,11 @@ Route::prefix('osago')->group(function () {
     Route::post('/', [\App\Http\Controllers\OsagoController::class, 'store']);
     Route::post('/calculate', [\App\Http\Controllers\OsagoController::class, 'calculate']);
     Route::get('/tariffs', [\App\Http\Controllers\OsagoController::class, 'tariffs']);
+
+    Route::prefix('salamandra')->group(function () {
+        Route::post('/calculate', [\App\Http\Controllers\Osago\SalamandraController::class, 'calculate']);
+        Route::post('/tariffs', [\App\Http\Controllers\Osago\SalamandraController::class, 'tariffs']);
+    });
 });
 
 Route::prefix('greencard')->group(function () {
