@@ -298,11 +298,15 @@ paths:
                 type: object
                 properties:
                   price:
-                    $ref: '#/components/schemas/calculatePrice'
-                  price_gos:
-                    $ref: '#/components/schemas/calculatePrice'
-                  cashback_amount:
-                    $ref: '#/components/schemas/cashback_amount'
+                    type: integer
+                  days:
+                    type: integer
+                  ranges:
+                    type: array
+                    items:
+                      type: integer
+                  ranges_total_price:
+                    type: integer
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: VZR
@@ -644,6 +648,17 @@ components:
                   - birth
                 items:
                   $ref: '#/components/schemas/tourist'
+              ranges:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - "0"
+                    - "4-15"
+                    - "16-18"
+                    - "19-60"
+                    - "61-65"
+                    - "66-75"
     vzrSave:
       content:
         application/json:

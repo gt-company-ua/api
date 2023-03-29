@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Order;
+use App\Services\VzrService;
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -42,6 +43,8 @@ class VzrCalculateRequest extends FormRequest
             'tourists' => 'required|array',
             'tourists.*.birth' => 'required|date|before:today',
             'promocode' => 'nullable|string',
+            'ranges' => 'nullable|array',
+            'ranges.*' => ['required', Rule::in(VzrService::AGE_RANGES)],
         ];
     }
 }

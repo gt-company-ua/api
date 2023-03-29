@@ -13,6 +13,7 @@ class VzrService
 {
     private $prices;
 
+    const AGE_RANGES = ['0', '4-15', '16-18', '19-60', '61-65', '66-75'];
 
     /**
      * @throws Exception
@@ -56,7 +57,7 @@ class VzrService
 
             $interval = $end->diff($start);
 
-            $days = $interval->format('%a') + 1;
+            $days = intval($interval->format('%a')) + 1;
         }
 
         $countRate = $this->getRateInsuredCount(count($data['tourists'] ?? []));
@@ -64,6 +65,8 @@ class VzrService
         $keyDays = ($data['insured_sum'] == '30000') ? 1 : 2;
 
         $basePrice = $this->prices['days_' . $days][$keyDays] * $multiCoefficient * $countRate;
+
+        $currency = ($data['territory'] == 'world') ? CurrencyService::USD : CurrencyService::EUR;
 
         $allPrice = 0;
 
@@ -74,7 +77,7 @@ class VzrService
                 return null;
             }
 
-            $allPrice += $basePrice * $rate;
+            $allPrice += round($basePrice * $rate * $currencies[$currency]);
         }
 
 //        if($data['with_covid'] === true){
@@ -82,21 +85,37 @@ class VzrService
 //            $allPrice += $price_covid * count($data['tourists']);
 //        }
 
+        $ranges = [];
+        $rangesTotalPrice = 0;
+
+        if (isset($data['ranges']) && is_array($data['ranges'])) {
+            foreach ($data['ranges'] as $ageRange) {
+                $rateRange = $this->calculateRate($data, $ageRange);
+                $price = round($basePrice * $rateRange * $currencies[$currency]);
+
+                $ranges[] = $price;
+
+                $rangesTotalPrice += $price;
+            }
+        }
+
+        //$allPrice *= $currencies[$currency];
+
         if($data['epolis'] === false && $data['with_greencard'] === false){
             $allPrice += 40;
+            if ($rangesTotalPrice > 0) $rangesTotalPrice += 40;
         }
 
         if ($usePromocode === true) {
             $allPrice = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $allPrice, Order::ORDER_TYPE_VZR);
+            $rangesTotalPrice = (new OrderService(null))->usePromocode($data['promocode'] ?? null, $rangesTotalPrice, Order::ORDER_TYPE_VZR);
         }
-
-        $currency = ($data['territory'] == 'world') ? CurrencyService::USD : CurrencyService::EUR;
-
-        $allPrice *= $currencies[$currency];
 
         return [
             'price' => round($allPrice),
-            'days' => intval($days)
+            'days' => intval($days),
+            'ranges' => $ranges,
+            'ranges_total_price' => round($rangesTotalPrice),
         ];
     }
 
@@ -131,6 +150,25 @@ class VzrService
         return $covidPrice->price ?? 0.00;
     }
 
+    private function calculateRate($data, $ageRate)
+    {
+        $rate = $this->prices['age_' . $ageRate][1];
+
+        if (isset($this->prices['target_' . $data['target']])) {
+            $rate *= $this->prices['target_' . $data['target']][1];
+        }
+
+        $rate *= $this->prices['terra_' . $data['territory']][1];
+
+        $rate *= $this->prices['sport_' . $data['sport']][1];
+
+        if($rate < 1){
+            $rate = 1;
+        }
+
+        return $rate;
+    }
+
     /**
      * @throws Exception
      */
@@ -159,21 +197,7 @@ class VzrService
             return false;
         }
 
-        $rate = $this->prices['age_' . $ageRate][1];
-
-        if (isset($this->prices['target_' . $data['target']])) {
-            $rate *= $this->prices['target_' . $data['target']][1];
-        }
-
-        $rate *= $this->prices['terra_' . $data['territory']][1];
-
-        $rate *= $this->prices['sport_' . $data['sport']][1];
-
-        if($rate < 1){
-            $rate = 1;
-        }
-
-        return $rate;
+        return $this->calculateRate($data, $ageRate);
     }
 
     private function loadPrices(): void

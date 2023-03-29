@@ -33,15 +33,17 @@ class CurrencyService
     {
         $loadCurrencies = $this->loadCurrencies();
 
-        foreach ($loadCurrencies as $currency) {
-            if (! isset($currency['cc']) || ! in_array($currency['cc'], self::CURRENCIES)) {
-                continue;
-            }
+        if (is_array($loadCurrencies)) {
+            foreach ($loadCurrencies as $currency) {
+                if (! isset($currency['cc']) || ! in_array($currency['cc'], self::CURRENCIES)) {
+                    continue;
+                }
 
-            Currency::updateOrCreate(
-                ['code' => $currency['cc']],
-                ['sum' => $currency['rate']]
-            );
+                Currency::updateOrCreate(
+                    ['code' => $currency['cc']],
+                    ['sum' => $currency['rate']]
+                );
+            }
         }
     }
 
