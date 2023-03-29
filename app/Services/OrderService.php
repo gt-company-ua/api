@@ -68,16 +68,26 @@ class OrderService
         $order = Order::create($request);
 
         $order->transport()->save($transport);
-        $order->insurant()->save($insurant);
 
         if (count($tourists) > 0) {
             $saveTourists = [];
             foreach ($tourists as $tourist) {
+                if (is_null($insurant->surname)) {
+                    $fullNameParts = explode(' ', $tourist['full_name']);
+                    $insurant->surname = $fullNameParts[0] ?? null;
+                    $insurant->name = $fullNameParts[1] ?? null;
+                    $insurant->patronymic = $fullNameParts[2] ?? null;
+                    $insurant->birth = $tourist['birth'] ?? null;
+                    $insurant->doc_number = $tourist['doc_number'] ?? null;
+                }
+
                 $saveTourists[] = new OrderTourist($tourist);
             }
 
             $order->tourists()->saveMany($saveTourists);
         }
+
+        $order->insurant()->save($insurant);
 
 
         if (isset($files)) {

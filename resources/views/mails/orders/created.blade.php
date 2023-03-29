@@ -70,6 +70,15 @@
 | Состояние | {{ $order->contract->state }} |
 | Ссылка | {{ $order->contract->policy_link }} |
 @endif
+@if(!is_null($order->tourists) && count($order->tourists) > 0)
+| ИНФОРМАЦИЯ О ТУРИСТАХ | - |
+@foreach($order->tourists as $tourist)
+| ФИО | {{ $tourist->full_name }} |
+| Номер документа | {{ $tourist->doc_number }} |
+| День рождения | {{ $tourist->birth }} |
+@endforeach
+
+@endif
 @endcomponent
 
 @endcomponent

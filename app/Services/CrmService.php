@@ -33,6 +33,10 @@ class CrmService
                 $this->order->crm_deal_id = $dealId;
 
                 $this->order->crm_car_id = $this->addCar();
+
+                if($this->order->order_type === Order::ORDER_TYPE_VZR){
+                    $this->sendTourists();
+                }
             }
         }
 
@@ -249,13 +253,7 @@ class CrmService
 
 
         if (array_key_exists('result', $response) && intval($response['result']) > 0) {
-            $dealId = intval($response['result']);
-
-            if($this->order->order_type === Order::ORDER_TYPE_VZR){
-                $this->sendTourists();
-            }
-
-            return $dealId;
+            return intval($response['result']);
         }
 
         Log::error('Create deal failed: '.json_encode($fields). ' Response: '.json_encode($response));
