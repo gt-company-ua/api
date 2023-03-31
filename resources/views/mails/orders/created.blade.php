@@ -7,6 +7,10 @@
 | Дата создадния | {{ $order->created_at }} |
 | Тип полиса | {{ $order->order_type }} |
 | Тариф | {{ $order->tariff }} |
+| Франшиза | {{ $order->franchise }} |
+| Доп. услуга "Додаткові розширення ліміту" | {{ $order->dgo_limit }} |
+| Доп. услуга "Пряме врегулювання" | @if ($order->is_pu) Да @else Нет @endif |
+| Доп. услуга "Медична допомога при ДТП" | @if ($order->is_dms) Да @else Нет @endif |
 | Начало действия полиса | {{ $order->polis_start }} |
 | Конец действия полиса | {{ $order->polis_end }} |
 | Иностранная регистрация | @if ($order->foreign_check) Да @else Нет @endif |
