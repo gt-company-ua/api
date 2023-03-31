@@ -387,6 +387,25 @@ paths:
                       type: number
       x-swagger-router-controller: Osago
 
+  /osago/salamandra:
+    post:
+      tags:
+        - osago-salamandra
+      summary: Сохранение полиса ОСАГО через Саламандру
+      operationId: postOsagoSalamandra
+      requestBody:
+        $ref: '#/components/requestBodies/osagoSalamandra'
+      responses:
+        '201':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Osago
+
   /osago/salamandra/calculate:
     post:
       tags:
@@ -1070,6 +1089,165 @@ components:
                 $ref: '#/components/schemas/insurantPhone'
               promocode:
                 $ref: '#/components/schemas/promocode'
+    osagoSalamandra:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - franchise
+              - city_id
+              - email
+              - polis_start
+              - upload_docs
+              - insurant
+              - transport
+            description: Если upload_docs = false, обязательны все поля, кроме comment, files, insurant.flat, promocode
+            properties:
+              city_id:
+                $ref: '#/components/schemas/salamandraCityId'
+              franchise:
+                type: integer
+                description: Вариант размера франшизы из `POST /osago/salamandra/tariffs`
+                example: 2600
+              dgo_limit:
+                type: integer
+                nullable: true
+                description: Дополнительная услуга "Додаткові розширення ліміту"
+                example: 100000
+              is_pu:
+                type: boolean
+                nullable: true
+                description: Дополнительная услуга "Пряме врегулювання"
+              is_dms:
+                type: boolean
+                nullable: true
+                description: Дополнительная услуга "Медична допомога при ДТП"
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              comment:
+                $ref: '#/components/schemas/comment'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              dont_call:
+                $ref: '#/components/schemas/dont_call'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_category_id
+                  - transport_power_id
+                properties:
+                  transport_category_id:
+                    $ref: '#/components/schemas/orderTransportCategoryId'
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
+                  car_mark:
+                    $ref: '#/components/schemas/orderCarMark'
+                  car_model:
+                    $ref: '#/components/schemas/orderCarModel'
+                  gov_num:
+                    $ref: '#/components/schemas/orderGovNum'
+                  vin:
+                    $ref: '#/components/schemas/orderVin'
+                  car_year:
+                    $ref: '#/components/schemas/orderCarYear'
+              insurant:
+                type: object
+                required:
+                  - type
+                  - phone
+                description: Данные страхователя
+                properties:
+                  type:
+                    $ref: '#/components/schemas/insurantType'
+                  phone:
+                    $ref: '#/components/schemas/insurantPhone'
+                  surname:
+                    $ref: '#/components/schemas/insurantSurname'
+                  name:
+                    $ref: '#/components/schemas/insurantName'
+                  patronymic:
+                    $ref: '#/components/schemas/insurantPatronymic'
+                  inn:
+                    $ref: '#/components/schemas/insurantInn'
+                  birth:
+                    $ref: '#/components/schemas/insurantBirth'
+                  address:
+                    $ref: '#/components/schemas/insurantAddress'
+                  street:
+                    $ref: '#/components/schemas/insurantStreet'
+                  house:
+                    $ref: '#/components/schemas/insurantHouse'
+                  flat:
+                    $ref: '#/components/schemas/insurantFlat'
+                  doc_type:
+                    $ref: '#/components/schemas/insurantDocType'
+                  doc_number:
+                    $ref: '#/components/schemas/insurantDocNumber'
+                  doc_series:
+                    $ref: '#/components/schemas/insurantDocSeries'
+                  doc_given:
+                    $ref: '#/components/schemas/insurantDocGiven'
+                  doc_date:
+                    $ref: '#/components/schemas/insurantDocDate'
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - franchise
+              - city_id
+              - email
+              - polis_start
+              - upload_docs
+              - insurant[type]
+              - insurant[phone]
+              - transport[transport_category_id]
+              - transport[transport_power_id]
+            properties:
+              city_id:
+                $ref: '#/components/schemas/salamandraCityId'
+              franchise:
+                type: integer
+                description: Вариант размера франшизы из `POST /osago/salamandra/tariffs`
+                example: 2600
+              dgo_limit:
+                type: integer
+                nullable: true
+                description: Дополнительная услуга "Додаткові розширення ліміту"
+                example: 100000
+              is_pu:
+                type: boolean
+                nullable: true
+                description: Дополнительная услуга "Пряме врегулювання"
+              is_dms:
+                type: boolean
+                nullable: true
+                description: Дополнительная услуга "Медична допомога при ДТП"
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              files:
+                $ref: '#/components/schemas/orderFiles'
+              comment:
+                $ref: '#/components/schemas/comment'
+              transport[transport_category_id]:
+                $ref: '#/components/schemas/orderTransportCategoryId'
+              transport[transport_power_id]:
+                $ref: '#/components/schemas/orderTransportPowerId'
+              insurant[type]:
+                $ref: '#/components/schemas/insurantType'
+              insurant[phone]:
+                $ref: '#/components/schemas/insurantPhone'
+              promocode:
+                $ref: '#/components/schemas/promocode'
 
   schemas:
     calculatePrice:
@@ -1240,6 +1418,7 @@ components:
       enum:
         - passport
         - license
+        - id
     insurantDocNumber:
       type: string
       nullable: true

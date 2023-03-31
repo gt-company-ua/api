@@ -7,6 +7,7 @@ use App\Http\Requests\PromocodeRequest;
 use App\Models\Order;
 use App\Models\Promocode;
 use App\Services\api\OneC;
+use App\Services\api\Salamandra;
 use App\Services\LiqPay;
 use App\Services\OrderService;
 use App\Traits\ApiResponser;
@@ -23,7 +24,9 @@ class OrderController extends Controller
     {
         $order = Order::where('uuid', $uuid)->firstOrFail();
 
-        return $this->sendResponse($order);
+        $preview = (new Salamandra())->releaseStatus($order);
+
+        return $this->sendResponse($preview);
     }
 
     public function sendSms($uuid): JsonResponse

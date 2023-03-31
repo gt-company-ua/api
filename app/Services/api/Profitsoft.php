@@ -197,7 +197,8 @@ class Profitsoft
                     'number' => $response['MainCode'],
                     'external_id' => $response['systemContractId'],
                     'policy_link' => $response['PolicyDirectLink'],
-                    'state' => 'draft'
+                    'state' => 'draft',
+                    'api_name' => 'profitsoft'
                 ];
 
                 (new OrderService($order))->saveContract($contract);

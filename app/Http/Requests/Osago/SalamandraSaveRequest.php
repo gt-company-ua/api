@@ -32,8 +32,8 @@ class SalamandraSaveRequest extends FormRequest
         return [
             'city_id' => 'required|exists:App\Models\City,id',
             'dgo_limit' => 'nullable|integer',
-            'is_pu' => 'nullable|boolean',
-            'is_dms' => 'nullable|boolean',
+            'is_pu' => ['nullable', new Boolean],
+            'is_dms' => ['nullable', new Boolean],
             'franchise' => 'required|integer',
             'polis_start' => 'required|date|after:today',
             'email' => 'required|email',

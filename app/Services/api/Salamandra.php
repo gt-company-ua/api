@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class Salamandra
 {
-    private function request(string $uri, $params = [], $sendPost = true): array
+    private function request(string $uri, $params = [], $sendPost = true): ?array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
@@ -23,13 +23,18 @@ class Salamandra
             $prepareRequest = Http::withToken(env('SALAMANDRA_TOKEN'));
 
             if ($sendPost) {
-                $response = $prepareRequest->withBody($json, 'application/json')->post($requestUrl);
+                $response = $prepareRequest->withBody($json, 'application/json')->accept('application/json')->post($requestUrl);
             } else {
                 $response = $prepareRequest->get($requestUrl, $params);
             }
 
             $body = $response->body();
             $code = $response->status();
+
+            if ($sendPost) {
+                Log::info($json);
+                Log::info($body);
+            }
 
             if ($code > 300) {
                 Log::info('Request() code: ' . $code);
@@ -107,8 +112,8 @@ class Salamandra
             'dgo_limit' => $order->dgo_limit,
             'is_pu' => $order->is_pu,
             'is_dms' => $order->is_dms,
-            'transport'=> ['transport_power_id' => $order->transport->power->id]
-
+            'transport' => ['transport_power_id' => $order->transport->power->id],
+            'city_id' => $order->city_id
         ]);
 
         $city = City::find($order->city_id);
@@ -134,7 +139,7 @@ class Salamandra
 
         $insuranceObject = [
             'carVIN' => $order->transport->vin,
-            'carYear' => $order->transport->car_year,
+            'carYear' => (int) $order->transport->car_year,
             'carBrand' => $order->transport->car_mark,
             'carModel' => $order->transport->car_model,
             'carNumber' => $order->transport->gov_num,
@@ -146,6 +151,8 @@ class Salamandra
             'insuranceObject' => $insuranceObject,
             'dateStart' => date('d.m.Y', strtotime($order->polis_start))
         ];
+
+        Log::info(json_encode($params, JSON_UNESCAPED_UNICODE));
 
         $response = $this->request('agent/osago/order', $params);
 
@@ -161,13 +168,66 @@ class Salamandra
             $contract = [
                 'number' => $number,
                 'external_id' => $response['data']['id'],
-                'state' => 'draft'
+                'state' => 'draft',
+                'api_name' => 'salamandra'
             ];
+
+            $preview = $this->preview($response['data']['id']);
+            if (is_array($preview)) {
+                $contract['policy_link'] = $preview['mtibuLink'] ?? null;
+                $contract['file_link'] = $preview['previewFileLink'] ?? null;
+            }
 
             (new OrderService($order))->saveContract($contract);
         } else {
             Log::debug("Reserve response", $response);
             Log::debug("Reserve request", $params);
+        }
+    }
+
+    public function preview($id): ?array
+    {
+        $response = $this->request('agent/osago/order/' . $id . '/preview/status', [], false);
+
+        if (isset($response['success']) && $response['success'] && isset($response['data'])) {
+            return $response['data'];
+        }
+
+        return null;
+    }
+
+    public function releaseStatus($id): ?array
+    {
+        $response = $this->request('agent/osago/order/' . $id . '/release/status', [], false);
+
+        if (isset($response['success']) && $response['success'] && isset($response['data'])) {
+            return $response['data'];
+        }
+
+        return null;
+    }
+
+    public function release(Order $order)
+    {
+        if (is_null($order->contract) || is_null($order->contract->external_id)) {
+            return null;
+        }
+
+        $response = $this->request('agent/osago/order/' . $order->contract->external_id . '/release');
+
+        if (isset($response['success']) && $response['success']) {
+            $contract = [
+                'state' => 'sendRelease'
+            ];
+
+            $preview = $this->releaseStatus($order->contract->external_id);
+            if (is_array($preview)) {
+                $contract['policy_link'] = $preview['mtibuLink'] ?? null;
+                $contract['file_link'] = $preview['fileLink'] ?? null;
+                if (!empty($preview['status'])) $contract['state'] = $preview['status'];
+            }
+
+            (new OrderService($order))->saveContract($contract);
         }
     }
 }

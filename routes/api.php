@@ -40,6 +40,7 @@ Route::prefix('osago')->group(function () {
     Route::get('/tariffs', [\App\Http\Controllers\OsagoController::class, 'tariffs']);
 
     Route::prefix('salamandra')->group(function () {
+        Route::post('/', [\App\Http\Controllers\Osago\SalamandraController::class, 'store']);
         Route::post('/calculate', [\App\Http\Controllers\Osago\SalamandraController::class, 'calculate']);
         Route::post('/tariffs', [\App\Http\Controllers\Osago\SalamandraController::class, 'tariffs']);
     });

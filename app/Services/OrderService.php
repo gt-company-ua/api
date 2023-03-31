@@ -15,6 +15,7 @@ use App\Models\Promocode;
 use App\Services\api\GoogleAnalytics;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
+use App\Services\api\Salamandra;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -252,7 +253,18 @@ class OrderService
 
     private function saveOsago1C()
     {
-        $save1c = (new Profitsoft())->confirm($this->order);
+        if ( ! is_null($this->order->contract)) {
+            switch ($this->order->contract->api_name){
+                case 'salamandra':
+                    (new Salamandra())->release($this->order);
+                    break;
+                case 'profitsoft':
+                    (new Profitsoft())->confirm($this->order);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private function saveGreenCard1C()

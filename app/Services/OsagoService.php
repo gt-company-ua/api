@@ -3,13 +3,16 @@
 namespace App\Services;
 
 use App\Exceptions\FileUploadException;
+use App\Http\Requests\Osago\SalamandraSaveRequest;
 use App\Http\Requests\OsagoSaveRequest;
+use App\Models\City;
 use App\Models\Order;
 use App\Models\OrderFile;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
 use App\Models\TransportPower;
 use App\Services\api\Profitsoft;
+use App\Services\api\Salamandra;
 use Illuminate\Support\Str;
 
 class OsagoService
@@ -125,6 +128,37 @@ class OsagoService
 
         if ($order->upload_docs === false) {
             (new Profitsoft())->reserve($order);
+        }
+
+        return $order;
+    }
+
+    public function saveOrderSalamandra(SalamandraSaveRequest $request): ?Order
+    {
+        $data = $request->validated();
+
+        $calculate = (new Salamandra())->calculate($data);
+
+        if (isset($calculate['success']) && $calculate['success'] && isset($calculate['data']['totalPayment'])) {
+            $data['price'] = $calculate['data']['totalPayment'];
+        } elseif (isset($calculate['message'])) {
+            if (! isset($data['comment'])) $data['comment'] = '';
+
+            $data['comment'] .= ' Ошибка рассчитать стоимость: ' . $calculate['message'];
+        }
+
+        $city = City::find($data['city_id']);
+
+        $data['city_name'] = $city->name;
+
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_OSAGO);
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        if ($order->upload_docs === false) {
+            (new Salamandra())->order($order);
         }
 
         return $order;
