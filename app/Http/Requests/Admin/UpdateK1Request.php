@@ -25,7 +25,7 @@ class UpdateK1Request extends FormRequest
     {
         return [
             'coefficient.*' => 'required|numeric|min:0',
-            'api_id.*' => 'nullable|integer|min:1',
+            'api_id.*' => 'nullable|string|min:1',
             'id.*' => 'required|exists:App\Models\TransportPower,id',
         ];
     }
