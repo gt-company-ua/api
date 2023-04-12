@@ -10,4 +10,8 @@ class OrderTourist extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function setBirthAttribute($value) {
+        $this->attributes['birth'] = date('Y-m-d', strtotime($value) );
+    }
 }

@@ -78,7 +78,7 @@ class OrderService
                     $insurant->surname = $fullNameParts[0] ?? null;
                     $insurant->name = $fullNameParts[1] ?? null;
                     $insurant->patronymic = $fullNameParts[2] ?? null;
-                    $insurant->birth = $tourist['birth'] ?? null;
+                    $insurant->birth = date('Y-m-d', strtotime($tourist['birth']) );
                     $insurant->doc_number = $tourist['doc_number'] ?? null;
                 }
 
