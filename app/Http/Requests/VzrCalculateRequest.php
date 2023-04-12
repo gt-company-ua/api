@@ -40,7 +40,7 @@ class VzrCalculateRequest extends FormRequest
             'sport' => ['required', Rule::in(Order::SPORTS)],
             'target' => ['required', Rule::in(Order::TARGETS)],
             'insured_sum' => ['required', Rule::in(Order::VZR_INSURED_SUMS)],
-            'tourists' => 'required|array',
+            'tourists' => 'nullable|array',
             'tourists.*.birth' => 'required|date|before:today',
             'promocode' => 'nullable|string',
             'ranges' => 'nullable|array',
