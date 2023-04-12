@@ -73,12 +73,13 @@ class OrderService
         if (count($tourists) > 0) {
             $saveTourists = [];
             foreach ($tourists as $tourist) {
+                $tourist['birth'] = date('Y-m-d', strtotime($tourist['birth']) );
                 if (is_null($insurant->surname)) {
                     $fullNameParts = explode(' ', $tourist['full_name']);
                     $insurant->surname = $fullNameParts[0] ?? null;
                     $insurant->name = $fullNameParts[1] ?? null;
                     $insurant->patronymic = $fullNameParts[2] ?? null;
-                    $insurant->birth = date('Y-m-d', strtotime($tourist['birth']) );
+                    $insurant->birth = $tourist['birth'];
                     $insurant->doc_number = $tourist['doc_number'] ?? null;
                 }
 
