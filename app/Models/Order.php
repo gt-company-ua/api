@@ -58,7 +58,7 @@ class Order extends Model
     protected $with = ['transport', 'insurant'];
     protected $hidden = [
         'id', 'send_sms', 'contract_response', 'crm_contact_id', 'crm_deal_id',
-        'crm_car_id', 'ga_id', 'promocode_id'
+        'crm_car_id', 'ga_id', 'promocode_id', 'code'
     ];
 
     protected $casts = [

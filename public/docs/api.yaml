@@ -722,6 +722,10 @@ components:
                 $ref: '#/components/schemas/promocode'
               dont_call:
                 $ref: '#/components/schemas/dont_call'
+              code:
+                $ref: '#/components/schemas/code'
+              code_date_end:
+                $ref: '#/components/schemas/code_date_end'
               tourists:
                 type: array
                 items:
@@ -1278,6 +1282,16 @@ components:
       description: Промокод
       nullable: true
       example: SALE10
+    code:
+      type: string
+      description: Код для идентификации
+      nullable: true
+      example: UA123543
+    code_date_end:
+      type: string
+      description: Срок действия кода идентификации
+      nullable: true
+      example: "2023-01-01 12:00:00"
     email:
       type: string
       format: email

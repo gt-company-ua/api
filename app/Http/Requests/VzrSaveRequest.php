@@ -54,6 +54,9 @@ class VzrSaveRequest extends FormRequest
             'insurant.name' => 'nullable|string',
             'promocode' => 'nullable|string',
 
+            'code' => 'nullable|string',
+            'code_date_end' => 'nullable|date',
+
             'ga_id' => 'nullable'
         ];
     }

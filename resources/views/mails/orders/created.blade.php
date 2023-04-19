@@ -29,6 +29,10 @@
 | Занятия спортом | {{ $order->sport }} |
 | Цель поездки | {{ $order->target }} |
 | Многоразовые поездки | @if ($order->multiple_trip) Да @else Нет @endif |
+@if(!is_null($order->code))
+| Код идентификации | {{ $order->code }} |
+| Время действия кода | {{ $order->code_date_end }} |
+@endif
 @if(!is_null($order->vzrDay))
 | ВЗР дней | {{ $order->vzrDay->days }} |
 @endif
