@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GreenCardCalculateRequest;
 use App\Http\Requests\GreenCardSaveRequest;
+use App\Services\AssistMeService;
 use App\Services\GreenCardService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
@@ -18,11 +19,15 @@ class GreenCardController extends Controller
         $data = $request->validated();
         $price = (new GreenCardService())->calculate($data);
         $priceGos = (new GreenCardService())->calculate($data, true);
+        $assist = ( ! empty($request['with_assist_me']) && $request['with_assist_me'])
+            ? (new AssistMeService())->getPrice($request['transport']['transport_category_id'], $request['trip_duration'])
+            : null;
 
         return $this->sendResponse([
             'price' => $price,
             'price_gos' => $priceGos,
-            'cashback_amount' => round($priceGos - $price)
+            'cashback_amount' => round($priceGos - $price),
+            'assist_me_price' => $assist->price ?? null
         ]);
     }
 
@@ -35,12 +40,6 @@ class GreenCardController extends Controller
         }
 
         return $this->sendResponse($saveOrder, 201);
-    }
-
-
-    public function update(Request $request, $id)
-    {
-        //
     }
 
 }

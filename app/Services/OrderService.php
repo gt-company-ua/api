@@ -6,6 +6,7 @@ use App\Exceptions\FileUploadException;
 use App\Mail\OrderCreated;
 use App\Mail\OrderPayment;
 use App\Models\Order;
+use App\Models\OrderAssistMeContract;
 use App\Models\OrderContract;
 use App\Models\OrderFile;
 use App\Models\OrderInsurant;
@@ -42,6 +43,17 @@ class OrderService
         }
     }
 
+    public function saveAssistMe(array $contract)
+    {
+        if (is_null($this->order->assist)) {
+            $contract = new OrderAssistMeContract($contract);
+
+            $this->order->assist()->save($contract);
+        } else {
+            $this->order->assist()->update($contract);
+        }
+    }
+
     public function saveOrder(array $request, string $orderType): ?Order
     {
         $transport = new OrderTransport($request['transport'] ?? []);
@@ -53,8 +65,9 @@ class OrderService
         }
 
         $promocode = $request['promocode'] ?? null;
+        $assistMe = $request['with_assist_me'] ?? false;
 
-        unset($request['transport'], $request['insurant'], $request['files'], $request['tourists'], $request['promocode']);
+        unset($request['transport'], $request['insurant'], $request['files'], $request['tourists'], $request['promocode'], $request['with_assist_me']);
 
         $request['order_type'] = $orderType;
         $request['full_price'] = $request['price'];
@@ -103,6 +116,10 @@ class OrderService
             }
         }
 
+        if ($assistMe) {
+            (new AssistMeService())->create($order);
+        }
+
         $this->order = $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
 
         $this->savePromocode($promocode, $orderType);
@@ -140,7 +157,7 @@ class OrderService
                 . $this->order->insurant->inn,
         ];
 
-        $sendInvoice = (new LiqPay())->api('request', $invoiceParams);
+        $sendInvoice = (new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY')))->api('request', $invoiceParams);
 
         if (isset($sendInvoice->status)) {
             $this->order->payment_type = 'liqpay';

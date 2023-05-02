@@ -60,7 +60,8 @@ class GreenCardSaveRequest extends FormRequest
             'insurant.inn' => ['nullable', new Inn],
             'insurant.birth' => 'nullable|required_if:upload_docs,0|date|before_or_equal:18 years ago',
 
-            'ga_id' => 'nullable'
+            'ga_id' => 'nullable',
+            'with_assist_me' => 'nullable|boolean'
 
         ];
     }

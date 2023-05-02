@@ -55,7 +55,7 @@ class Order extends Model
 
     protected $guarded = [];
 
-    protected $with = ['transport', 'insurant'];
+    protected $with = ['transport', 'insurant', 'assist', 'tourists'];
     protected $hidden = [
         'id', 'send_sms', 'contract_response', 'crm_contact_id', 'crm_deal_id',
         'crm_car_id', 'ga_id', 'promocode_id', 'code'
@@ -101,6 +101,11 @@ class Order extends Model
     public function contract(): ?HasOne
     {
         return $this->hasOne(OrderContract::class);
+    }
+
+    public function assist(): ?HasOne
+    {
+        return $this->hasOne(OrderAssistMeContract::class);
     }
 
     public function files(): HasMany

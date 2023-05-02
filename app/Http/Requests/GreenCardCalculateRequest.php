@@ -32,6 +32,7 @@ class GreenCardCalculateRequest extends FormRequest
             'promocode' => 'nullable|string',
             'trip_country' => ['required', Rule::in(Order::TRIP_COUNTRIES)],
             'trip_duration' => 'required|numeric|min:0|max:12',
+            'with_assist_me' => 'nullable|boolean'
         ];
     }
 }

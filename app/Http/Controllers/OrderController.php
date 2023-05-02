@@ -24,9 +24,9 @@ class OrderController extends Controller
     {
         $order = Order::where('uuid', $uuid)->firstOrFail();
 
-        $preview = (new Salamandra())->releaseStatus($order);
+        //$preview = (new Salamandra())->releaseStatus($order);
 
-        return $this->sendResponse($preview);
+        return $this->sendResponse($order);
     }
 
     public function sendSms($uuid): JsonResponse
@@ -68,7 +68,7 @@ class OrderController extends Controller
 
     public function liqPayStatus(Request $request)
     {
-        $liqpay = new LiqPay();
+        $liqpay = new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY'));
 
         $signature = $liqpay->str_to_sign($request->post('data'));
 
@@ -93,7 +93,7 @@ class OrderController extends Controller
 
     public function liqPayResult(string $uuid)
     {
-        $liqpay = new LiqPay();
+        $liqpay = new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY'));
 
         $order = Order::where('uuid', $uuid)->firstOrFail();
 
@@ -106,6 +106,59 @@ class OrderController extends Controller
         if ($data->status !== 'error' && $order->status === 'invoice_wait') {
             $order->payment_status = $data->status;
             $order->save();
+
+            (new OrderService($order))->actionsAfterPayment();
+        }
+
+        return redirect(env('LIQPAY_REDIRECT_URL') . '?order=' . $uuid);
+    }
+
+    public function liqPayStatusAssist(Request $request)
+    {
+        $liqpay = new LiqPay(env('LIQPAY_ASSIST_PUPLIC_KEY'), env('LIQPAY_ASSIST_PRIVATE_KEY'));
+
+        $signature = $liqpay->str_to_sign($request->post('data'));
+
+        Log::debug('Liqpay assist status request', $request->all());
+        Log::debug('Liqpay assist signature ' . $signature);
+
+        $data = $liqpay->decode_params($request->post('data'));
+        Log::debug('Liqpay assist data', $data);
+
+        $orderId = explode('_', $data['order_id']);
+        $orderUuid = $orderId[1];
+
+        $order = Order::where('id', $orderUuid)->firstOrFail();
+
+        $contract = [
+            'payment_status' => $data['status']
+        ];
+
+        (new OrderService($order))->saveAssistMe($contract);
+
+        Log::debug('Liqpay assist order ID '. $orderUuid . ' Status: ' . $data['status']);
+
+        (new OrderService($order))->actionsAfterPayment();
+    }
+
+    public function liqPayResultAssist(string $uuid)
+    {
+        $liqpay = new LiqPay(env('LIQPAY_ASSIST_PUPLIC_KEY'), env('LIQPAY_ASSIST_PRIVATE_KEY'));
+
+        $order = Order::where('uuid', $uuid)->firstOrFail();
+
+        $data = $liqpay->api("request", array(
+            'action'        => 'status',
+            'version'       => '3',
+            'order_id'      => $order->payment_id
+        ));
+
+        if ($data->status !== 'error' && $order->status === 'invoice_wait') {
+            $contract = [
+                'payment_status' => $data->status
+            ];
+
+            (new OrderService($order))->saveAssistMe($contract);
 
             (new OrderService($order))->actionsAfterPayment();
         }

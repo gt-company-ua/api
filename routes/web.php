@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/liqpay/result/{order}', [\App\Http\Controllers\OrderController::class, 'liqPayResult'])->name('orders.liqpay.result');
+Route::get('/liqpay/result/{order}/assist', [\App\Http\Controllers\OrderController::class, 'liqPayResultAssist'])->name('orders.liqpay.result.assist');
 
 Route::prefix('admin')->group(function () {
     Auth::routes(['register' => false]);

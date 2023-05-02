@@ -258,6 +258,8 @@ paths:
                     $ref: '#/components/schemas/calculatePrice'
                   cashback_amount:
                     $ref: '#/components/schemas/cashback_amount'
+                  assist_me_price:
+                    $ref: '#/components/schemas/calculatePrice'
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard
@@ -614,6 +616,8 @@ components:
                 $ref: '#/components/schemas/orderTripDuration'
               promocode:
                 $ref: '#/components/schemas/promocode'
+              with_assist_me:
+                $ref: '#/components/schemas/with_assist_me'
               transport:
                 type: object
                 description: Данные траспортного средства
@@ -879,6 +883,8 @@ components:
                 $ref: '#/components/schemas/promocode'
               dont_call:
                 $ref: '#/components/schemas/dont_call'
+              with_assist_me:
+                $ref: '#/components/schemas/with_assist_me'
               cashback_phone:
                 type: string
                 nullable: true
@@ -950,6 +956,8 @@ components:
                 $ref: '#/components/schemas/orderFiles'
               comment:
                 $ref: '#/components/schemas/comment'
+              with_assist_me:
+                $ref: '#/components/schemas/with_assist_me'
               transport[transport_category_id]:
                 $ref: '#/components/schemas/orderTransportCategoryId'
               insurant[phone]:
@@ -1332,6 +1340,9 @@ components:
     dont_call:
       type: boolean
       description: Пометка не перезванивать
+    with_assist_me:
+      type: boolean
+      description: Оформить вместе с AssistMe
     gc_plus_price:
       type: number
       description: Сумма за GreenCard +
@@ -1497,6 +1508,22 @@ components:
     full_name:
       type: string
       description: ФИО
+    assist:
+      type: object
+      properties:
+        number:
+          type: string
+        price:
+          type: number
+        payment_type:
+          type: string
+          example: liqpay
+        payment_status:
+          type: string
+          example: invoice_wait
+        payment_url:
+          type: string
+          example: https://www.liqpay.ua
     tourist:
       type: object
       required:
@@ -1899,6 +1926,11 @@ components:
           nullable: true
           items:
             $ref: '#/components/schemas/tourist'
+        assist:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/assist'
   responses:
     resp200Status:
       description: OK
