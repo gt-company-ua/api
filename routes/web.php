@@ -27,5 +27,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/prices', [\App\Http\Controllers\Admin\PricesController::class, 'index'])->name('prices.index');
         Route::get('/prices/download/{filename}', [\App\Http\Controllers\Admin\PricesController::class, 'download'])->name('prices.download');
         Route::post('/prices/upload', [\App\Http\Controllers\Admin\PricesController::class, 'upload'])->name('prices.upload');
+
+        Route::get('/assist-me', [\App\Http\Controllers\Admin\AssistMeController::class, 'index'])->name('assist.index');
+        Route::put('/assist-me/tariffs', [\App\Http\Controllers\Admin\AssistMeController::class, 'update'])->name('assist.tariffs');
     });
 });

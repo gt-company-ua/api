@@ -30,7 +30,7 @@ class GreenCardService
             (new OneC())->saveGreenCard($order, 'Draft');
         }
 
-        return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
+        return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assistMe'])->refresh();
     }
 
     public function calculate(array $data, $gos = false, $usePromocode = true) {

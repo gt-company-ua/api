@@ -310,6 +310,11 @@ return [
             'url'  => 'admin/osago',
             'icon' => 'fas fa-calculator',
         ],
+        [
+            'text' => 'AssistMe',
+            'url'  => 'admin/assist-me',
+            'icon' => 'fas fa-calculator',
+        ],
     ],
 
     /*
