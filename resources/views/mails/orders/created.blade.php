@@ -78,6 +78,12 @@
 | Состояние | {{ $order->contract->state }} |
 | Ссылка | {{ $order->contract->policy_link }} |
 @endif
+@if(!is_null($order->assist))
+| AssistMe | - |
+| Цена | {{ $order->assist }} |
+| Статус оплаты | {{ $order->assist->payment_status }} |
+| Ссылка на оплату | {{ $order->assist->payment_url }} |
+@endif
 @if(!is_null($order->tourists) && count($order->tourists) > 0)
 | ИНФОРМАЦИЯ О ТУРИСТАХ | - |
 @foreach($order->tourists as $tourist)

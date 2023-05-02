@@ -120,7 +120,7 @@ class OrderService
             (new AssistMeService())->create($order);
         }
 
-        $this->order = $order->load(['transport', 'insurant', 'contract', 'files', 'tourists'])->refresh();
+        $this->order = $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
 
         $this->savePromocode($promocode, $orderType);
 

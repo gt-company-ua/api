@@ -2,10 +2,10 @@
 
 @section('plugins.Datatables', true)
 @section('plugins.Select2', true)
-@section('title', 'ОСАГО')
+@section('title', 'AssistMe')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">ОСАГО</h1>
+    <h1 class="m-0 text-dark">AssistMe</h1>
 @stop
 
 @section('content')
