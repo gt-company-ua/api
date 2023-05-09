@@ -67,5 +67,4 @@ Route::prefix('orders')->group(function () {
 
 Route::prefix('data')->group(function () {
     Route::get('/inn', [\App\Http\Controllers\DataController::class, 'innInfo'])->name('data.inn');
-    Route::get('/pdf', [\App\Http\Controllers\DataController::class, 'testPdf'])->name('data.pdf');
 });

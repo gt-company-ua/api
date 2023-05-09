@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConfirmSmsRequest;
 use App\Http\Requests\PromocodeRequest;
+use App\Mail\AssistMe;
 use App\Models\Order;
 use App\Models\Promocode;
 use App\Services\api\OneC;
@@ -14,6 +15,7 @@ use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -103,7 +105,7 @@ class OrderController extends Controller
             'order_id'      => $order->payment_id
         ));
 
-        if ($data->status !== 'error' && $order->status === 'invoice_wait') {
+        if ($data->status !== 'error' && $order->payment_status === 'invoice_wait') {
             $order->payment_status = $data->status;
             $order->save();
 
@@ -136,6 +138,10 @@ class OrderController extends Controller
 
         (new OrderService($order))->saveAssistMe($contract);
 
+        if ($data['status'] === 'success' && $order->assist->payment_status === 'invoice_wait') {
+            Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
+        }
+
         Log::debug('Liqpay assist order ID '. $orderUuid . ' Status: ' . $data['status']);
 
         (new OrderService($order))->actionsAfterPayment();
@@ -153,7 +159,7 @@ class OrderController extends Controller
             'order_id'      => $order->payment_id
         ));
 
-        if ($data->status !== 'error' && $order->status === 'invoice_wait') {
+        if ($data->status !== 'error' && $order->payment_status === 'invoice_wait') {
             $contract = [
                 'payment_status' => $data->status
             ];
@@ -161,6 +167,10 @@ class OrderController extends Controller
             (new OrderService($order))->saveAssistMe($contract);
 
             (new OrderService($order))->actionsAfterPayment();
+
+            if ($data->status === 'success') {
+                Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
+            }
         }
 
         return redirect(env('LIQPAY_REDIRECT_URL') . '?order=' . $uuid);

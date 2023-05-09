@@ -6,13 +6,13 @@
     <style type="text/css">
         * {
             /*font-family: Helvetica, sans-serif;*/
-            font-family: "DejaVu Sans", serif;
+            font-family: "DejaVu Sans", sans-serif;
         }
 
     </style>
     <style>
         @font-face {
-            font-family: "DejaVu Sans";
+            font-family: "DejaVu Sans", sans-serif;
             /* IE9 Compat Modes */
             src: url("{{ storage_path('fonts/dejavu-sans/DejaVuSans.ttf') }}");
             /* IE9 Compat Modes */
@@ -31,10 +31,9 @@
 
 <div class=WordSection1>
 
-    <p class=MsoNormal align=center style='text-align:center;line-height:normal'><b><span
+    <p class=MsoNormal align=center style='text-align:center;line-height:normal;font-weight: bold;'><span
                 lang=ru style='font-size:12.0pt;'>ДОГОВІР
-ПУБЛІЧНОЇ ОФЕРТИ</span></b><b><span style='font-size:12.0pt;'>
-{{ $number }}</span></b></p>
+ПУБЛІЧНОЇ ОФЕРТИ {{ $number }}</span></p>
 
     <p class=MsoNormal align=center style='text-align:center;line-height:normal'><b><span
                 lang=ru style='font-size:12.0pt;'>про
