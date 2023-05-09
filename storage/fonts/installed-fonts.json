@@ -1,0 +1,11 @@
+{
+    "dejavu sans\", sans-serif": {
+        "normal": "dejavu_sans___sans_serif_normal_6d40739ee1fe5def863976ee2e7ec867"
+    },
+    "dejavu sans": {
+        "bold": "W:\\OpenServer\\domains\\insurance\\gt-new\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-Bold",
+        "bold_italic": "W:\\OpenServer\\domains\\insurance\\gt-new\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-BoldOblique",
+        "italic": "W:\\OpenServer\\domains\\insurance\\gt-new\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-Oblique",
+        "normal": "dejavu_sans_normal_6d40739ee1fe5def863976ee2e7ec867"
+    }
+}
