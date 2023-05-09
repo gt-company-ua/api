@@ -26,4 +26,12 @@ class DataController extends Controller
 
         return $this->sendResponse($parse);
     }
+
+    public function test($oderID)
+    {
+        $order = Order::find($oderID);
+        Mail::to($order->email)->bcc(env('MAIL_TEST'))->send(new AssistMe($order));
+
+        return $this->sendSuccess();
+    }
 }
