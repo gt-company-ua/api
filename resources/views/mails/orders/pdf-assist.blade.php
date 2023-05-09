@@ -408,11 +408,7 @@ line-height:normal'><b><span lang=ru style='font-size:12.0pt;'>5.
 
     <p class=MsoNormal style='text-align:justify;text-indent:28.3pt;line-height:
 normal'><span lang=ru style='font-size:12.0pt;'>5.1.
-Цей Договір укладено на строк: </span><span lang=RU style='font-size:12.0pt;
-'>{{ $duration }}</span><span
-            lang=RU style='font-size:12.0pt;'> </span><span
-            lang=ru style='font-size:12.0pt;'>від дати
-його укладення.</span></p>
+Цей Договір укладено на строк: {{ $duration }} від {{ $date }}</span></p>
 
     <p class=MsoNormal style='text-align:justify;text-indent:28.3pt;line-height:
 normal'><span lang=ru style='font-size:12.0pt;'>5.2.

@@ -43,7 +43,7 @@ class AssistMeService
             return;
         }
 
-        $orderUid = 'assist_' . $order->assist->number . '_' . Str::random(3);
+        $orderUid = 'assist_' . $order->id . '_' . Str::random(3);
 
         $invoiceParams = [
             'action'       => 'invoice_send',

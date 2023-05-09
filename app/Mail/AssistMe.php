@@ -36,7 +36,8 @@ class AssistMe extends Mailable
             'number' => $this->order->assist->number,
             'name' => $this->order->insurant->fullname,
             'duration' => ($this->order->trip_duration == 0) ? '15 дн.' : $this->order->trip_duration . ' міс.',
-            'price' => $this->order->assist->price
+            'price' => $this->order->assist->price,
+            'date' => date('d.m.Y', strtotime($this->order->polis_start))
         ], [], 'UTF-8');
         $pdf->setOption([
             'defaultFont' => 'DejaVu Serif'

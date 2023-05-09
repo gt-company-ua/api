@@ -156,10 +156,12 @@ class OrderController extends Controller
         $data = $liqpay->api("request", array(
             'action'        => 'status',
             'version'       => '3',
-            'order_id'      => $order->payment_id
+            'order_id'      => $order->assist->payment_id
         ));
 
-        if ($data->status !== 'error' && $order->payment_status === 'invoice_wait') {
+        Log::debug('Liqpay assist result order ID '. $order->id . ' Status: ' . $data->status);
+
+        if ($data->status !== 'error' && $order->assist->payment_status === 'invoice_wait') {
             $contract = [
                 'payment_status' => $data->status
             ];
@@ -173,7 +175,7 @@ class OrderController extends Controller
             }
         }
 
-        return redirect(env('LIQPAY_REDIRECT_URL') . '?order=' . $uuid);
+        return redirect(env('LIQPAY_REDIRECT_URL') . '?order=' . $uuid . '&assist_pay=1');
     }
 
     public function promocode(PromocodeRequest $request)
