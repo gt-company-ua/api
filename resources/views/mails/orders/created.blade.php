@@ -80,7 +80,7 @@
 @endif
 @if(!is_null($order->assist))
 | AssistMe | - |
-| Цена | {{ $order->assist }} |
+| Цена | {{ $order->assist->price }} |
 | Статус оплаты | {{ $order->assist->payment_status }} |
 | Ссылка на оплату | {{ $order->assist->payment_url }} |
 @endif
