@@ -150,8 +150,12 @@ class CrmService
             'UF_CRM_1538415860677' => $fio,
             'UF_CRM_1538408288850' => 'N', // Нужна доставка зарубеж - string (Y - да , N - нет)
             'UF_CRM_1538408555178' => 'N', // Многоразовые поездки ВЗР - string (Y - да , N - нет)
-            'UF_CRM_1538482354207' => 'epolis' // Доставка по Украине (1 день бесплатно) string
+            'UF_CRM_1538482354207' => 'epolis', // Доставка по Украине (1 день бесплатно) string
         ];
+
+        if ( ! is_null($this->order->assist)) {
+            $fields['UF_CRM_1594379052'] = 'YES';
+        }
 
         if ($this->order->order_type === Order::ORDER_TYPE_OSAGO || $this->order->order_type === Order::ORDER_TYPE_GC){
             $fields['UF_CRM_5BC76EACF1061'] = $this->order->transport->vin; // VIN код авто
