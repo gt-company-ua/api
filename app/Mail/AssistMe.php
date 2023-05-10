@@ -43,6 +43,8 @@ class AssistMe extends Mailable
             'defaultFont' => 'DejaVu Serif'
         ]);
 
-        return $this->view('mails.orders.payment')->subject("AssistMe")->attachData($pdf->output(), 'AssistMe.pdf');
+        return $this->view('mails.orders.payment-assist', ['fullName' => $this->order->insurant->fullname])
+            ->subject("Договір розширеного покриття - AssistMe від Greentravel")
+            ->attachData($pdf->output(), 'AssistMe.pdf');
     }
 }

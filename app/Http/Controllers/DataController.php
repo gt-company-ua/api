@@ -30,7 +30,7 @@ class DataController extends Controller
     public function test($oderID)
     {
         $order = Order::find($oderID);
-        Mail::to($order->email)->bcc(env('MAIL_TEST'))->send(new AssistMe($order));
+        Mail::to(env('MAIL_TEST'))->send(new AssistMe($order));
 
         return $this->sendSuccess();
     }
