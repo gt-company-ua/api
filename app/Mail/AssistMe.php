@@ -35,6 +35,7 @@ class AssistMe extends Mailable
         $pdf = PDF::loadView('mails.orders.pdf-assist', [
             'number' => $this->order->assist->number,
             'name' => $this->order->insurant->fullname,
+            'inn' => $this->order->insurant->inn,
             'duration' => ($this->order->trip_duration == 0) ? '15 дн.' : $this->order->trip_duration . ' міс.',
             'price' => $this->order->assist->price,
             'date' => date('d.m.Y', strtotime($this->order->polis_start))

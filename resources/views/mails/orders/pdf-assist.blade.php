@@ -51,7 +51,7 @@
                                                           style='font-size:12.0pt;'> </span><span
             lang=ru style='font-size:12.0pt;'>або юридичній
 особі</span><span lang=ru style='font-size:12.0pt;'>
-</span><span lang=RU style='font-size:12.0pt;'>{{ $name }}</span><span
+</span><span lang=RU style='font-size:12.0pt;'>{{ $name }} {{ $inn }}</span><span
             lang=ru style='font-size:12.0pt;'> (далі -
 Замовник) з іншою сторони, в подальшому разом іменовані - Сторони, а кожен
 окремо - Сторона, укласти публічний договір про надання послуг (далі -
@@ -298,7 +298,7 @@ normal'><span lang=ru style='font-size:12.0pt;'>3.1.1.
 Вартість додаткових звернень Замовника, передбачених в пп.2.2.2.-2.2.3 цього
 Договору становить </span><span lang=RU style='font-size:12.0pt;'>800,00</span><span lang=ru style='font-size:12.0pt;
 '> (</span><span lang=RU style='font-size:
-12.0pt;'>п`ятсот</span><span lang=ru style='font-size:12.0pt;'>) грн за окремо
+12.0pt;'>вісімсот</span><span lang=ru style='font-size:12.0pt;'>) грн за окремо
 надану послугу за переліку.</span></p>
 
     <p class=MsoNormal style='text-align:justify;text-indent:28.3pt;line-height:
