@@ -78,8 +78,8 @@
 | Состояние | {{ $order->contract->state }} |
 | Ссылка | {{ $order->contract->policy_link }} |
 @endif
+| AssistMe | @if (!is_null($order->assist)) Да @else Нет @endif |
 @if(!is_null($order->assist))
-| AssistMe | - |
 | Цена | {{ $order->assist->price }} |
 | Статус оплаты | {{ $order->assist->payment_status }} |
 | Ссылка на оплату | {{ $order->assist->payment_url }} |
