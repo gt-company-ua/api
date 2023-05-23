@@ -33,6 +33,7 @@ class OneC
             $requestUrl = $this->apiUrl . $uri;
 
             $client = Http::withBasicAuth($this->username, $this->password)
+                ->timeout(10)
                 ->withBody($json, 'application/json; charset=UTF-8');
 
             if ( ! is_null($filename)) {
