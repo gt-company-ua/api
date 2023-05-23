@@ -164,6 +164,8 @@ class OneC
                 $order->save();
             }
         } catch (\Exception $e) {
+            Log::error('Save GreenCard request error:' . $e->getMessage());
+
             return [];
         }
 
