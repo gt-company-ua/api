@@ -7,9 +7,13 @@ use App\Models\Order;
 use App\Models\TransportCategory;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
+use Illuminate\Support\Facades\Log;
 
 class GreenCardService
 {
+    const STATUS_CONTRACT_NOT_SENT = 'not_sent';
+    const STATUS_CONTRACT_SENT = 'sent';
+    const STATUS_CONTRACT_ERROR = 'error';
     public function saveOrder(GreenCardSaveRequest $request): ?Order
     {
         $data = $request->validated();
@@ -19,15 +23,12 @@ class GreenCardService
 
         $data['price'] = $priceGos;
         $data['cashback_amount'] = round($priceGos - $price);
+        $data['status_contract'] = self::STATUS_CONTRACT_NOT_SENT;
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
 
         if (is_null($order)) {
             return null;
-        }
-
-        if ($order->upload_docs === false) {
-            (new OneC())->saveGreenCard($order, 'Draft');
         }
 
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
@@ -83,5 +84,22 @@ class GreenCardService
         }
 
         return $csv;
+    }
+
+    function sendGreenCardDraft()
+    {
+        $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
+            ->where('upload_docs', false)
+            ->where('status_contract', self::STATUS_CONTRACT_NOT_SENT)
+            ->limit(2)
+            ->get();
+
+        $timeStart = date('d.m.Y H:i:s');
+
+        foreach ($orders as $order) {
+            (new OneC())->saveGreenCard($order, 'Draft');
+        }
+
+        Log::debug('sendGreenCardDraft() Time start:' . $timeStart . '. Time end: '. date('d.m.Y H:i:s'));
     }
 }

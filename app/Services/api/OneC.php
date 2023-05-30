@@ -33,7 +33,7 @@ class OneC
             $requestUrl = $this->apiUrl . $uri;
 
             $client = Http::withBasicAuth($this->username, $this->password)
-                ->timeout(10)
+                ->timeout(100)
                 ->withBody($json, 'application/json; charset=UTF-8');
 
             if ( ! is_null($filename)) {
@@ -161,10 +161,15 @@ class OneC
                 (new OrderService($order))->saveContract($contract);
 
                 $order->send_sms = $response['OTP'];
-                $order->save();
             }
+
+            $order->status_contract = GreenCardService::STATUS_CONTRACT_SENT;
+            $order->save();
         } catch (\Exception $e) {
             Log::error('Save GreenCard request error:' . $e->getMessage());
+
+            $order->status_contract = GreenCardService::STATUS_CONTRACT_ERROR;
+            $order->save();
 
             return [];
         }
