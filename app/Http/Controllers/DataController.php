@@ -30,8 +30,17 @@ class DataController extends Controller
     public function test($oderID)
     {
         $order = Order::find($oderID);
-        Mail::to(env('MAIL_TEST'))->send(new AssistMe($order));
+        //Mail::to(env('MAIL_TEST'))->send(new AssistMe($order));
 
-        return $this->sendSuccess();
+        $pdf = PDF::loadView('mails.orders.pdf-assist-new', [
+            'number' => $order->assist->number,
+            'name' => $order->insurant->fullname,
+            'inn' => $order->insurant->inn,
+            'duration' => ($order->trip_duration == 0) ? '15 дн.' : $order->trip_duration . ' міс.',
+            'price' => $order->assist->price,
+            'date' => date('d.m.Y', strtotime($order->polis_start))
+        ], [], 'UTF-8');
+
+        return $pdf->stream();
     }
 }
