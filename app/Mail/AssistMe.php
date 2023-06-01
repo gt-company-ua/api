@@ -32,7 +32,7 @@ class AssistMe extends Mailable
      */
     public function build()
     {
-        $pdf = PDF::loadView('mails.orders.pdf-assist', [
+        $pdf = PDF::loadView('mails.orders.pdf-assist-new', [
             'number' => $this->order->assist->number,
             'name' => $this->order->insurant->fullname,
             'inn' => $this->order->insurant->inn,
