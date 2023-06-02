@@ -287,6 +287,11 @@ class OrderService
 
     private function saveGreenCard1C()
     {
+        $count = OrderContract::where('order_id', $this->order->id)->where('state', 'Draft')->count();
+        if ($count <= 0) {
+            return;
+        }
+
         $save1c = (new OneC())->saveGreenCard($this->order);
 
         if ( ! empty($save1c['Number'])) {

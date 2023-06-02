@@ -98,6 +98,10 @@ class GreenCardService
 
         foreach ($orders as $order) {
             (new OneC())->saveGreenCard($order, 'Draft');
+
+            if ($order->payment_status === OrderService::PAYMENT_STATUS_OK) {
+                (new OneC())->saveGreenCard($order);
+            }
         }
 
         Log::debug('sendGreenCardDraft() Time start:' . $timeStart . '. Time end: '. date('d.m.Y H:i:s'));
