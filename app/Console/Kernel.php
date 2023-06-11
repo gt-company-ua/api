@@ -22,12 +22,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt("03:00")
             ->withoutOverlapping();
 
-        $schedule->call(function () {
-            (new GreenCardService())->sendGreenCardDraft();
-        })
-            ->name('orders:greencard:draft')
-            ->everyMinute()
-            ->withoutOverlapping();
+//        $schedule->call(function () {
+//            (new GreenCardService())->sendGreenCardDraft();
+//        })
+//            ->name('orders:greencard:draft')
+//            ->everyMinute()
+//            ->withoutOverlapping();
     }
 
     /**

@@ -260,7 +260,7 @@ class OrderService
 
         if ($this->order->upload_docs === false) {
             if ($this->order->order_type === Order::ORDER_TYPE_GC) {
-                $this->saveGreenCard1C();
+                //$this->saveGreenCard1C();
             } else if ($this->order->order_type === Order::ORDER_TYPE_OSAGO) {
                 $this->saveOsago1C();
             }
