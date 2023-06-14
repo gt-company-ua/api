@@ -14,12 +14,13 @@ use Illuminate\Support\Facades\Log;
 class Ingo
 {
     const GREENCARD_TRANSPORT_CATEGORIES = ['car' => 'A', 'moto' => 'B', 'bus' => 'E', 'truck' => 'C', 'trailer' => 'F'];
+    const API_NAME = "INGO";
     private function request(string $uri, array $params, $get = false, ?string $filename = null): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
         try{
-            $requestUrl = $this->apiUrl . $uri;
+            $requestUrl = env('INGO_URL') . $uri;
 
             $client = Http::withHeaders([
                 'authid' => env('INGO_LOGIN'),
@@ -111,15 +112,16 @@ class Ingo
         try {
             $response = $this->request('/greencard/register', $params);
 
-            Log::debug("Save GreenCard request", $params);
-            Log::debug("Save GreenCard response", $response);
+            Log::debug("Save GreenCard (order: ".$order->id.") request", $params);
+            Log::debug("Save GreenCard (order: ".$order->id.") response", $response);
 
-            if ( ! empty($response['id'])) {
+            if (! empty($response['data']) && ! empty($response['data']['id'])) {
                 $contract = [
-                    'number' => $response['mainCode'],
-                    'external_id' => $response['id'],
+                    'number' => $response['data']['mainCode'],
+                    'external_id' => $response['data']['id'],
                     'state' => 'Draft',
-                    'policy_link' => $response['publicUrl']
+                    'policy_link' => $response['data']['directLink'],
+                    'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
             }
@@ -141,8 +143,23 @@ class Ingo
     public function greenCardConfirm(Order $order)
     {
         if (! is_null($order->contract) && ! empty($order->contract->number)) {
-            $this->request('/greencard/' . $order->contract->number . '/confirm', []);
+            $response = $this->request('/greencard/' . $order->contract->number . '/confirm', []);
+
+            Log::debug("Confirm GreenCard (order: ".$order->id.") response", $response);
+            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+                $contract = [
+                    'number' => $response['data']['mainCode'],
+                    'external_id' => $response['data']['id'],
+                    'state' => 'Signed',
+                    'policy_link' => $response['data']['directLink'],
+                    'api_name' => self::API_NAME
+                ];
+                (new OrderService($order))->saveContract($contract);
+            }
+            return $response;
         }
+
+        return null;
     }
 
     public function greenCardPrintForm(Order $order)

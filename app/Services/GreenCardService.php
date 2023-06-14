@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\GreenCardSaveRequest;
 use App\Models\Order;
 use App\Models\TransportCategory;
+use App\Services\api\Ingo;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 use Illuminate\Support\Facades\Log;
@@ -97,10 +98,10 @@ class GreenCardService
         $timeStart = date('d.m.Y H:i:s');
 
         foreach ($orders as $order) {
-            (new OneC())->saveGreenCard($order, 'Draft');
+            (new Ingo())->greenCardDraft($order);
 
             if ($order->payment_status === OrderService::PAYMENT_STATUS_OK) {
-                (new OneC())->saveGreenCard($order);
+                (new Ingo())->greenCardConfirm($order);
             }
         }
 

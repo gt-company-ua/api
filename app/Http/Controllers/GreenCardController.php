@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GreenCardCalculateRequest;
 use App\Http\Requests\GreenCardSaveRequest;
+use App\Services\api\Ingo;
 use App\Services\AssistMeService;
 use App\Services\GreenCardService;
 use App\Traits\ApiResponser;
@@ -17,16 +18,21 @@ class GreenCardController extends Controller
     public function calculate(GreenCardCalculateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $price = (new GreenCardService())->calculate($data);
-        $priceGos = (new GreenCardService())->calculate($data, true);
+        $calculate = (new Ingo())->greenCardCalculate($data);
+
+        if (empty($calculate['data'])) {
+            return $this->sendError("Нажаль не вдалося порахувати вартість полісу. Спробуйте пізніше");
+        }
+
+        //$priceGos = (new GreenCardService())->calculate($data, true);
         $assist = ( ! empty($request['with_assist_me']) && $request['with_assist_me'])
             ? (new AssistMeService())->getPrice($request['transport']['transport_category_id'], $request['trip_duration'])
             : null;
 
         return $this->sendResponse([
-            'price' => $price,
-            'price_gos' => $priceGos,
-            'cashback_amount' => round($priceGos - $price),
+            'price' => $calculate['data']['amount'],
+            'price_gos' => 0,
+            'cashback_amount' => 0,
             'assist_me_price' => $assist->price ?? null
         ]);
     }
