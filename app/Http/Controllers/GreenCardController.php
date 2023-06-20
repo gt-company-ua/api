@@ -29,9 +29,11 @@ class GreenCardController extends Controller
             ? (new AssistMeService())->getPrice($request['transport']['transport_category_id'], $request['trip_duration'])
             : null;
 
+        $amount = round($calculate['data']['amount'], 2);
+
         return $this->sendResponse([
-            'price' => $calculate['data']['amount'],
-            'price_gos' => 0,
+            'price' => $amount,
+            'price_gos' => $amount,
             'cashback_amount' => 0,
             'assist_me_price' => $assist->price ?? null
         ]);
