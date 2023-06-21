@@ -30,7 +30,7 @@ class Ingo
                 ->withBody($json, 'application/json; charset=UTF-8');
 
             if ( ! is_null($filename)) {
-                $tempName = storage_path('app/public/greencard')
+                $tempName = storage_path('app/public/policies')
                     . DIRECTORY_SEPARATOR . $filename;
 
                 $client->sink($tempName);
@@ -46,7 +46,8 @@ class Ingo
             $code = $response->status();
 
             if ($code > 300) {
-                Log::info('Request() code: ' . $code);
+                $getPost = ($get) ? 'GET' : 'POST';
+                Log::info('Request() code: ' . $code . '. URL: ' . $getPost . ' ' . $requestUrl);
                 Log::info($json);
                 Log::info($body);
 
@@ -156,6 +157,7 @@ class Ingo
                 ];
                 (new OrderService($order))->saveContract($contract);
             }
+
             return $response;
         }
 
@@ -164,15 +166,19 @@ class Ingo
 
     public function greenCardPrintForm(Order $order)
     {
-        $status = true;
-        $filename = $order->id . '.zip';
+        $files = [];
 
         if (! is_null($order->contract) && ! empty($order->contract->number)) {
-            $response = $this->request('/greencard/' . $order->contract->number . '/confirm', [], true, $filename);
+            foreach (['form', 'certificate'] as $formType) {
+                $filename = $order->id . '-' . $formType . '.pdf';
+                $response = $this->request('/greencard/' . $order->contract->number . '/pdf?formType=' . $formType, [], true, $filename);
 
-            $status = $response['status'] ?? null;
+                if (isset($response['status']) && $response['status'] === true) {
+                    $files[] = $filename;
+                }
+            }
         }
 
-        return $status ? $filename : '';
+        return $files;
     }
 }

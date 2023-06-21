@@ -6,6 +6,7 @@ use App\Http\Requests\Data\InnInfoRequest;
 use App\Mail\AssistMe;
 use App\Mail\OrderPayment;
 use App\Models\Order;
+use App\Services\api\Ingo;
 use App\Services\OrderService;
 use App\Traits\ApiResponser;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,18 +30,12 @@ class DataController extends Controller
 
     public function test($oderID)
     {
-        $order = Order::find($oderID);
-        //Mail::to(env('MAIL_TEST'))->send(new AssistMe($order));
-
-        $pdf = PDF::loadView('mails.orders.pdf-assist-new', [
-            'number' => $order->assist->number,
-            'name' => $order->insurant->fullname,
-            'inn' => $order->insurant->inn,
-            'duration' => ($order->trip_duration == 0) ? '15 дн.' : $order->trip_duration . ' міс.',
-            'price' => $order->assist->price,
-            'date' => date('d.m.Y', strtotime($order->polis_start))
-        ], [], 'UTF-8');
-
-        return $pdf->stream();
+//        $order = Order::find($oderID);
+//        $files = (new Ingo())->greenCardPrintForm($order);
+//        if (count($files) > 0) {
+//            Mail::to('nostrag@gmail.com')->send(new OrderPayment($files));
+//        }
+//
+//        return $this->sendResponse(['files' => $files]);
     }
 }

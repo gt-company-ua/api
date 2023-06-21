@@ -14,6 +14,7 @@ use App\Models\OrderTourist;
 use App\Models\OrderTransport;
 use App\Models\Promocode;
 use App\Services\api\GoogleAnalytics;
+use App\Services\api\Ingo;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 use App\Services\api\Salamandra;
@@ -260,7 +261,7 @@ class OrderService
 
         if ($this->order->upload_docs === false) {
             if ($this->order->order_type === Order::ORDER_TYPE_GC) {
-                //$this->saveGreenCard1C();
+                $this->saveGreenCard1C();
             } else if ($this->order->order_type === Order::ORDER_TYPE_OSAGO) {
                 $this->saveOsago1C();
             }
@@ -292,17 +293,15 @@ class OrderService
             return;
         }
 
-        $save1c = (new OneC())->saveGreenCard($this->order);
+        $ingo = new Ingo();
 
-        if ( ! empty($save1c['Number'])) {
-            $filename = (new OneC())->getPrintForm(
-                $this->order->id, $save1c['Number']
-            );
-            if ( ! empty($filename)) {
-                $filePath = storage_path('app/public/greencard')
-                    . DIRECTORY_SEPARATOR . $filename;
+        $response = $ingo->greenCardConfirm($this->order);
 
-                Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($filePath));
+        if (! empty($response['data']) && ! empty($response['data']['id'])) {
+            $files = $ingo->greenCardPrintForm($this->order);
+
+            if (count($files) > 0) {
+                Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
             }
         }
     }

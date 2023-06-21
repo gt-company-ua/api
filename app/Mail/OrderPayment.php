@@ -11,16 +11,16 @@ class OrderPayment extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $filepath;
+    private $files;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $filepath)
+    public function __construct(array $files)
     {
-        $this->filepath = $filepath;
+        $this->files = $files;
     }
 
     /**
@@ -30,6 +30,14 @@ class OrderPayment extends Mailable
      */
     public function build()
     {
-        return $this->view('mails.orders.payment')->subject("Електронний поліс")->attach($this->filepath);
+        $mail = $this->view('mails.orders.payment')->subject("Електронний поліс");
+
+        foreach ($this->files as $file) {
+            $filePath = storage_path('app/public/policies') . DIRECTORY_SEPARATOR . $file;
+
+            $mail->attach($filePath);
+        }
+
+        return $mail;
     }
 }
