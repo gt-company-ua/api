@@ -19,11 +19,15 @@ class GreenCardService
     {
         $data = $request->validated();
 
-        $price = $this->calculate($data, false, false);
-        $priceGos = $this->calculate($data, true, false);
+        $calculate = (new Ingo())->greenCardCalculate($data);
 
-        $data['price'] = $priceGos;
-        $data['cashback_amount'] = round($priceGos - $price);
+        $amount = 0;
+        if ( ! empty($calculate['data'])) {
+            $amount = round($calculate['data']['amount'], 2);
+        }
+
+        $data['price'] = $amount;
+        $data['cashback_amount'] = 0;
         $data['status_contract'] = self::STATUS_CONTRACT_NOT_SENT;
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
