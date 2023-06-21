@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\GreenCardSaveRequest;
+use App\Models\GreencardCashback;
 use App\Models\Order;
 use App\Models\TransportCategory;
 use App\Services\api\Ingo;
@@ -27,7 +28,7 @@ class GreenCardService
         }
 
         $data['price'] = $amount;
-        $data['cashback_amount'] = 0;
+        $data['cashback_amount'] = $this->getCashback($data['trip_duration']);
         $data['status_contract'] = self::STATUS_CONTRACT_NOT_SENT;
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
@@ -37,6 +38,13 @@ class GreenCardService
         }
 
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
+    }
+
+    public function getCashback($months)
+    {
+        $cashback = GreencardCashback::where('months', $months)->first();
+
+        return $cashback->amount ?? 0;
     }
 
     public function calculate(array $data, $gos = false, $usePromocode = true) {

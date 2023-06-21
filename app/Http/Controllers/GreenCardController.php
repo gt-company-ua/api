@@ -34,7 +34,7 @@ class GreenCardController extends Controller
         return $this->sendResponse([
             'price' => $amount,
             'price_gos' => $amount,
-            'cashback_amount' => 0,
+            'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration']),
             'assist_me_price' => $assist->price ?? null
         ]);
     }
