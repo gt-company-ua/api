@@ -101,7 +101,7 @@ class GreenCardService
             (new Ingo())->greenCardDraft($order);
 
             if ($order->payment_status === OrderService::PAYMENT_STATUS_OK) {
-                (new Ingo())->greenCardConfirm($order);
+                (new OrderService($order))->saveGreenCard1C();
             }
         }
 
