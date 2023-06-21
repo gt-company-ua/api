@@ -31,5 +31,8 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/assist-me', [\App\Http\Controllers\Admin\AssistMeController::class, 'index'])->name('assist.index');
         Route::put('/assist-me/tariffs', [\App\Http\Controllers\Admin\AssistMeController::class, 'update'])->name('assist.tariffs');
+
+        Route::get('/greencard', [\App\Http\Controllers\Admin\GreenCardController::class, 'index']);
+        Route::put('/greencard/cashback', [\App\Http\Controllers\Admin\GreenCardController::class, 'updateCashback'])->name('greencard.cashback');
     });
 });
