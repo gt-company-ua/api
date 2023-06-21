@@ -315,6 +315,11 @@ return [
             'url'  => 'admin/assist-me',
             'icon' => 'fas fa-calculator',
         ],
+        [
+            'text' => 'Green Card',
+            'url'  => 'admin/greencard',
+            'icon' => 'fas fa-calculator',
+        ],
     ],
 
     /*
