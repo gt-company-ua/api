@@ -10,4 +10,5 @@ class GreencardCashback extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $casts = ['amount' => 'float'];
 }
