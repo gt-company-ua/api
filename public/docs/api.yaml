@@ -883,6 +883,8 @@ components:
                 $ref: '#/components/schemas/promocode'
               dont_call:
                 $ref: '#/components/schemas/dont_call'
+              cashback_to_vsu:
+                $ref: '#/components/schemas/cashback_to_vsu'
               with_assist_me:
                 $ref: '#/components/schemas/with_assist_me'
               cashback_phone:
@@ -1340,6 +1342,9 @@ components:
     dont_call:
       type: boolean
       description: Пометка не перезванивать
+    cashback_to_vsu:
+      type: boolean
+      description: Отправить cashback ВСУ
     with_assist_me:
       type: boolean
       description: Оформить вместе с AssistMe
@@ -1872,6 +1877,8 @@ components:
           description: Телефон для Cashback
         cashback_amount:
           $ref: '#/components/schemas/cashback_amount'
+        cashback_to_vsu:
+          $ref: '#/components/schemas/cashback_to_vsu'
         multiple_trip:
           $ref: '#/components/schemas/multiple_trip'
         with_greencard:
