@@ -38,6 +38,7 @@
 @endif
 | Сумма cashback | {{ $order->cashback_amount }} |
 | Телефон для cashback | {{ $order->cashback_phone }} |
+| Отправить cashback ВСУ | @if ($order->cashback_to_vsu) Да @else Нет @endif |
 @if(!is_null($order->transport))
 | ИНФОРМАЦИЯ О ТРАНСПОРТЕ | - |
 | Марка | {{ $order->transport->car_mark }} |

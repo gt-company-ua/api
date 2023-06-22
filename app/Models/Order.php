@@ -65,6 +65,7 @@ class Order extends Model
         'is_pu' => 'bool',
         'is_dms' => 'bool',
         'dont_call' => 'bool',
+        'cashback_to_vsu' => 'bool',
         'upload_docs' => 'bool',
         'foreign_check' => 'bool',
         'discount_check' => 'bool',
