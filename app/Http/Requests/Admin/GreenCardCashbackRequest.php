@@ -25,7 +25,8 @@ class GreenCardCashbackRequest extends FormRequest
     {
         return [
             'months.*' => 'required|numeric|min:0|max:12',
-            'amount.*' => 'nullable|numeric|min:0',
+            'amount_eu.*' => 'nullable|numeric|min:0',
+            'amount_sng.*' => 'nullable|numeric|min:0',
         ];
     }
 }

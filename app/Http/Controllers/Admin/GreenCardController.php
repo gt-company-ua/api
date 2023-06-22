@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\GreenCardCashbackRequest;
 use App\Models\GreencardCashback;
+use App\Models\Order;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
 use App\Models\TransportCategory;
@@ -14,7 +15,9 @@ class GreenCardController extends Controller
 {
     public function index()
     {
-        $prices = GreencardCashback::orderBy('months')->pluck('amount', 'months');
+        $prices = [];
+        $prices[Order::TRIP_COUNTRY_EU] = GreencardCashback::where('trip_country', Order::TRIP_COUNTRY_EU)->orderBy('months')->pluck('amount', 'months');
+        $prices[Order::TRIP_COUNTRY_SNG] = GreencardCashback::where('trip_country', Order::TRIP_COUNTRY_SNG)->orderBy('months')->pluck('amount', 'months');
 
         return view('greencard', compact('prices'));
     }
@@ -24,10 +27,13 @@ class GreenCardController extends Controller
         $data = $request->validated();
 
         foreach ($data['months'] as $key => $month) {
-            GreencardCashback::updateOrCreate(
-                ['months' => $month],
-                ['amount' => $data['amount'][$key]]
-            );
+            foreach (Order::TRIP_COUNTRIES as $tripCountry) {
+                GreencardCashback::updateOrCreate(
+                    ['months' => $month, 'trip_country' => $tripCountry],
+                    ['amount' => $data['amount_' . $tripCountry][$key]]
+                );
+            }
+
         }
 
         return back()

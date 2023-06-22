@@ -28,7 +28,7 @@ class GreenCardService
         }
 
         $data['price'] = $amount;
-        $data['cashback_amount'] = $this->getCashback($data['trip_duration']);
+        $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country']);
         $data['status_contract'] = self::STATUS_CONTRACT_NOT_SENT;
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
@@ -40,9 +40,9 @@ class GreenCardService
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
     }
 
-    public function getCashback($months)
+    public function getCashback($months, $tripCountry)
     {
-        $cashback = GreencardCashback::where('months', $months)->first();
+        $cashback = GreencardCashback::where('months', $months)->where('trip_country', $tripCountry)->first();
 
         return $cashback->amount ?? 0;
     }
