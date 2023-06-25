@@ -288,6 +288,8 @@ class OrderService
 
     public function saveGreenCard1C()
     {
+        $this->order = Order::find($this->order->id);
+
         $count = OrderContract::where('order_id', $this->order->id)->where('state', 'Draft')->count();
         if ($count <= 0) {
             return;
