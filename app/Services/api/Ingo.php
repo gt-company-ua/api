@@ -5,6 +5,7 @@ namespace App\Services\api;
 use App\Exceptions\OneCRequestException;
 use App\Models\Order;
 use App\Models\TransportCategory;
+use App\Models\VzrRangeDay;
 use App\Services\GreenCardService;
 use App\Services\OrderService;
 use GuzzleHttp\Exception\RequestException;
@@ -180,5 +181,55 @@ class Ingo
         }
 
         return $files;
+    }
+
+    private function calculateVzrDays(array $data): int
+    {
+        $start = new \DateTime($data['polis_start']);
+        $end   = new \DateTime($data['polis_end']);
+
+        $interval = $end->diff($start);
+
+        return intval($interval->format('%a')) + 1;
+    }
+
+
+    public function vzrCalculate(array $data, string $medicalPocket)
+    {
+        $params = [
+            'startFrom' => date('Y-m-d', strtotime($data['polis_start'])) . ' 00:00:00',
+            'period' => $this->calculateVzrDays($data) . 'd',
+            'territories' => $data['territories'],
+            'medicalPocket' => $medicalPocket,
+            'medicalCover' => $data['insured_sum'],
+            'medicalCurrency' => 'EUR',
+            'tourists' => [],
+        ];
+
+        if ($data['multiple_trip'] === true) {
+            $duration = VzrRangeDay::find($data['vzr_range_day_id']);
+
+            $params['multi'] = true;
+            $params['multiDays'] = $duration->days;
+        }
+
+        if (isset($data['tourists']) && count($data['tourists']) > 0) {
+            foreach ($data['tourists'] as $tourist) {
+                $params['tourists'][] = ['goal' => 'T', 'birthday' => $tourist['birth']];
+            }
+        } elseif (isset($data['ranges']) && count($data['ranges']) > 0) {
+            foreach ($data['ranges'] as $range) {
+                if ($range === '0') {
+                    $age = 0;
+                } else {
+                    $ages = explode('-', $range);
+                    $age = (int) $ages[0];
+                }
+
+                $params['tourists'][] = ['goal' => 'T', 'age' => $age];
+            }
+        }
+
+        return $this->request('/travel/calculate', $params);
     }
 }
