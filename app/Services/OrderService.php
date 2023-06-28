@@ -80,6 +80,10 @@ class OrderService
         $request['price'] = $this->usePromocode($promocode, $request['price'], $orderType);
         $request['dont_call'] = (isset($request['dont_call']) && $request['dont_call']);
 
+        if (isset($request['territories'])) {
+            $request['territory'] = json_encode($request['territories']);
+        }
+
         $order = Order::create($request);
 
         $order->transport()->save($transport);
@@ -87,7 +91,14 @@ class OrderService
         if (count($tourists) > 0) {
             $saveTourists = [];
             foreach ($tourists as $tourist) {
-                $tourist['birth'] = date('Y-m-d', strtotime($tourist['birth']) );
+                $tourist['birth'] = date('Y-m-d', strtotime($tourist['birth']));
+
+                if (!isset($tourist['full_name']) && isset($tourist['name'])) {
+                    $tourist['full_name'] = $tourist['surname'] . ' ' . $tourist['name'];
+
+                    unset($tourist['surname'], $tourist['name']);
+                }
+
                 if (is_null($insurant->surname)) {
                     $fullNameParts = explode(' ', $tourist['full_name']);
                     $insurant->surname = $fullNameParts[0] ?? null;
@@ -104,7 +115,6 @@ class OrderService
         }
 
         $order->insurant()->save($insurant);
-
 
         if (isset($files)) {
             try {

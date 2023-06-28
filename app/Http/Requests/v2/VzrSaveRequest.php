@@ -2,7 +2,12 @@
 
 namespace App\Http\Requests\v2;
 
+use App\Models\Order;
+use App\Rules\Boolean;
+use App\Rules\Inn;
+use App\Services\VzrService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class VzrSaveRequest extends FormRequest
 {
@@ -13,7 +18,7 @@ class VzrSaveRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +29,40 @@ class VzrSaveRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'polis_start' => 'required|date|after:today',
+            'multiple_trip' => 'required|boolean',
+            'dont_call' => ['nullable', new Boolean],
+            'polis_end' => 'required_if:multiple_trip,false|date|after:polis_start',
+            'vzr_range_day_id' => 'nullable|required_if:multiple_trip,true|exists:App\Models\VzrRangeDay,id',
+            'territories' => 'required|array',
+            'territories.*' => ['required', Rule::in(VzrService::TERRITORIES_IDS)],
+            'insured_sum' => ['required', Rule::in(Order::VZR_INSURED_SUMS)],
+            'tariff' => ['required', Rule::in(VzrService::INGO_TARIFFS)],
+
+            'tourists' => 'required|array',
+            'tourists.*.birth' => 'required|date|before:today',
+            'tourists.*.surname' => 'required|string|min:1',
+            'tourists.*.name' => 'required|string|min:1',
+            'tourists.*.doc_number' => 'required|string|min:3',
+
+            'email' => 'required|email',
+            'insurant.phone' => 'required|string|min:6',
+            'insurant.inn' => ['required', new Inn],
+            'insurant.surname' => 'required|string',
+            'insurant.name' => 'required|string',
+            'insurant.patronymic' => 'required|string',
+            'insurant.birth' => 'required|date|before:today',
+            'insurant.address' => 'required|string',
+            'insurant.doc_type' => ['required', Rule::in(Order::DOC_TYPES)],
+            'insurant.doc_number' => 'required|string',
+            'insurant.doc_series' => 'nullable|string',
+
+            'promocode' => 'nullable|string',
+
+            'code' => 'nullable|string',
+            'code_date_end' => 'nullable|date',
+
+            'ga_id' => 'nullable'
         ];
     }
 }

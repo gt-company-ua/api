@@ -4,6 +4,7 @@ namespace App\Services\api;
 
 use App\Exceptions\OneCRequestException;
 use App\Models\Order;
+use App\Models\OrderContract;
 use App\Services\GreenCardService;
 use App\Services\OrderService;
 use GuzzleHttp\Exception\RequestException;
@@ -163,12 +164,12 @@ class OneC
                 $order->send_sms = $response['OTP'];
             }
 
-            $order->status_contract = GreenCardService::STATUS_CONTRACT_SENT;
+            $order->status_contract = OrderContract::STATUS_CONTRACT_SENT;
             $order->save();
         } catch (\Exception $e) {
             Log::error('Save GreenCard request error:' . $e->getMessage());
 
-            $order->status_contract = GreenCardService::STATUS_CONTRACT_ERROR;
+            $order->status_contract = OrderContract::STATUS_CONTRACT_ERROR;
             $order->save();
 
             return [];

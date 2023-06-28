@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\GreenCardSaveRequest;
 use App\Models\GreencardCashback;
 use App\Models\Order;
+use App\Models\OrderContract;
 use App\Models\TransportCategory;
 use App\Services\api\Ingo;
 use App\Services\api\OneC;
@@ -13,9 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class GreenCardService
 {
-    const STATUS_CONTRACT_NOT_SENT = 'not_sent';
-    const STATUS_CONTRACT_SENT = 'sent';
-    const STATUS_CONTRACT_ERROR = 'error';
     public function saveOrder(GreenCardSaveRequest $request): ?Order
     {
         $data = $request->validated();
@@ -29,7 +27,7 @@ class GreenCardService
 
         $data['price'] = $amount;
         $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country']);
-        $data['status_contract'] = self::STATUS_CONTRACT_NOT_SENT;
+        $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
 
@@ -103,7 +101,7 @@ class GreenCardService
     {
         $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
             ->where('upload_docs', false)
-            ->where('status_contract', self::STATUS_CONTRACT_NOT_SENT)
+            ->where('status_contract', OrderContract::STATUS_CONTRACT_NOT_SENT)
             ->limit(2)
             ->get();
 

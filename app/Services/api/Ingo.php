@@ -2,8 +2,8 @@
 
 namespace App\Services\api;
 
-use App\Exceptions\OneCRequestException;
 use App\Models\Order;
+use App\Models\OrderContract;
 use App\Models\TransportCategory;
 use App\Models\VzrRangeDay;
 use App\Services\GreenCardService;
@@ -73,7 +73,7 @@ class Ingo
         return ($country === Order::TRIP_COUNTRY_SNG) ? 1 : 2;
     }
 
-    public function greenCardCalculate(array $data)
+    public function greenCardCalculate(array $data): array
     {
         $transportCategory = TransportCategory::whereId($data['transport']['transport_category_id'])->first();
 
@@ -87,7 +87,7 @@ class Ingo
         return $this->request('/greencard/calculate', $params);
     }
 
-    public function greenCardDraft(Order $order)
+    public function greenCardDraft(Order $order): array
     {
         $date = date('Y-m-d', strtotime('+1 day'));
         $startDate = date('Y-m-d', strtotime($order->polis_start));
@@ -128,12 +128,12 @@ class Ingo
                 (new OrderService($order))->saveContract($contract);
             }
 
-            $order->status_contract = GreenCardService::STATUS_CONTRACT_SENT;
+            $order->status_contract = OrderContract::STATUS_CONTRACT_SENT;
             $order->save();
         } catch (\Exception $e) {
             Log::error('Save GreenCard request error:' . $e->getMessage());
 
-            $order->status_contract = GreenCardService::STATUS_CONTRACT_ERROR;
+            $order->status_contract = OrderContract::STATUS_CONTRACT_ERROR;
             $order->save();
 
             return [];
@@ -142,7 +142,7 @@ class Ingo
         return $response;
     }
 
-    public function greenCardConfirm(Order $order)
+    public function greenCardConfirm(Order $order): ?array
     {
         if (! is_null($order->contract) && ! empty($order->contract->number)) {
             $response = $this->request('/greencard/' . $order->contract->number . '/confirm', []);
@@ -165,7 +165,7 @@ class Ingo
         return null;
     }
 
-    public function greenCardPrintForm(Order $order)
+    public function greenCardPrintForm(Order $order): array
     {
         $files = [];
 
@@ -194,7 +194,80 @@ class Ingo
     }
 
 
-    public function vzrCalculate(array $data, string $medicalPocket)
+    public function vzrDraft(Order $order): array
+    {
+        $days = $this->calculateVzrDays(['polis_start' => $order->polis_start, 'polis_end' => $order->polis_end]);
+
+        $params = [
+            'startFrom' => date('Y-m-d', strtotime($order->polis_start)) . ' 00:00:00',
+            'period' => $days . 'd',
+            'territories' => json_decode($order->territory),
+            'medicalPocket' => $order->tariff,
+            'medicalCover' => $order->insured_sum,
+            'medicalCurrency' => 'EUR',
+            'tourists' => [],
+            'customerIsPhysicalPerson' => true,
+            'customerIsResident' => true,
+            'customerIdentCode' => $order->insurant->inn,
+            'customerFirstName' => $order->insurant->surname,
+            'customerSecondName' => $order->insurant->name,
+            'customerThirdName' => $order->insurant->patronymic,
+            'customerBirthday' => $order->insurant->birth,
+            'customerDocType' => $order->insurant->doc_type,
+            'customerDocSeries' => $order->insurant->doc_series,
+            'customerDocNumber' => $order->insurant->doc_number,
+            'address' => $order->insurant->address,
+            'phone' => $order->insurant->phone,
+            'email' => $order->email,
+        ];
+
+        if ($order->multiple_trip) {
+            $params['multi'] = true;
+            $params['multiDays'] = $order->vzrDay->days;
+        }
+
+        foreach ($order->tourists as $tourist) {
+            $fullNameToParts = explode(' ', $tourist->full_name, 2);
+
+            $params['tourists'][] = [
+                'goal' => 'T',
+                'birthday' => $tourist['birth'],
+                'firstName' => $fullNameToParts[0],
+                'secondName' => $fullNameToParts[1] ?? null
+            ];
+        }
+
+        try {
+            $response = $this->request('/travel/register', $params);
+
+            Log::debug("Save VZR (order: ".$order->id.") request", $params);
+            Log::debug("Save VZR (order: ".$order->id.") response", $response);
+
+            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+                $contract = [
+                    'external_id' => $response['data']['id'],
+                    'state' => 'Draft',
+                    'start_date' => $response['data']['startFrom'] ?? null,
+                    'end_date' => $response['data']['untilTo'] ?? null,
+                    'api_name' => self::API_NAME
+                ];
+                (new OrderService($order))->saveContract($contract);
+            }
+
+            $order->status_contract = OrderContract::STATUS_CONTRACT_SENT;
+            $order->save();
+        } catch (\Exception $e) {
+            Log::error('Save VZR request error:' . $e->getMessage());
+
+            $order->status_contract = OrderContract::STATUS_CONTRACT_ERROR;
+            $order->save();
+
+            return [];
+        }
+
+        return $response;
+    }
+    public function vzrCalculate(array $data, string $medicalPocket): array
     {
         $params = [
             'startFrom' => date('Y-m-d', strtotime($data['polis_start'])) . ' 00:00:00',
