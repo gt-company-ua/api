@@ -107,7 +107,7 @@ class CrmService
 
             $response = $this->crm->createContact($params);
 
-            if (array_key_exists('result', $response) && intval($response['result']) > 0) {
+            if (is_array($response) && array_key_exists('result', $response) && intval($response['result']) > 0) {
                 return intval($response['result']);
             }else{
                 Log::error('Crm contact add failed: '.json_encode($fields). '. Response: '.json_encode($response));
@@ -256,7 +256,7 @@ class CrmService
         $response = $this->crm->createDeal($params);
 
 
-        if (array_key_exists('result', $response) && intval($response['result']) > 0) {
+        if (is_array($response) && array_key_exists('result', $response) && intval($response['result']) > 0) {
             return intval($response['result']);
         }
 
@@ -288,7 +288,7 @@ class CrmService
 
             $response = $this->crm->findListItem($params);
 
-            if (array_key_exists('result', $response) && intval($response['result']) > 0) { // Найден
+            if (is_array($response) && array_key_exists('result', $response) && intval($response['result']) > 0) { // Найден
                 $touristId = intval($response['result'][0]['ID']);
 
                 // Обновляем привязку
@@ -368,7 +368,7 @@ class CrmService
 
             $response = $this->crm->addListItem($params);
 
-            if (array_key_exists('result', $response) && intval($response['result']) > 0) {
+            if (is_array($response) && array_key_exists('result', $response) && intval($response['result']) > 0) {
                 return intval($response['result']);
             }
         }
