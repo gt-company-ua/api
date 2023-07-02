@@ -5,12 +5,14 @@ namespace App\Http\Requests\v2;
 use App\Models\Order;
 use App\Rules\Boolean;
 use App\Rules\Inn;
-use App\Services\VzrService;
+use App\Services\api\Ingo;
+use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class VzrSaveRequest extends FormRequest
 {
+    use RequestFailedValidationResponse;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,15 +37,17 @@ class VzrSaveRequest extends FormRequest
             'polis_end' => 'required_if:multiple_trip,false|date|after:polis_start',
             'vzr_range_day_id' => 'nullable|required_if:multiple_trip,true|exists:App\Models\VzrRangeDay,id',
             'territories' => 'required|array',
-            'territories.*' => ['required', Rule::in(VzrService::TERRITORIES_IDS)],
+            'territories.*' => ['required', Rule::in(Ingo::TERRITORIES_IDS)],
             'insured_sum' => ['required', Rule::in(Order::VZR_INSURED_SUMS)],
-            'tariff' => ['required', Rule::in(VzrService::INGO_TARIFFS)],
+            'tariff' => ['required', Rule::in(Ingo::VZR_TARIFFS)],
 
             'tourists' => 'required|array',
             'tourists.*.birth' => 'required|date|before:today',
             'tourists.*.surname' => 'required|string|min:1',
             'tourists.*.name' => 'required|string|min:1',
+            'tourists.*.doc_series' => 'required|string|min:1',
             'tourists.*.doc_number' => 'required|string|min:3',
+            'tourists.*.goal' => ['required', Rule::in(Ingo::GOAL_IDS)],
 
             'email' => 'required|email',
             'insurant.phone' => 'required|string|min:6',
@@ -53,7 +57,7 @@ class VzrSaveRequest extends FormRequest
             'insurant.patronymic' => 'required|string',
             'insurant.birth' => 'required|date|before:today',
             'insurant.address' => 'required|string',
-            'insurant.doc_type' => ['required', Rule::in(Order::DOC_TYPES)],
+            'insurant.doc_type' => 'required|integer|min:1|max:14',
             'insurant.doc_number' => 'required|string',
             'insurant.doc_series' => 'nullable|string',
 

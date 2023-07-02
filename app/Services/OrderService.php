@@ -82,6 +82,8 @@ class OrderService
 
         if (isset($request['territories'])) {
             $request['territory'] = json_encode($request['territories']);
+
+            unset($request['territories']);
         }
 
         $order = Order::create($request);
@@ -137,9 +139,13 @@ class OrderService
 
         $this->createInvoice();
 
-        (new CrmService($this->order))->sendCrm();
+        //(new CrmService($this->order))->sendCrm(); //TODO включить
 
-        Mail::send(new OrderCreated($this->order));
+        try {
+            Mail::send(new OrderCreated($this->order));
+        } catch (\Exception $e) {
+            Log::error("Send mail failed: " . $e->getMessage());
+        }
 
         return $this->order;
     }

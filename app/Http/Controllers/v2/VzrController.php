@@ -24,7 +24,7 @@ class VzrController extends Controller
         $data = $request->validated();
         $tariffs = [];
 
-        foreach (VzrService::INGO_TARIFFS as $tariff) {
+        foreach (Ingo::VZR_TARIFFS as $tariff) {
             $calculate = (new Ingo())->vzrCalculate($data, $tariff);
 
             if (isset($calculate['data']['amount'])) {
@@ -38,9 +38,9 @@ class VzrController extends Controller
 
     public function store(VzrSaveRequest $request): JsonResponse
     {
-        try {
-            $data = $request->validated();
+        $data = $request->validated();
 
+        try {
             $calculate = (new Ingo())->vzrCalculate($data, $data['tariff']);
 
             if (isset($calculate['data']['amount'])) {
@@ -51,6 +51,8 @@ class VzrController extends Controller
 
             $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_VZR);
 
+            (new Ingo())->vzrDraft($order);
+
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -58,8 +60,18 @@ class VzrController extends Controller
         return $this->sendResponse($order, 201);
     }
 
-    public function territories()
+    public function territories(): JsonResponse
     {
-        return $this->sendResponse(VzrService::TERRITORIES);
+        return $this->sendResponse(Ingo::TERRITORIES);
+    }
+
+    public function documents(): JsonResponse
+    {
+        return $this->sendResponse(Ingo::DOC_TYPES);
+    }
+
+    public function goals(): JsonResponse
+    {
+        return $this->sendResponse(Ingo::GOALS);
     }
 }

@@ -14,15 +14,6 @@ class VzrService
     private $prices;
 
     const AGE_RANGES = ['0', '4-15', '16-18', '19-60', '61-65', '66-75'];
-    const TERRITORIES_IDS = [5, 6, 7, 8];
-    const TERRITORIES = [
-        5 => 'Весь світ',
-        6 => 'Країни Європи, країни СНД, Грузія, Туреччина, Египет, Болгарія, Ізраїль, ОАЕ, Туніс',
-        7 => 'Весь світ крім США, Канади, Японії',
-        8 => 'Шенгенська зона, Країни Європи, СНД, Грузія',
-    ];
-
-    const INGO_TARIFFS = ['ECONOM', 'STANDARD', 'ELIT'];
 
     /**
      * @throws Exception

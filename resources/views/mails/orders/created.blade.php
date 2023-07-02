@@ -91,6 +91,7 @@
 | ФИО | {{ $tourist->full_name }} |
 | Номер документа | {{ $tourist->doc_number }} |
 | День рождения | {{ $tourist->birth }} |
+| Цель поездки | @if (!is_null($tourist->goal)) {{ \App\Services\api\Ingo::GOALS[$tourist->goal] }} @endif |
 @endforeach
 
 @endif

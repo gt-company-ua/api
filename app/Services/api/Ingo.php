@@ -16,6 +16,43 @@ class Ingo
 {
     const GREENCARD_TRANSPORT_CATEGORIES = ['car' => 'A', 'moto' => 'B', 'bus' => 'E', 'truck' => 'C', 'trailer' => 'F'];
     const API_NAME = "INGO";
+
+    const DOC_TYPES = [
+        1 => 'паспорт',
+        2 => 'ID-паспорт',
+        3 => 'водійське посвідчення',
+        4 => 'пенсійне посвідчення',
+        5 => 'посвідчення про інвалідність',
+        6 => 'посвідчення учасника війни',
+        7 => 'закордонний паспорт',
+        8 => 'іноземний паспорт',
+        9 => 'посвідка на проживання',
+        10 => 'реєстраційний талон',
+        11 => 'свідоцтво про народження',
+        12 => 'чорнобильське посвідчення',
+        13 => 'інший',
+        14 => 'іноземне посвідчення водія'
+    ];
+
+    const VZR_TARIFFS = ['ECONOM', 'STANDARD', 'ELIT'];
+
+    const TERRITORIES_IDS = [5, 6, 7, 8];
+    const TERRITORIES = [
+        5 => 'Весь світ',
+        6 => 'Країни Європи, країни СНД, Грузія, Туреччина, Египет, Болгарія, Ізраїль, ОАЕ, Туніс',
+        7 => 'Весь світ крім США, Канади, Японії',
+        8 => 'Шенгенська зона, Країни Європи, СНД, Грузія',
+    ];
+
+    const GOAL_IDS = ['T', 'W', 'PW', 'AR', 'SE', 'SA'];
+    const GOALS = [
+        'T' => '',
+        'W' => '',
+        'PW' => '',
+        'AR' => '',
+        'SE' => '',
+        'SA' => ''
+    ];
     private function request(string $uri, array $params, $get = false, ?string $filename = null): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
@@ -230,10 +267,12 @@ class Ingo
             $fullNameToParts = explode(' ', $tourist->full_name, 2);
 
             $params['tourists'][] = [
-                'goal' => 'T',
-                'birthday' => $tourist['birth'],
+                'goal' => $tourist->goal,
+                'birthday' => $tourist->birth,
                 'firstName' => $fullNameToParts[0],
-                'secondName' => $fullNameToParts[1] ?? null
+                'secondName' => $fullNameToParts[1] ?? null,
+                'passportSeries' => $tourist->doc_series,
+                'passportNumber' => $tourist->doc_number,
             ];
         }
 
@@ -244,11 +283,13 @@ class Ingo
             Log::debug("Save VZR (order: ".$order->id.") response", $response);
 
             if (! empty($response['data']) && ! empty($response['data']['id'])) {
+                $startDate = $response['data']['startFrom'] ?? null;
+                $endDate = $response['data']['untilTo'] ?? null;
                 $contract = [
                     'external_id' => $response['data']['id'],
                     'state' => 'Draft',
-                    'start_date' => $response['data']['startFrom'] ?? null,
-                    'end_date' => $response['data']['untilTo'] ?? null,
+                    'start_date' => !is_null($startDate) ? date('Y-m-d', strtotime($startDate)) : null,
+                    'end_date' => !is_null($endDate) ? date('Y-m-d', strtotime($endDate)) : null,
                     'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
