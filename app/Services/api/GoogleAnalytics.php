@@ -4,6 +4,7 @@ namespace App\Services\api;
 
 use App\Models\Order;
 use Exception;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class GoogleAnalytics
@@ -49,7 +50,47 @@ class GoogleAnalytics
             'cu' => 'UAH',
         ];
 
-        return $this->request($send);
+        $this->request($send);
+
+        return $this->event($order);
+    }
+
+    public function event(Order $order)
+    {
+        $price = $order->price + $order->gc_plus_price;
+
+        $send = [
+            "client_id" => ($order->ga_id != '') ? $this->getGaId($order->ga_id) : 555,
+            "timestamp_micros" => microtime(),
+            "non_personalized_ads" => false,
+            "events" => [
+                [
+                    "name" => "purchase",
+                    "params" => [
+                        "items" => [],
+                        "affiliation" => "greentravel.ua",
+                        "currency" => "UAH",
+                        "transaction_id" => $order->uuid,
+                        "shipping" => 0,
+                        "tax" => 0,
+                        "value" => $price
+                    ]
+                ]
+            ]
+        ];
+
+        $response = Http::withBody(json_encode($send), 'application/json; charset=UTF-8')
+            ->timeout(5)
+            ->post('https://www.google-analytics.com/mp/collect?api_secret=BN4lqb8hSHyYi77WClzO8g&measurement_id=G-D38QGQMQHB');
+
+        if ($response->status() >= 300) {
+            Log::error("GA event error:");
+            Log::info('GA event error code: ' . $response->status());
+            Log::info("Request:", $send);
+            Log::info("Response" . $response->body());
+        }
+
+        return $response->body();
     }
 
     function getGaId($gaIdFull)
