@@ -90,7 +90,7 @@ class GoogleAnalytics
             Log::info("Response" . $response->body());
         }
 
-        return $this->request($send);
+        return $response->body();
     }
 
     function getGaId($gaIdFull)
