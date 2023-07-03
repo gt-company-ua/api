@@ -313,6 +313,93 @@ paths:
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: VZR
 
+  /v2/vzr:
+    post:
+      tags:
+        - vzr
+      summary: Сохранение полиса ВЗР
+      operationId: postVzr-v2
+      requestBody:
+        $ref: '#/components/requestBodies/vzrSaveV2'
+      responses:
+        '201':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: VZR
+
+  /v2/vzr/calculate:
+    post:
+      tags:
+        - vzr
+      summary: Расчет тарифов по ВЗР
+      operationId: postVzrCalculate-v2
+      requestBody:
+        $ref: '#/components/requestBodies/vzrCalculateV2'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {"ECONOM": 500, "STANDART": 600}
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: VZR
+
+  /v2/vzr/territories:
+    get:
+      tags:
+        - vzr
+      summary: Список территорий страхования
+      operationId: vzrTerritories
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                example: { "5": "Весь світ", "7": "Весь світ крім США, Канади, Японії" }
+      x-swagger-router-controller: VZR
+
+  /v2/vzr/documents:
+    get:
+      tags:
+        - vzr
+      summary: Список возможных документов
+      operationId: vzrDocuments
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                example: { "1": "паспорт", "2": "ID-паспорт" }
+      x-swagger-router-controller: VZR
+
+  /v2/vzr/goals:
+    get:
+      tags:
+        - vzr
+      summary: Список возможных целей поездки
+      operationId: vzrGoals
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                example: { "T": "Туризм, навчання", "W": "Робота (інтелектуальна праця)" }
+      x-swagger-router-controller: VZR
+
   /osago:
     post:
       tags:
@@ -747,6 +834,139 @@ components:
                     $ref: '#/components/schemas/insurantSurname'
                   name:
                     $ref: '#/components/schemas/insurantName'
+                  inn:
+                    $ref: '#/components/schemas/insurantInn'
+    vzrCalculateV2:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - polis_start
+              - polis_end
+              - multiple_trip
+              - territories
+              - insured_sum
+              - tourists
+            description: Если multiple_trip = true, то `polis_end` не обязательно, а `vzr_range_day_id` обязательно
+            properties:
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              multiple_trip:
+                $ref: '#/components/schemas/multiple_trip'
+              polis_end:
+                $ref: '#/components/schemas/orderPolisEnd'
+              vzr_range_day_id:
+                $ref: '#/components/schemas/vzr_range_day_id'
+              territories:
+                type: array
+                description: Территории действия - `GET /v2/vzr/territories`
+                items:
+                  type: integer
+              insured_sum:
+                $ref: '#/components/schemas/insured_sum'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              tourists:
+                type: array
+                required:
+                  - birth
+                items:
+                  $ref: '#/components/schemas/touristV2'
+              ranges:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    range:
+                      type: string
+                      enum:
+                        - "0"
+                        - "4-15"
+                        - "16-18"
+                        - "19-60"
+                        - "61-65"
+                        - "66-75"
+                    goal:
+                      $ref: '#/components/schemas/vzrGoal'
+    vzrSaveV2:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - polis_start
+              - multiple_trip
+              - territories
+              - insured_sum
+              - tourists
+              - insurant
+            description: Если multiple_trip = true, то `polis_end` не обязательно, а `vzr_range_day_id` обязательно
+            properties:
+              tariff:
+                type: string
+                description: ID тарифа из расчета
+                example: "ECONOM"
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              multiple_trip:
+                $ref: '#/components/schemas/multiple_trip'
+              polis_end:
+                $ref: '#/components/schemas/orderPolisEnd'
+              vzr_range_day_id:
+                $ref: '#/components/schemas/vzr_range_day_id'
+              territories:
+                type: array
+                description: Территории действия - `GET /v2/vzr/territories`
+                items:
+                  type: integer
+              insured_sum:
+                $ref: '#/components/schemas/insured_sum'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              dont_call:
+                $ref: '#/components/schemas/dont_call'
+              tourists:
+                type: array
+                items:
+                  $ref: '#/components/schemas/touristV2'
+              insurant:
+                type: object
+                required:
+                  - phone
+                  - inn
+                  - surname
+                  - name
+                  - patronymic
+                  - address
+                  - birth
+                  - doc_type
+                  - doc_series
+                  - doc_number
+                description: Данные страхователя
+                properties:
+                  phone:
+                    $ref: '#/components/schemas/insurantPhone'
+                  surname:
+                    $ref: '#/components/schemas/insurantSurname'
+                  name:
+                    $ref: '#/components/schemas/insurantName'
+                  patronymic:
+                    $ref: '#/components/schemas/insurantPatronymic'
+                  birth:
+                    $ref: '#/components/schemas/insurantBirth'
+                  address:
+                    $ref: '#/components/schemas/insurantAddress'
+                  doc_type:
+                    type: integer
+                    description: Тип документа `GET /v2/vzr/documents`
+                  doc_number:
+                    $ref: '#/components/schemas/insurantDocNumber'
+                  doc_series:
+                    $ref: '#/components/schemas/insurantDocSeries'
                   inn:
                     $ref: '#/components/schemas/insurantInn'
 
@@ -1529,6 +1749,10 @@ components:
         payment_url:
           type: string
           example: https://www.liqpay.ua
+    vzrGoal:
+      type: string
+      description: Цель поездки `GET /v2/vzr/goals`
+      example: T
     tourist:
       type: object
       required:
@@ -1542,6 +1766,28 @@ components:
           $ref: '#/components/schemas/full_name'
         doc_number:
           $ref: '#/components/schemas/insurantDocNumber'
+    touristV2:
+      type: object
+      required:
+        - birth
+        - surname
+        - name
+        - doc_series
+        - doc_number
+        - goal
+      properties:
+        birth:
+          $ref: '#/components/schemas/insurantBirth'
+        surname:
+          $ref: '#/components/schemas/insurantSurname'
+        name:
+          $ref: '#/components/schemas/insurantName'
+        doc_series:
+          $ref: '#/components/schemas/insurantDocSeries'
+        doc_number:
+          $ref: '#/components/schemas/insurantDocNumber'
+        goal:
+          $ref: '#/components/schemas/vzrGoal'
 
     defaultStatus:
       type: object

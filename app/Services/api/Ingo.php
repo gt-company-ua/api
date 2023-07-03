@@ -46,12 +46,12 @@ class Ingo
 
     const GOAL_IDS = ['T', 'W', 'PW', 'AR', 'SE', 'SA'];
     const GOALS = [
-        'T' => '',
-        'W' => '',
-        'PW' => '',
-        'AR' => '',
-        'SE' => '',
-        'SA' => ''
+        'T' => 'Туризм, навчання',
+        'W' => 'Робота (інтелектуальна праця)',
+        'PW' => 'Робота (фізична праця)',
+        'AR' => 'Активний спорт',
+        'SE' => 'Екстремальний спорт',
+        'SA' => 'Активний спорт'
     ];
     private function request(string $uri, array $params, $get = false, ?string $filename = null): array
     {

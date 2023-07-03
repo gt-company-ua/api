@@ -39,9 +39,11 @@ class VzrCalculateRequest extends FormRequest
             'insured_sum' => ['required', Rule::in(Order::VZR_INSURED_SUMS)],
             'tourists' => 'nullable|array',
             'tourists.*.birth' => 'required|date|before:today',
+            'tourists.*.goal' => ['required', Rule::in(Ingo::GOAL_IDS)],
             'promocode' => 'nullable|string',
             'ranges' => 'nullable|array',
-            'ranges.*' => ['required', Rule::in(VzrService::AGE_RANGES)],
+            'ranges.*.range' => ['required', Rule::in(VzrService::AGE_RANGES)],
+            'ranges.*.goal' => ['required', Rule::in(Ingo::GOAL_IDS)],
         ];
     }
 }

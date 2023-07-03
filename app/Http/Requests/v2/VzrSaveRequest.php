@@ -59,7 +59,7 @@ class VzrSaveRequest extends FormRequest
             'insurant.address' => 'required|string',
             'insurant.doc_type' => 'required|integer|min:1|max:14',
             'insurant.doc_number' => 'required|string',
-            'insurant.doc_series' => 'nullable|string',
+            'insurant.doc_series' => 'required|string',
 
             'promocode' => 'nullable|string',
 
