@@ -37,21 +37,6 @@ class GoogleAnalytics
 
     public function transaction(Order $order)
     {
-        $price = $order->price + $order->gc_plus_price;
-
-        $send = [
-            'cid' => ($order->ga_id != '') ? $this->getGaId($order->ga_id) : 555,
-            't' => 'transaction',
-            'ti' => $order->uuid,
-            'ta' => 'liqpay',
-            'tr' => $price,
-            'dr' => 'https://greentravel.ua/thankyou',
-            'dt' => 'Thank You',
-            'cu' => 'UAH',
-        ];
-
-        $this->request($send);
-
         return $this->event($order);
     }
 
@@ -83,11 +68,11 @@ class GoogleAnalytics
             ->timeout(5)
             ->post('https://www.google-analytics.com/mp/collect?api_secret=BN4lqb8hSHyYi77WClzO8g&measurement_id=G-D38QGQMQHB');
 
+        Log::info("GA event request:", $send);
+        Log::info("GA event response" . $response->body());
+
         if ($response->status() >= 300) {
-            Log::error("GA event error:");
             Log::info('GA event error code: ' . $response->status());
-            Log::info("Request:", $send);
-            Log::info("Response" . $response->body());
         }
 
         return $response->body();
