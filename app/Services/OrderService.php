@@ -139,7 +139,7 @@ class OrderService
 
         $this->createInvoice();
 
-        //(new CrmService($this->order))->sendCrm(); //TODO включить
+        (new CrmService($this->order))->sendCrm();
 
         try {
             Mail::send(new OrderCreated($this->order));
