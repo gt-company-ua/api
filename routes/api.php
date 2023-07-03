@@ -69,3 +69,13 @@ Route::prefix('data')->group(function () {
     Route::get('/inn', [\App\Http\Controllers\DataController::class, 'innInfo'])->name('data.inn');
     Route::get('/pdf/{order_id}', [\App\Http\Controllers\DataController::class, 'test'])->name('data.pdf');
 });
+
+Route::prefix('v2')->group(function () {
+    Route::prefix('vzr')->group(function () {
+        Route::post('/', [\App\Http\Controllers\v2\VzrController::class, 'store']);
+        Route::post('/calculate', [\App\Http\Controllers\v2\VzrController::class, 'calculate']);
+        Route::get('/territories', [\App\Http\Controllers\v2\VzrController::class, 'territories']);
+        Route::get('/documents', [\App\Http\Controllers\v2\VzrController::class, 'documents']);
+        Route::get('/goals', [\App\Http\Controllers\v2\VzrController::class, 'goals']);
+    });
+});
