@@ -117,6 +117,6 @@ class GreenCardService
             }
         }
 
-        Log::debug('sendGreenCardDraft() Time start:' . $timeStart . '. Time end: '. date('d.m.Y H:i:s'));
+        //Log::debug('sendGreenCardDraft() Time start:' . $timeStart . '. Time end: '. date('d.m.Y H:i:s'));
     }
 }
