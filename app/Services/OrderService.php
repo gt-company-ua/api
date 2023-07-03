@@ -255,9 +255,9 @@ class OrderService
             return;
         }
 
-        (new CrmService($this->order))->updateDeal();
-
         (new GoogleAnalytics())->transaction($this->order);
+
+        (new CrmService($this->order))->updateDeal();
 
         if ($this->order->upload_docs === false) {
             if ($this->order->order_type === Order::ORDER_TYPE_GC) {
