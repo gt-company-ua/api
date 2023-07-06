@@ -46,13 +46,15 @@ class GoogleAnalytics
 
         $send = [
             "client_id" => ($order->ga_id != '') ? $this->getGaId($order->ga_id) : 555,
-            "timestamp_micros" => microtime(),
+            "timestamp_micros" => intval(microtime(true) * 1000000),
             "non_personalized_ads" => false,
             "events" => [
                 [
                     "name" => "purchase",
                     "params" => [
-                        "items" => [],
+                        "items" => [
+                            ['item_name' => $order->order_type]
+                        ],
                         "affiliation" => "greentravel.ua",
                         "currency" => "UAH",
                         "transaction_id" => $order->uuid,
@@ -64,9 +66,8 @@ class GoogleAnalytics
             ]
         ];
 
-        $response = Http::withBody(json_encode($send), 'application/json; charset=UTF-8')
-            ->timeout(5)
-            ->post('https://www.google-analytics.com/mp/collect?api_secret=BN4lqb8hSHyYi77WClzO8g&measurement_id=G-D38QGQMQHB');
+        $response = Http::timeout(5)
+            ->post('https://www.google-analytics.com/mp/collect?measurement_id=G-D38QGQMQHB&api_secret=BN4lqb8hSHyYi77WClzO8g', $send);
 
         Log::info("GA event request:", $send);
         Log::info("GA event response" . $response->body());
