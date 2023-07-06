@@ -30,7 +30,7 @@ class CarController extends Controller
         return $this->sendResponse($marks->get());
     }
 
-    public function models(int $carMarkId, CarModelRequest $request): JsonResponse
+    public function models($carMarkId, CarModelRequest $request): JsonResponse
     {
         $filter = $request->validated();
 
