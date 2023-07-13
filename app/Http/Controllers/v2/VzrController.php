@@ -23,13 +23,20 @@ class VzrController extends Controller
     {
         $data = $request->validated();
         $tariffs = [];
+        $error = null;
 
         foreach (Ingo::VZR_TARIFFS as $tariff) {
             $calculate = (new Ingo())->vzrCalculate($data, $tariff);
 
             if (isset($calculate['data']['amount'])) {
                 $tariffs[$tariff] = round($calculate['data']['amount'], 2);
+            } else if (isset($calculate['message'])) {
+                $error = $calculate['message'];
             }
+        }
+
+        if (count($tariffs) === 0 && ! is_null($error)) {
+            return $this->sendError($error, 422);
         }
 
         return $this->sendResponse($tariffs);

@@ -89,7 +89,7 @@ class Ingo
                 Log::info($json);
                 Log::info($body);
 
-                return [];
+                return json_decode($body, true);
             } elseif ( ! is_null($filename)) {
                 return ['status' => true];
             }
@@ -329,18 +329,18 @@ class Ingo
 
         if (isset($data['tourists']) && count($data['tourists']) > 0) {
             foreach ($data['tourists'] as $tourist) {
-                $params['tourists'][] = ['goal' => 'T', 'birthday' => $tourist['birth']];
+                $params['tourists'][] = ['goal' => $tourist['goal'], 'birthday' => $tourist['birth']];
             }
         } elseif (isset($data['ranges']) && count($data['ranges']) > 0) {
             foreach ($data['ranges'] as $range) {
                 if ($range === '0') {
                     $age = 0;
                 } else {
-                    $ages = explode('-', $range);
+                    $ages = explode('-', $range['range']);
                     $age = (int) $ages[0];
                 }
 
-                $params['tourists'][] = ['goal' => 'T', 'age' => $age];
+                $params['tourists'][] = ['goal' => $range['goal'], 'age' => $age];
             }
         }
 
