@@ -346,4 +346,45 @@ class Ingo
 
         return $this->request('/travel/calculate', $params);
     }
+
+
+    public function vzrConfirm(Order $order): bool
+    {
+        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+            $response = $this->request('/vmi/' . $order->contract->external_id . '/confirm', []);
+
+            Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
+            if (! empty($response['status_code']) && $response['status_code'] == 200) {
+                $contract = [
+                    'state' => 'Signed',
+                    'api_name' => self::API_NAME
+                ];
+                (new OrderService($order))->saveContract($contract);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public function vzrPrintForm(Order $order): array
+    {
+        $files = [];
+
+        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+            foreach (['form', 'personal_offer'] as $formType) {
+                $filename = $order->id . '-' . $formType . '.pdf';
+                $response = $this->request('/vmi/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
+
+                if (isset($response['status']) && $response['status'] === true) {
+                    $files[] = $filename;
+                }
+            }
+        }
+
+        return $files;
+    }
 }

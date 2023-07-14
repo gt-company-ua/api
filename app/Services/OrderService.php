@@ -278,6 +278,8 @@ class OrderService
         if ($this->order->upload_docs === false) {
             if ($this->order->order_type === Order::ORDER_TYPE_GC) {
                 $this->saveGreenCard1C();
+            } else if ($this->order->order_type === Order::ORDER_TYPE_VZR) {
+                $this->saveVzr1C();
             } else if ($this->order->order_type === Order::ORDER_TYPE_OSAGO) {
                 $this->saveOsago1C();
             }
@@ -317,6 +319,31 @@ class OrderService
 
         if (! empty($response['data']) && ! empty($response['data']['id'])) {
             $files = $ingo->greenCardPrintForm($this->order);
+
+            if (count($files) > 0) {
+                Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
+            }
+        }
+    }
+
+    public function saveVzr1C()
+    {
+        $this->order = Order::find($this->order->id);
+
+        $count = OrderContract::where('order_id', $this->order->id)->where('state', 'Draft')->count();
+
+        if ($count <= 0) {
+            return;
+        }
+
+        $ingo = new Ingo();
+
+        $sent = $ingo->vzrConfirm($this->order);
+        var_dump($sent);
+
+
+        if ($sent) {
+            $files = $ingo->vzrPrintForm($this->order);
 
             if (count($files) > 0) {
                 Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
