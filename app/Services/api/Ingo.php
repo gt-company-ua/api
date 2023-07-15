@@ -329,7 +329,7 @@ class Ingo
 
         if (isset($data['tourists']) && count($data['tourists']) > 0) {
             foreach ($data['tourists'] as $tourist) {
-                $params['tourists'][] = ['goal' => $tourist['goal'], 'birthday' => $tourist['birth']];
+                $params['tourists'][] = ['goal' => $tourist['goal'], 'birthday' => date('Y-m-d', strtotime($tourist['birth']))];
             }
         } elseif (isset($data['ranges']) && count($data['ranges']) > 0) {
             foreach ($data['ranges'] as $range) {

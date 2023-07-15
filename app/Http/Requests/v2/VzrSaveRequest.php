@@ -47,6 +47,7 @@ class VzrSaveRequest extends FormRequest
             'tourists.*.name' => 'required|string|min:1',
             'tourists.*.doc_series' => 'required|string|min:1',
             'tourists.*.doc_number' => 'required|string|min:3',
+            'tourists.*.doc_type' => 'required|integer|min:1|max:14',
             'tourists.*.goal' => ['required', Rule::in(Ingo::GOAL_IDS)],
 
             'email' => 'required|email',

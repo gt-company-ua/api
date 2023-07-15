@@ -110,10 +110,15 @@ class OrderService
                     $insurant->doc_number = $tourist['doc_number'] ?? null;
                 }
 
+                unset($tourist['range']);
                 $saveTourists[] = new OrderTourist($tourist);
             }
 
             $order->tourists()->saveMany($saveTourists);
+        }
+
+        if (! is_null($insurant->birth)) {
+            $insurant->birth = date('Y-m-d', strtotime($insurant->birth));
         }
 
         $order->insurant()->save($insurant);
