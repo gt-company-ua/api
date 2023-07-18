@@ -259,6 +259,7 @@ class Ingo
         ];
 
         if ($order->multiple_trip) {
+            $params['period'] = '365d';
             $params['multi'] = true;
             $params['multiDays'] = $order->vzrDay->days;
         }
@@ -320,6 +321,10 @@ class Ingo
             'tourists' => [],
         ];
 
+        if ($medicalPocket === 'ELIT') {
+            $params['accidentCover'] = 30000;
+        }
+
         if ($data['multiple_trip'] === true) {
             $duration = VzrRangeDay::find($data['vzr_range_day_id']);
 
@@ -351,7 +356,7 @@ class Ingo
     public function vzrConfirm(Order $order): bool
     {
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            $response = $this->request('/vmi/' . $order->contract->external_id . '/confirm', []);
+            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', []);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
             if (! empty($response['status_code']) && $response['status_code'] == 200) {
@@ -375,9 +380,9 @@ class Ingo
         $files = [];
 
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            foreach (['form', 'personal_offer'] as $formType) {
+            foreach (['form'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
-                $response = $this->request('/vmi/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
+                $response = $this->request('/travel/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
 
                 if (isset($response['status']) && $response['status'] === true) {
                     $files[] = $filename;
