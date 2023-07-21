@@ -51,7 +51,7 @@ class Ingo
         'PW' => 'Робота (фізична праця)',
         'AR' => 'Активний спорт',
         'SE' => 'Екстремальний спорт',
-        'SA' => 'Активний спорт'
+        //'SA' => 'Активний спорт'
     ];
     private function request(string $uri, array $params, $get = false, ?string $filename = null): array
     {
