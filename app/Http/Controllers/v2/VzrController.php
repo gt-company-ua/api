@@ -49,9 +49,12 @@ class VzrController extends Controller
 
         try {
             $calculate = (new Ingo())->vzrCalculate($data, $data['tariff']);
+            $data['price'] = 0;
 
             if (isset($calculate['data']['amount'])) {
                 $data['price'] = $calculate['data']['amount'];
+            } else if (isset($calculate['message'])) {
+                return $this->sendError($calculate['message'], 422);
             }
 
             $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
