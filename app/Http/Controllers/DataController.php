@@ -31,6 +31,7 @@ class DataController extends Controller
     public function test($oderID)
     {
 //        $order = Order::find($oderID);
+//        (new OrderService($order))->saveVzr1C();
 //        $files = (new Ingo())->greenCardPrintForm($order);
 //        if (count($files) > 0) {
 //            Mail::to('nostrag@gmail.com')->send(new OrderPayment($files));

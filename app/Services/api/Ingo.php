@@ -359,7 +359,7 @@ class Ingo
             $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', []);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
-            if (! empty($response['status_code']) && $response['status_code'] == 200) {
+            if (! empty($response['data']['registered_at'])) {
                 $contract = [
                     'state' => 'Signed',
                     'api_name' => self::API_NAME
@@ -371,6 +371,8 @@ class Ingo
 
             return false;
         }
+
+        Log::debug('Sign VZR contract filed, order_id: ' . $order->id);
 
         return false;
     }

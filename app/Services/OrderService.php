@@ -338,14 +338,14 @@ class OrderService
         $count = OrderContract::where('order_id', $this->order->id)->where('state', 'Draft')->count();
 
         if ($count <= 0) {
+            Log::debug('VZR Draft contract not found, order_id: ' . $this->order->id);
+
             return;
         }
 
         $ingo = new Ingo();
 
         $sent = $ingo->vzrConfirm($this->order);
-        var_dump($sent);
-
 
         if ($sent) {
             $files = $ingo->vzrPrintForm($this->order);
