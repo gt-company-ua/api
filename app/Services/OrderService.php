@@ -280,7 +280,7 @@ class OrderService
 
         (new CrmService($this->order))->updateDeal();
 
-        if ($this->order->upload_docs === false) {
+        if (is_null($this->order->upload_docs) || $this->order->upload_docs === false) {
             if ($this->order->order_type === Order::ORDER_TYPE_GC) {
                 $this->saveGreenCard1C();
             } else if ($this->order->order_type === Order::ORDER_TYPE_VZR) {
