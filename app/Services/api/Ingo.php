@@ -227,7 +227,7 @@ class Ingo
 
         $interval = $end->diff($start);
 
-        return intval($interval->format('%a')) + 1;
+        return intval($interval->format('%a'));
     }
 
 
@@ -246,8 +246,8 @@ class Ingo
             'customerIsPhysicalPerson' => true,
             'customerIsResident' => true,
             'customerIdentCode' => $order->insurant->inn,
-            'customerFirstName' => $order->insurant->surname,
-            'customerSecondName' => $order->insurant->name,
+            'customerFirstName' => $order->insurant->name,
+            'customerSecondName' => $order->insurant->surname,
             'customerThirdName' => $order->insurant->patronymic,
             'customerBirthday' => $order->insurant->birth,
             'customerDocType' => $order->insurant->doc_type,
@@ -270,8 +270,8 @@ class Ingo
             $params['tourists'][] = [
                 'goal' => $tourist->goal,
                 'birthday' => $tourist->birth,
-                'firstName' => $fullNameToParts[0],
-                'secondName' => $fullNameToParts[1] ?? null,
+                'firstName' => $fullNameToParts[1] ?? null,
+                'secondName' => $fullNameToParts[0],
                 'passportSeries' => $tourist->doc_series,
                 'passportNumber' => $tourist->doc_number,
             ];
