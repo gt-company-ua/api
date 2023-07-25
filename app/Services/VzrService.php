@@ -13,7 +13,7 @@ class VzrService
 {
     private $prices;
 
-    const AGE_RANGES = ['0', '4-15', '16-18', '19-60', '61-65', '66-75'];
+    const AGE_RANGES = ['0', '4-12', '13-17', '18-59', '60-65', '66-75'];
 
     /**
      * @throws Exception
