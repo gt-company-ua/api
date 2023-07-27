@@ -248,7 +248,7 @@ class Ingo
             'customerIdentCode' => $order->insurant->inn,
             'customerFirstName' => $order->insurant->name,
             'customerSecondName' => $order->insurant->surname,
-            'customerThirdName' => $order->insurant->patronymic,
+            //'customerThirdName' => $order->insurant->patronymic,
             'customerBirthday' => $order->insurant->birth,
             'customerDocType' => $order->insurant->doc_type,
             'customerDocSeries' => $order->insurant->doc_series,

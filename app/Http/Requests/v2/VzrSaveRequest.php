@@ -55,7 +55,7 @@ class VzrSaveRequest extends FormRequest
             'insurant.inn' => ['required', new Inn],
             'insurant.surname' => 'required|string',
             'insurant.name' => 'required|string',
-            'insurant.patronymic' => 'required|string',
+            //'insurant.patronymic' => 'required|string',
             'insurant.birth' => 'required|date|before:today',
             'insurant.address' => 'required|string',
             'insurant.doc_type' => 'required|integer|min:1|max:14',
