@@ -48,9 +48,15 @@
                                         <table class="table table-striped">
                                             <thead>
                                             <tr class="info">
-                                                <th class="col-md-2">Период</th>
-                                                <th class="col-md-5">Сумма Европа</th>
-                                                <th class="col-md-5">Сумма СНГ</th>
+                                                <th class="col-md-2" rowspan="2">Период</th>
+                                                <th class="col-md-5 text-center" colspan="2">Грузовые и Автобусы</th>
+                                                <th class="col-md-5 text-center" colspan="2">Остальные</th>
+                                            </tr>
+                                            <tr class="info">
+                                                <th class="col-md-2">Сумма Европа</th>
+                                                <th class="col-md-2">Сумма СНГ</th>
+                                                <th class="col-md-2">Сумма Европа</th>
+                                                <th class="col-md-2">Сумма СНГ</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -60,12 +66,13 @@
                                                         <input type="hidden" name="months[{{ $month }}]" value="{{ $month }}">
                                                         @if ($month === 0)15 дней@else{{ $month }} мес.@endif
                                                     </td>
-                                                    <td class="success">
-                                                        <input type="text" name="amount_{{ \App\Models\Order::TRIP_COUNTRY_EU }}[{{ $month }}]" class="form-control" value="@if (isset($prices[\App\Models\Order::TRIP_COUNTRY_EU][$month])){{ $prices[\App\Models\Order::TRIP_COUNTRY_EU][$month] }}@endif">
-                                                    </td>
-                                                    <td class="success">
-                                                        <input type="text" name="amount_{{ \App\Models\Order::TRIP_COUNTRY_SNG }}[{{ $month }}]" class="form-control" value="@if (isset($prices[\App\Models\Order::TRIP_COUNTRY_SNG][$month])){{ $prices[\App\Models\Order::TRIP_COUNTRY_SNG][$month] }}@endif">
-                                                    </td>
+                                                    @foreach(\App\Models\GreencardCashback::TRANSPORT_TYPE as $transport)
+                                                        @foreach(\App\Models\Order::TRIP_COUNTRIES as $country)
+                                                            <td class="success">
+                                                                <input type="text" name="amount_{{ $country }}_{{ $transport }}[{{ $month }}]" class="form-control" value="@if (isset($prices[$country][$transport][$month])){{ $prices[$country][$transport][$month] }}@endif">
+                                                            </td>
+                                                        @endforeach
+                                                    @endforeach
                                                 </tr>
                                             @endfor
                                             </tbody>

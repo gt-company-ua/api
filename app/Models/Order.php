@@ -41,7 +41,7 @@ class Order extends Model
 
     const TRIP_COUNTRY_SNG = 'sng';
     const TRIP_COUNTRY_EU = 'eu';
-    const TRIP_COUNTRIES = [self::TRIP_COUNTRY_SNG, self::TRIP_COUNTRY_EU];
+    const TRIP_COUNTRIES = [self::TRIP_COUNTRY_EU, self::TRIP_COUNTRY_SNG];
 
     const TERRITORY_EU = 'europe';
     const TERRITORY_WORLD = 'world';
