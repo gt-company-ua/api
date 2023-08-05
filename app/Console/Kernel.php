@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Services\CarService;
 use App\Services\CitiesUpdateService;
 use App\Services\GreenCardService;
 use Illuminate\Console\Scheduling\Schedule;
@@ -27,6 +28,13 @@ class Kernel extends ConsoleKernel
         })
             ->name('orders:greencard:draft')
             ->everyMinute()
+            ->withoutOverlapping();
+
+        $schedule->call(function () {
+            (new CarService())->updateCars();
+        })
+            ->name('cars:update')
+            ->dailyAt("04:00")
             ->withoutOverlapping();
     }
 

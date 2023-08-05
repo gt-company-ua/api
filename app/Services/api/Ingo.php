@@ -394,4 +394,18 @@ class Ingo
 
         return $files;
     }
+
+    public function carBrands()
+    {
+        $response = $this->request('/osago/car-brands', [], true);
+
+        return $response['data']['exportData'] ?? [];
+    }
+
+    public function carModels()
+    {
+        $response = $this->request('/osago/car-models', [], true);
+
+        return $response['data']['exportData'] ?? [];
+    }
 }

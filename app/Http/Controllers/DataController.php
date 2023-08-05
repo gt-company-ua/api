@@ -7,6 +7,7 @@ use App\Mail\AssistMe;
 use App\Mail\OrderPayment;
 use App\Models\Order;
 use App\Services\api\Ingo;
+use App\Services\CarService;
 use App\Services\OrderService;
 use App\Traits\ApiResponser;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -38,5 +39,6 @@ class DataController extends Controller
 //        }
 //
 //        return $this->sendResponse(['files' => $files]);
+        (new CarService())->updateCars();
     }
 }
