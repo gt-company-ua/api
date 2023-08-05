@@ -415,4 +415,11 @@ class Ingo
 
         return $response['data'] ?? [];
     }
+
+    public function getCities()
+    {
+        $response = $this->request('/osago/cities', [], true);
+
+        return $response['data']['exportData'] ?? [];
+    }
 }

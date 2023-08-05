@@ -18,9 +18,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(new CitiesUpdateService())
+        $schedule->call(function () {
+            (new CitiesUpdateService())->ingo();
+        })
             ->name('cities:update')
-            ->dailyAt("03:00")
+            ->everyMinute()
             ->withoutOverlapping();
 
         $schedule->call(function () {
