@@ -408,4 +408,11 @@ class Ingo
 
         return $response['data']['exportData'] ?? [];
     }
+
+    public function findCarByNum(string $number)
+    {
+        $response = $this->request('/osago/plate-parse?regNo=' . $number, [], true);
+
+        return $response['data'] ?? [];
+    }
 }

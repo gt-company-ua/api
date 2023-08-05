@@ -8,6 +8,7 @@ use App\Http\Requests\Handbooks\CarModelRequest;
 use App\Http\Requests\Handbooks\FindVehicleRequest;
 use App\Models\CarMark;
 use App\Models\CarModel;
+use App\Services\api\Ingo;
 use App\Services\api\OneC;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
@@ -48,6 +49,15 @@ class CarController extends Controller
         $data = $request->validated();
 
         $search = (new OneC())->findVehicle($data['search']);
+
+        return $this->sendResponse($search);
+    }
+
+    public function findVehicleIngo(FindVehicleRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $search = (new Ingo())->findCarByNum($data['search']);
 
         return $this->sendResponse($search);
     }
