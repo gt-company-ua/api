@@ -2,11 +2,12 @@
 
 namespace App\Services\api;
 
+use App\Models\City;
 use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\TransportCategory;
+use App\Models\TransportPower;
 use App\Models\VzrRangeDay;
-use App\Services\GreenCardService;
 use App\Services\OrderService;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
@@ -16,6 +17,8 @@ class Ingo
 {
     const GREENCARD_TRANSPORT_CATEGORIES = ['car' => 'A', 'moto' => 'B', 'bus' => 'E', 'truck' => 'C', 'trailer' => 'F'];
     const API_NAME = "INGO";
+
+    const OSAGO_FRANCHISES = [0, 1600, 3200];
 
     const DOC_TYPES = [
 //        1 => 'паспорт',
@@ -421,5 +424,143 @@ class Ingo
         $response = $this->request('/osago/cities', [], true);
 
         return $response['data']['exportData'] ?? [];
+    }
+
+    public function osagoCalculate(array $data): array
+    {
+        $transportPower = TransportPower::whereId($data['transport']['transport_power_id'])->first();
+        $city = City::find($data['city_id']);
+
+        $params = [
+            'startFrom' => date('Y-m-d H:i:s', strtotime('+1 day')),
+            'period' => $this->periodFormat($data['trip_duration'] ?? 12),
+            'bonusMalus' => 1,
+            'privelege' => ($data['discount_check']) ? $data['discount_type'] : 0,
+            'franchise' => $data['franchise'],
+            'zoneId' => $city->zone,
+            'usage' => '111111111111',
+            'vehicleType' => $transportPower->type_auto ?? null,
+            'customerIsPhysicalPerson' => ($data['insurant']['type'] === Order::INSURANT_PHYSICAL) ? 1 : 0,
+            'customerIsResident' => 1,
+        ];
+
+        if (isset($data['dgo_limit'])) {
+            $params['subDgo'] = $data['dgo_limit'];
+        }
+
+        return $this->request('/osago/calculate', $params);
+    }
+
+    public function osagoDraft(Order $order): array
+    {
+        $city = City::find($order->city_id);
+
+        $params = [
+            'startFrom' => date('d.m.Y', strtotime($order->polis_start)) . ' 00:00:00',
+            'period' => $this->periodFormat($order->trip_duration),
+            'bonusMalus' => 1,
+            'privelege' => ($order->discount_check) ? $order->discount_type : 0,
+            'franchise' => $order->franchise,
+            'zoneId' => $city->zone,
+            'cityCode' => $city->external_id,
+            'address' => $order->city_name,
+            'usage' => '111111111111',
+            'asTaxi' => ($order->use_as_taxi) ? 1 : 0,
+
+            'customerIsPhysicalPerson' => ($order->insurant->type === Order::INSURANT_PHYSICAL) ? 1 : 0,
+            'customerIsResident' => 1,
+            'customerIdentCode' => $order->insurant->inn,
+            'customerFirstName' => $order->insurant->name_latin,
+            'customerSecondName' => $order->insurant->surname_latin,
+            'customerBirthday' => date('Y-m-d', strtotime($order->insurant->birth)),
+            'customerDocType' => $order->insurant->doc_type,
+            'customerDocSeries' => $order->insurant->doc_series,
+            'customerDocNumber' => $order->insurant->doc_number,
+            'customerDocDate' => $order->insurant->doc_date,
+            'customerDocIssuer' => $order->insurant->doc_given,
+
+            'vehicleType' => $order->transport->power->type_auto ?? null,
+            'vehicleBrandCode' => $order->transport->carMark->external_id,
+            'vehicleModelCode' => $order->transport->carModel->external_id,
+            'vehicleTitle' => $order->transport->car_mark . ' ' . $order->transport->car_model,
+            'vehicleRegNo' => $order->transport->gov_num,
+            'vehicleVin' => $order->transport->vin,
+            'vehicleYear' => $order->transport->car_year,
+
+            'phone' => $order->insurant->phone,
+            'email' => $order->email,
+            'docId' => $order->id
+        ];
+
+        try {
+            $response = $this->request('/osago/register', $params);
+
+            Log::debug("Save OSAGO (order: ".$order->id.") request", $params);
+            Log::debug("Save OSAGO (order: ".$order->id.") response", $response);
+
+            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+                $contract = [
+                    'number' => $response['data']['mainCode'],
+                    'external_id' => $response['data']['id'],
+                    'state' => 'Draft',
+                    'policy_link' => $response['data']['directLink'],
+                    'api_name' => self::API_NAME
+                ];
+                (new OrderService($order))->saveContract($contract);
+            }
+
+            $order->status_contract = OrderContract::STATUS_CONTRACT_SENT;
+            $order->save();
+        } catch (\Exception $e) {
+            Log::error('Save GreenCard request error:' . $e->getMessage());
+
+            $order->status_contract = OrderContract::STATUS_CONTRACT_ERROR;
+            $order->save();
+
+            return [];
+        }
+
+        return $response;
+    }
+
+    public function osagoConfirm(Order $order): ?array
+    {
+        if (! is_null($order->contract) && ! empty($order->contract->number)) {
+            $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', []);
+
+            Log::debug("Confirm OSAGO (order: ".$order->id.") response", $response);
+            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+                $contract = [
+                    'number' => $response['data']['mainCode'],
+                    'external_id' => $response['data']['id'],
+                    'state' => 'Signed',
+                    'policy_link' => $response['data']['directLink'],
+                    'api_name' => self::API_NAME
+                ];
+                (new OrderService($order))->saveContract($contract);
+            }
+
+            return $response;
+        }
+
+        return null;
+    }
+
+    public function osagoPrintForm(Order $order): array
+    {
+        $files = [];
+
+        if (! is_null($order->external_id) && ! empty($order->contract->external_id)) {
+            foreach (['form'] as $formType) {
+                $filename = $order->id . '-' . $formType . '.pdf';
+                $response = $this->request('/osago/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
+
+                if (isset($response['status']) && $response['status'] === true) {
+                    $files[] = $filename;
+                }
+            }
+        }
+
+        return $files;
     }
 }

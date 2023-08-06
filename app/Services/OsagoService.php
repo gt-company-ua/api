@@ -2,18 +2,19 @@
 
 namespace App\Services;
 
-use App\Exceptions\FileUploadException;
+use App\Http\Requests\Osago\IngoSaveRequest;
 use App\Http\Requests\Osago\SalamandraSaveRequest;
 use App\Http\Requests\OsagoSaveRequest;
+use App\Models\CarMark;
+use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Order;
-use App\Models\OrderFile;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
 use App\Models\TransportPower;
+use App\Services\api\Ingo;
 use App\Services\api\Profitsoft;
 use App\Services\api\Salamandra;
-use Illuminate\Support\Str;
 
 class OsagoService
 {
@@ -159,6 +160,47 @@ class OsagoService
 
         if ($order->upload_docs === false) {
             (new Salamandra())->order($order);
+        }
+
+        return $order;
+    }
+
+    public function saveOrderIngo(IngoSaveRequest $request): ?Order
+    {
+        $data = $request->validated();
+
+        $calculate = (new Ingo())->osagoCalculate($data);
+
+        if (isset($calculate['data']['amount'])) {
+            $data['price'] = $calculate['data']['amount'];
+
+            if (isset($calculate['data']['dgo'])) {
+                $data['price'] += round($calculate['data']['dgo'], 2);
+            }
+        }
+
+        $city = City::find($data['city_id']);
+
+        $data['city_name'] = $city->name;
+
+        if (!empty($data['transport']['car_mark_id'])) {
+            $carMark = CarMark::find($data['transport']['car_mark_id']);
+            $data['car_mark'] = $carMark->name;
+        }
+
+        if (!empty($data['transport']['car_model_id'])) {
+            $carModel = CarModel::find($data['transport']['car_model_id']);
+            $data['car_model'] = $carModel->name;
+        }
+
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_OSAGO);
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        if ($order->upload_docs === false) {
+            (new Ingo())->osagoDraft($order);
         }
 
         return $order;

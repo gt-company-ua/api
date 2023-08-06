@@ -15,6 +15,8 @@ tags:
     description: Оформление и расчет полиса ОСАГО
   - name: osago-salamandra
     description: Оформление и расчет полиса ОСАГО через "Саламандра"
+  - name: osago-ingo
+    description: Оформление и расчет полиса ОСАГО через "INGO"
   - name: vzr
     description: Оформление и расчет полиса ВЗР
   - name: orders
@@ -602,6 +604,56 @@ paths:
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: OsagoSalamandra
 
+  /osago/ingo:
+    post:
+      tags:
+        - osago-ingo
+      summary: Сохранение полиса ОСАГО через INGO
+      operationId: postOsagoIngo
+      requestBody:
+        $ref: '#/components/requestBodies/osagoIngo'
+      responses:
+        '201':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: OsagoIngo
+
+  /osago/ingo/calculate:
+    post:
+      tags:
+        - osago-ingo
+      summary: Расчет суммы по ОСАГО
+      operationId: postOsagoIngoCalculate
+      requestBody:
+        $ref: '#/components/requestBodies/osagoIngoCalculate'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                  amount:
+                    type: number
+                    description: Сумма за полис ОСАГО
+                  dgo:
+                    type: number
+                    nullable: true
+                    description: Сумма за "Додаткові розширення ліміту"
+
+        '400':
+          $ref: '#/components/responses/resp400'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: OsagoIngo
   /orders/{uuid}:
     get:
       tags:
@@ -1482,7 +1534,209 @@ components:
                 $ref: '#/components/schemas/insurantPhone'
               promocode:
                 $ref: '#/components/schemas/promocode'
-
+    osagoIngo:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - franchise
+              - city_id
+              - email
+              - polis_start
+              - upload_docs
+              - insurant
+              - transport
+              - discount_check
+            description: Если upload_docs = false, обязательны все поля, кроме comment, files, insurant.flat, promocode
+            properties:
+              city_id:
+                $ref: '#/components/schemas/osagoCityId'
+              franchise:
+                type: integer
+                description: Размер франшизы
+                enum:
+                  - 0
+                  - 1600
+                  - 3200
+              dgo_limit:
+                type: integer
+                nullable: true
+                description: Дополнительная услуга "Додаткові розширення ліміту"
+                example: 100000
+              use_as_taxi:
+                $ref: '#/components/schemas/use_as_taxi'
+              discount_check:
+                $ref: '#/components/schemas/discountCheck'
+              discount_type:
+                $ref: '#/components/schemas/discountType'
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              comment:
+                $ref: '#/components/schemas/comment'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              dont_call:
+                $ref: '#/components/schemas/dont_call'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_category_id
+                  - transport_power_id
+                properties:
+                  transport_category_id:
+                    $ref: '#/components/schemas/orderTransportCategoryId'
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
+                  car_mark_id:
+                    type: integer
+                    nullable: true
+                    description: ID марки из справочника
+                  car_model_id:
+                    type: integer
+                    nullable: true
+                    description: ID модели из справочника
+                  gov_num:
+                    $ref: '#/components/schemas/orderGovNum'
+                  vin:
+                    $ref: '#/components/schemas/orderVin'
+                  car_year:
+                    $ref: '#/components/schemas/orderCarYear'
+              insurant:
+                type: object
+                required:
+                  - type
+                  - phone
+                description: Данные страхователя
+                properties:
+                  type:
+                    $ref: '#/components/schemas/insurantType'
+                  phone:
+                    $ref: '#/components/schemas/insurantPhone'
+                  surname:
+                    $ref: '#/components/schemas/insurantSurname'
+                  name:
+                    $ref: '#/components/schemas/insurantName'
+                  patronymic:
+                    $ref: '#/components/schemas/insurantPatronymic'
+                  inn:
+                    $ref: '#/components/schemas/insurantInn'
+                  birth:
+                    $ref: '#/components/schemas/insurantBirth'
+                  address:
+                    $ref: '#/components/schemas/insurantAddress'
+                  doc_type:
+                    $ref: '#/components/schemas/insurantDocTypeID'
+                  doc_number:
+                    $ref: '#/components/schemas/insurantDocNumber'
+                  doc_series:
+                    $ref: '#/components/schemas/insurantDocSeries'
+                  doc_given:
+                    $ref: '#/components/schemas/insurantDocGiven'
+                  doc_date:
+                    $ref: '#/components/schemas/insurantDocDate'
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - franchise
+              - city_id
+              - email
+              - polis_start
+              - upload_docs
+              - insurant[type]
+              - insurant[phone]
+              - transport[transport_category_id]
+              - transport[transport_power_id]
+            properties:
+              city_id:
+                $ref: '#/components/schemas/salamandraCityId'
+              franchise:
+                type: integer
+                description: Размер франшизы
+                enum:
+                  - 0
+                  - 1600
+                  - 3200
+              dgo_limit:
+                type: integer
+                nullable: true
+                description: Дополнительная услуга "Додаткові розширення ліміту"
+                example: 100000
+              use_as_taxi:
+                $ref: '#/components/schemas/use_as_taxi'
+              discount_check:
+                $ref: '#/components/schemas/discountCheck'
+              discount_type:
+                $ref: '#/components/schemas/discountType'
+              email:
+                $ref: '#/components/schemas/email'
+              polis_start:
+                $ref: '#/components/schemas/orderPolisStart'
+              upload_docs:
+                $ref: '#/components/schemas/orderUploadDocs'
+              files:
+                $ref: '#/components/schemas/orderFiles'
+              comment:
+                $ref: '#/components/schemas/comment'
+              transport[transport_category_id]:
+                $ref: '#/components/schemas/orderTransportCategoryId'
+              transport[transport_power_id]:
+                $ref: '#/components/schemas/orderTransportPowerId'
+              insurant[type]:
+                $ref: '#/components/schemas/insurantType'
+              insurant[phone]:
+                $ref: '#/components/schemas/insurantPhone'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+    osagoIngoCalculate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - transport
+              - city_id
+              - franchise
+            description: Если upload_docs = false, обязательны все поля, кроме comment и files
+            properties:
+              city_id:
+                $ref: '#/components/schemas/osagoCityId'
+              franchise:
+                type: integer
+                description: Размер франшизы
+                enum:
+                  - 0
+                  - 1600
+                  - 3200
+              dgo_limit:
+                type: integer
+                nullable: true
+                description: Дополнительная услуга "Додаткові розширення ліміту"
+                example: 100000
+              use_as_taxi:
+                $ref: '#/components/schemas/use_as_taxi'
+              discount_check:
+                $ref: '#/components/schemas/discountCheck'
+              discount_type:
+                $ref: '#/components/schemas/discountType'
+              promocode:
+                $ref: '#/components/schemas/promocode'
+              transport:
+                type: object
+                description: Данные траспортного средства
+                required:
+                  - transport_power_id
+                properties:
+                  transport_power_id:
+                    $ref: '#/components/schemas/orderTransportPowerId'
+                  car_year:
+                    $ref: '#/components/schemas/orderCarYear'
   schemas:
     calculatePrice:
       type: number
@@ -1534,6 +1788,13 @@ components:
     salamandraCityId:
       type: integer
       description: ID города из поиска `GET /handbooks/cities/local`
+    osagoCityId:
+      type: integer
+      description: ID города из поиска `GET /handbooks/cities/osago`
+    use_as_taxi:
+      type: boolean
+      nullable: true
+      description: Используется в такис
     comment:
       type: string
       description: Комментарий
@@ -1556,6 +1817,9 @@ components:
     discountCheck:
       type: boolean
       description: Пометка, что есть льгота
+    discountType:
+      type: integer
+      description: Тип льготного документа 1 - Учасники війни, що визначені законом; 2 - Інваліди II групи; 3 - Особи, які постраждали внаслідок Чорнобильської катастрофи; 4 - Пенсіонери громадяни України
     gc_plus:
       type: boolean
       description: Пометка, что включен GreenCard +
@@ -1669,6 +1933,13 @@ components:
         - passport
         - license
         - id
+    insurantDocTypeID:
+      type: string
+      nullable: true
+      minimum: 1
+      maximum: 14
+      description: Тип документа. 1 - паспорт; 2 - ID-паспорт; 3 - водительское удостоверение; 4 - пенсионное удостоверение; 5 - удостоверение об инвалидности; 6 - удостоверение участника войны; 7 - загран паспорт; 8 - иностранный паспорт (для нерезидентов); 9 - вид на жительство; 10 - регистрационный талон; 11 - свидетельство о рождении; 12 - чернобыльское удостоверение; 13 - другой; 14 - загран водительское удостоверение (для нерезидентов)
+
     insurantDocNumber:
       type: string
       nullable: true

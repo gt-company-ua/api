@@ -22,4 +22,14 @@ class OrderTransport extends Model
     {
         return $this->belongsTo(TransportCategory::class, 'transport_category_id', 'id');
     }
+
+    public function carMark(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CarMark::class, 'car_mark_id', 'id');
+    }
+
+    public function carModel(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CarModel::class, 'car_model_id', 'id');
+    }
 }

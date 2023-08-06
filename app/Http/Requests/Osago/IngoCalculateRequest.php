@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Requests\Osago;
+
+use App\Models\Order;
+use App\Rules\Boolean;
+use App\Services\api\Ingo;
+use App\Traits\RequestFailedValidationResponse;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class IngoCalculateRequest extends FormRequest
+{
+    use RequestFailedValidationResponse;
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'discount_check' => ['required', new Boolean],
+            'discount_type' => 'nullable|required_if:discount_check,1|integer|min:1|max:4',
+
+            'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
+            'transport.car_year' => 'required|digits:4|integer|min:1970|max:' . date('Y'),
+
+            'city_id' => 'required|exists:App\Models\City,id',
+            'dgo_limit' => 'nullable|integer',
+
+            'franchise' => ['required', Rule::in(Ingo::OSAGO_FRANCHISES)],
+            'use_as_taxi' => ['nullable', new Boolean],
+
+            'insurant.birth' => 'nullable|date|before_or_equal:18 years ago',
+            'insurant.type' => ['required', Rule::in(Order::INSURANT_TYPES)],
+
+            'promocode' => 'nullable|string',
+        ];
+    }
+}

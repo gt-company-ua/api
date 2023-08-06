@@ -45,6 +45,11 @@ Route::prefix('osago')->group(function () {
         Route::post('/calculate', [\App\Http\Controllers\Osago\SalamandraController::class, 'calculate']);
         Route::post('/tariffs', [\App\Http\Controllers\Osago\SalamandraController::class, 'tariffs']);
     });
+
+    Route::prefix('ingo')->group(function () {
+        Route::post('/', [\App\Http\Controllers\Osago\IngoController::class, 'store']);
+        Route::post('/calculate', [\App\Http\Controllers\Osago\IngoController::class, 'calculate']);
+    });
 });
 
 Route::prefix('greencard')->group(function () {
