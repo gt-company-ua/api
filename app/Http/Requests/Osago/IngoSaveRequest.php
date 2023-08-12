@@ -31,7 +31,8 @@ class IngoSaveRequest extends FormRequest
     public function rules()
     {
         return [
-            'city_id' => 'required|exists:App\Models\City,id',
+            'city_id' => 'required|exists:App\Models\OsagoCity,id',
+            'trip_duration' => 'required|numeric|min:0|max:12',
             'dgo_limit' => 'nullable|integer',
             'franchise' => ['required', Rule::in(Ingo::OSAGO_FRANCHISES)],
             'polis_start' => 'required|date|after:today',

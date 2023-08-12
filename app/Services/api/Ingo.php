@@ -2,9 +2,9 @@
 
 namespace App\Services\api;
 
-use App\Models\City;
 use App\Models\Order;
 use App\Models\OrderContract;
+use App\Models\OsagoCity;
 use App\Models\TransportCategory;
 use App\Models\TransportPower;
 use App\Models\VzrRangeDay;
@@ -429,7 +429,7 @@ class Ingo
     public function osagoCalculate(array $data): array
     {
         $transportPower = TransportPower::whereId($data['transport']['transport_power_id'])->first();
-        $city = City::find($data['city_id']);
+        $city = OsagoCity::find($data['city_id']);
 
         $params = [
             'startFrom' => date('Y-m-d H:i:s', strtotime('+1 day')),
@@ -453,7 +453,7 @@ class Ingo
 
     public function osagoDraft(Order $order): array
     {
-        $city = City::find($order->city_id);
+        $city = OsagoCity::find($order->city_id);
 
         $params = [
             'startFrom' => date('d.m.Y', strtotime($order->polis_start)) . ' 00:00:00',
@@ -470,8 +470,9 @@ class Ingo
             'customerIsPhysicalPerson' => ($order->insurant->type === Order::INSURANT_PHYSICAL) ? 1 : 0,
             'customerIsResident' => 1,
             'customerIdentCode' => $order->insurant->inn,
-            'customerFirstName' => $order->insurant->name_latin,
-            'customerSecondName' => $order->insurant->surname_latin,
+            'customerFirstName' => $order->insurant->name,
+            'customerSecondName' => $order->insurant->surname,
+            'customerThirdName' => $order->insurant->patronymic,
             'customerBirthday' => date('Y-m-d', strtotime($order->insurant->birth)),
             'customerDocType' => $order->insurant->doc_type,
             'customerDocSeries' => $order->insurant->doc_series,
@@ -489,7 +490,7 @@ class Ingo
 
             'phone' => $order->insurant->phone,
             'email' => $order->email,
-            'docId' => $order->id
+            'docId' => (string) $order->id
         ];
 
         try {
@@ -529,7 +530,7 @@ class Ingo
             $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', []);
 
             Log::debug("Confirm OSAGO (order: ".$order->id.") response", $response);
-            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+            if (! empty($response['data']['id'])) {
                 $contract = [
                     'number' => $response['data']['mainCode'],
                     'external_id' => $response['data']['id'],

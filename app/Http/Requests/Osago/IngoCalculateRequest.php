@@ -30,13 +30,14 @@ class IngoCalculateRequest extends FormRequest
     public function rules()
     {
         return [
+            'trip_duration' => 'required|numeric|min:0|max:12',
             'discount_check' => ['required', new Boolean],
             'discount_type' => 'nullable|required_if:discount_check,1|integer|min:1|max:4',
 
             'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
             'transport.car_year' => 'required|digits:4|integer|min:1970|max:' . date('Y'),
 
-            'city_id' => 'required|exists:App\Models\City,id',
+            'city_id' => 'required|exists:App\Models\OsagoCity,id',
             'dgo_limit' => 'nullable|integer',
 
             'franchise' => ['required', Rule::in(Ingo::OSAGO_FRANCHISES)],

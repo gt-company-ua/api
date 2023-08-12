@@ -28,6 +28,7 @@ Route::prefix('handbooks')->group(function () {
 
     Route::get('/cities', [\App\Http\Controllers\Handbooks\CityController::class, 'searchMtsbu']);
     Route::get('/cities/local', [\App\Http\Controllers\Handbooks\CityController::class, 'searchLocal']);
+    Route::get('/cities/osago', [\App\Http\Controllers\Handbooks\CityController::class, 'searchOsago']);
 });
 
 Route::prefix('kasko')->group(function () {

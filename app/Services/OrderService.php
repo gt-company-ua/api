@@ -303,6 +303,17 @@ class OrderService
                 case 'profitsoft':
                     (new Profitsoft())->confirm($this->order);
                     break;
+                case Ingo::API_NAME:
+                    $response = (new Ingo())->osagoConfirm($this->order);
+
+                    if (! empty($response['data']['id'])) {
+                        $files = (new Ingo())->osagoPrintForm($this->order);
+
+                        if (count($files) > 0) {
+                            Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
+                        }
+                    }
+                    break;
                 default:
                     break;
             }

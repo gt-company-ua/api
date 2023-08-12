@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\City;
+use App\Models\OsagoCity;
 use App\Services\api\Ingo;
 use App\Services\api\Salamandra;
 
@@ -85,7 +86,7 @@ class CitiesUpdateService
         }
 
         foreach ($parts as $places) {
-            City::upsert($places, ['external_id'], ['name', 'name_eng', 'zone', 'koatuu']);
+            OsagoCity::upsert($places, ['external_id'], ['name', 'zone', 'koatuu']);
         }
 
         print 'Update successfully';

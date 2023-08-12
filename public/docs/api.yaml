@@ -219,6 +219,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/findCityLocal'
       x-swagger-router-controller: Cities
+  /handbooks/cities/osago:
+    get:
+      tags:
+        - handbooks
+      operationId: getCitiesOsago
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Поиск городов для ОСАГО
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/findCityOsago'
+      x-swagger-router-controller: Cities
   /greencard:
     post:
       tags:
@@ -1540,6 +1558,7 @@ components:
           schema:
             type: object
             required:
+              - trip_duration
               - franchise
               - city_id
               - email
@@ -1550,6 +1569,8 @@ components:
               - discount_check
             description: Если upload_docs = false, обязательны все поля, кроме comment, files, insurant.flat, promocode
             properties:
+              trip_duration:
+                $ref: '#/components/schemas/orderTripDuration'
               city_id:
                 $ref: '#/components/schemas/osagoCityId'
               franchise:
@@ -1934,7 +1955,7 @@ components:
         - license
         - id
     insurantDocTypeID:
-      type: string
+      type: integer
       nullable: true
       minimum: 1
       maximum: 14
@@ -2248,6 +2269,20 @@ components:
         region_name:
           type: string
           description: Одеська область
+    findCityOsago:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: Одеса
+        zone:
+          type: integer
+          example: 2
+        koatuu:
+          type: string
+          example: 5110100000
     findCity:
       type: object
       properties:

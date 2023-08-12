@@ -9,6 +9,7 @@ use App\Models\CarMark;
 use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Order;
+use App\Models\OsagoCity;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
 use App\Models\TransportPower;
@@ -179,18 +180,18 @@ class OsagoService
             }
         }
 
-        $city = City::find($data['city_id']);
+        $city = OsagoCity::find($data['city_id']);
 
         $data['city_name'] = $city->name;
 
         if (!empty($data['transport']['car_mark_id'])) {
             $carMark = CarMark::find($data['transport']['car_mark_id']);
-            $data['car_mark'] = $carMark->name;
+            $data['transport']['car_mark'] = $carMark->name;
         }
 
         if (!empty($data['transport']['car_model_id'])) {
             $carModel = CarModel::find($data['transport']['car_model_id']);
-            $data['car_model'] = $carModel->name;
+            $data['transport']['car_model'] = $carModel->name;
         }
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_OSAGO);
