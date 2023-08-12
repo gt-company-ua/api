@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
             (new CitiesUpdateService())->ingo();
         })
             ->name('cities:update')
-            ->everyMinute()
+            ->dailyAt("03:00")
             ->withoutOverlapping();
 
         $schedule->call(function () {
