@@ -25,7 +25,13 @@
 | Статус оплаты | {{ $order->payment_status }} |
 | Ссылка на оплату | {{ $order->payment_url }} |
 | Комментарий | {{ $order->comment }} |
+@if($order->order_type == \App\Models\Order::ORDER_TYPE_VZR && substr_count($order->territory, '[') > 0)
+@foreach(json_decode($order->territory) as $ter)
+| Территория действия | {{ \App\Services\api\Ingo::TERRITORIES[$ter] }} |
+@endforeach
+@else
 | Территория действия | {{ $order->territory }} |
+@endif
 | Занятия спортом | {{ $order->sport }} |
 | Цель поездки | {{ $order->target }} |
 | Многоразовые поездки | @if ($order->multiple_trip) Да @else Нет @endif |
@@ -89,6 +95,7 @@
 | ИНФОРМАЦИЯ О ТУРИСТАХ | - |
 @foreach($order->tourists as $tourist)
 | ФИО | {{ $tourist->full_name }} |
+| Серия документа | {{ $tourist->doc_series }} |
 | Номер документа | {{ $tourist->doc_number }} |
 | День рождения | {{ $tourist->birth }} |
 | Цель поездки | @if (!is_null($tourist->goal)) {{ \App\Services\api\Ingo::GOALS[$tourist->goal] }} @endif |
