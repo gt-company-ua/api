@@ -429,7 +429,14 @@ class Ingo
     public function osagoCalculate(array $data): array
     {
         $transportPower = TransportPower::whereId($data['transport']['transport_power_id'])->first();
-        $city = OsagoCity::find($data['city_id']);
+
+        if (empty($data['city_id'])) {
+            $zone = 5;
+        } else {
+            $city = OsagoCity::find($data['city_id']);
+            $zone = $city->zone;
+        }
+
 
         $params = [
             'startFrom' => date('Y-m-d H:i:s', strtotime('+1 day')),
@@ -437,7 +444,7 @@ class Ingo
             'bonusMalus' => 1,
             'privelege' => ($data['discount_check']) ? $data['discount_type'] : 0,
             'franchise' => $data['franchise'],
-            'zoneId' => $city->zone,
+            'zoneId' => $zone,
             'usage' => '111111111111',
             'vehicleType' => $transportPower->type_auto ?? null,
             'customerIsPhysicalPerson' => ($data['insurant']['type'] === Order::INSURANT_PHYSICAL) ? 1 : 0,
