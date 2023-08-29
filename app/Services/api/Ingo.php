@@ -97,6 +97,11 @@ class Ingo
                 return ['status' => true];
             }
 
+            if ($uri === '/osago/calculate') {
+                Log::info($json);
+                Log::info($body);
+            }
+
             return json_decode($body, true);
         }catch (RequestException $e){
             return [];
@@ -441,7 +446,7 @@ class Ingo
         $params = [
             'startFrom' => date('Y-m-d H:i:s', strtotime('+1 day')),
             'period' => $this->periodFormat($data['trip_duration'] ?? 12),
-            'bonusMalus' => 1,
+            //'bonusMalus' => 1,
             'privelege' => ($data['discount_check']) ? $data['discount_type'] : 0,
             'franchise' => $data['franchise'],
             'zoneId' => $zone,
@@ -465,7 +470,7 @@ class Ingo
         $params = [
             'startFrom' => date('d.m.Y', strtotime($order->polis_start)) . ' 00:00:00',
             'period' => $this->periodFormat($order->trip_duration),
-            'bonusMalus' => 1,
+            //'bonusMalus' => 1,
             'privelege' => ($order->discount_check) ? $order->discount_type : 0,
             'franchise' => $order->franchise,
             'zoneId' => $city->zone,
