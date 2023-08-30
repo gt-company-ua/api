@@ -97,10 +97,10 @@ class Ingo
                 return ['status' => true];
             }
 
-            if ($uri === '/osago/calculate') {
-                Log::info($json);
-                Log::info($body);
-            }
+//            if ($uri === '/osago/calculate') {
+//                Log::info($json);
+//                Log::info($body);
+//            }
 
             return json_decode($body, true);
         }catch (RequestException $e){
