@@ -184,6 +184,18 @@ class OsagoService
 
         $data['city_name'] = $city->name;
 
+        if (!empty($data['transport']['car_mark_code'])) {
+            $carMark = CarMark::where('external_id', $data['transport']['car_mark_code'])->first();
+            $data['transport']['car_mark_id'] = $carMark->id;
+            unset($data['transport']['car_mark_code']);
+        }
+
+        if (!empty($data['transport']['car_model_code'])) {
+            $carModel = CarModel::where('external_id', $data['transport']['car_model_code'])->first();
+            $data['transport']['car_model_id'] = $carModel->id;
+            unset($data['transport']['car_model_code']);
+        }
+
         if (!empty($data['transport']['car_mark_id'])) {
             $carMark = CarMark::find($data['transport']['car_mark_id']);
             $data['transport']['car_mark'] = $carMark->name;

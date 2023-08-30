@@ -48,8 +48,10 @@ class IngoSaveRequest extends FormRequest
 
             'transport.transport_category_id' => 'required|exists:App\Models\TransportCategory,id',
             'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
-            'transport.car_mark_id' => 'nullable|required_if:upload_docs,0|exists:App\Models\CarMark,id',
-            'transport.car_model_id' => 'nullable|required_if:upload_docs,0|exists:App\Models\CarModel,id',
+            'transport.car_mark_id' => 'nullable|exists:App\Models\CarMark,id',
+            'transport.car_model_id' => 'nullable|exists:App\Models\CarModel,id',
+            'transport.car_mark_code' => 'nullable|exists:App\Models\CarMark,external_id',
+            'transport.car_model_code' => 'nullable|exists:App\Models\CarModel,external_id',
             'transport.gov_num' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.vin' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.car_year' => 'nullable|required_if:upload_docs,0|digits:4|integer|min:1970|max:' . date('Y'),

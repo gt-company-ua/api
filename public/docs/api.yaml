@@ -103,6 +103,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/findVehicle'
       x-swagger-router-controller: Cars
+  /handbooks/cars/findIngo:
+    get:
+      tags:
+        - handbooks
+      operationId: getFindVehicleIngo
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Поиск информации по номеру авто в INGO
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/findVehicleIngo'
+      x-swagger-router-controller: Cars
   /handbooks/transport:
     get:
       tags:
@@ -1622,6 +1640,14 @@ components:
                     type: integer
                     nullable: true
                     description: ID модели из справочника
+                  car_mark_code:
+                    type: integer
+                    nullable: true
+                    description: brand_code из справочника `/handbooks/cars/findIngo`
+                  car_model_code:
+                    type: integer
+                    nullable: true
+                    description: model_code модели из справочника `/handbooks/cars/findIngo`
                   gov_num:
                     $ref: '#/components/schemas/orderGovNum'
                   vin:
@@ -2105,6 +2131,30 @@ components:
         message:
           type: object
           description: Ошибки
+    findVehicleIngo:
+      type: object
+      properties:
+        vin:
+          type: string
+        year:
+          type: integer
+          nullable: true
+        brand_name:
+          type: string
+          nullable: true
+        model_name:
+          type: string
+          nullable: true
+        brand_code:
+          type: integer
+          nullable: true
+        model_code:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          nullable: true
+
     findVehicle:
       type: object
       properties:
