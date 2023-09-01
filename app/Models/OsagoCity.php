@@ -11,5 +11,5 @@ class OsagoCity extends Model
 
     protected $guarded = [];
 
-    protected $hidden = ['created_at', 'updated_at', 'external_id'];
+    protected $hidden = ['created_at', 'updated_at'];
 }
