@@ -59,6 +59,16 @@ class CarController extends Controller
 
         $search = (new Ingo())->findCarByNum($data['search']);
 
+        if (!empty($search['brand_code'])) {
+            $carMark = CarMark::where('external_id', $search['brand_code'])->first();
+            $search['car_mark_id'] = $carMark->id ?? null;
+        }
+
+        if (!empty($search['model_code'])) {
+            $carModel = CarModel::where('external_id', $search['model_code'])->first();
+            $search['car_model_id'] = $carModel->id ?? null;
+        }
+
         return $this->sendResponse($search);
     }
 }
