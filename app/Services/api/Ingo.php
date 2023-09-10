@@ -475,7 +475,7 @@ class Ingo
             'franchise' => $order->franchise,
             'zoneId' => $city->zone,
             'cityCode' => $city->external_id,
-            'address' => $order->city_name,
+            'address' => (!empty($order->insurant->address)) ? $order->insurant->address : $order->city_name,
             'usage' => '111111111111',
             'asTaxi' => ($order->use_as_taxi) ? 1 : 0,
 
