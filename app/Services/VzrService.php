@@ -13,7 +13,7 @@ class VzrService
 {
     private $prices;
 
-    const AGE_RANGES = ['0-3', '4-12', '13-17', '18-59', '60-65', '66-75'];
+    const AGE_RANGES = ['0-3', '4-12', '13-17', '18-59', '60-65', '66-70'];
 
     /**
      * @throws Exception
@@ -191,8 +191,8 @@ class VzrService
             $ageRate = '19-60';
         } else if($age >= 61 && $age <= 65) {
             $ageRate = '61-65';
-        } else if($age >= 66 && $age <= 75) {
-            $ageRate = '66-75';
+        } else if($age >= 66 && $age <= 70) {
+            $ageRate = '66-70';
         } else {
             return false;
         }
