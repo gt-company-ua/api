@@ -18,12 +18,13 @@ class AssistMeService
 
         $contract = [
             'number' => date('ym') . '-' . $order->id,
-            'price' => $assistMePrice->price
+            'price' => $assistMePrice->price,
+            'payment_status' => 'invoice_wait'
         ];
 
         (new OrderService($order))->saveAssistMe($contract);
 
-        $this->createInvoice($order);
+        //$this->createInvoice($order);
     }
 
     public function getPrice($transportCategoryId, $tripDuration)

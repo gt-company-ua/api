@@ -165,6 +165,26 @@ class OrderService
 
         $orderUid = $this->order->order_type . '_' . $this->order->id . '_' . Str::random(3);
 
+        $splitRules = [];
+
+        if (!is_null($this->order->assist) && $this->order->assist->price > 0) {
+            $splitRules[] = [
+                'public_key' => env('LIQPAY_POLICE_PUBLIC_KEY'),
+                'amount' => $this->order->price,
+                'commission_payer' => 'receiver',
+                'server_url' => route('orders.liqpay.status', ['order' => $this->order->uuid])
+            ];
+
+            $price += $this->order->assist->price;
+
+            $splitRules[] = [
+                'public_key' => env('LIQPAY_ASSIST_PUPLIC_KEY'),
+                'amount' => $this->order->assist->price,
+                'commission_payer' => 'receiver',
+                'server_url' => route('orders.liqpay.status.assist', ['order' => $this->order->uuid])
+            ];
+        }
+
         $invoiceParams = [
             'action'       => 'invoice_send',
             'version'      => '3',
@@ -176,8 +196,12 @@ class OrderService
             'order_id'     => $orderUid,
             'expired_date' => date('Y-m-d H:i:s', strtotime('+1 day')),
             'description'  => $this->getInsurantFullName() . ', ІПН: '
-                . $this->order->insurant->inn,
+                . $this->order->insurant->inn
         ];
+
+        if (count($splitRules) > 0) {
+            $invoiceParams['split_rules'] = $splitRules;
+        }
 
         $sendInvoice = (new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY')))->api('request', $invoiceParams);
 
