@@ -40,6 +40,24 @@ paths:
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Inn
+  /data/search-by-phone:
+    post:
+      tags:
+        - data
+      operationId: searchUserByPhone
+      requestBody:
+        $ref: '#/components/requestBodies/searchByPhone'
+      summary: Поиск информации о пользователе, по номеру телефона
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/searchUserByPhone'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: Inn
   /handbooks/cars:
     get:
       tags:
@@ -774,6 +792,17 @@ paths:
 
 components:
   requestBodies:
+    searchByPhone:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - phone
+            properties:
+              phone:
+                type: string
+                minimum: 12
     greencardCalculate:
       content:
         application/json:
@@ -2366,6 +2395,42 @@ components:
         calcZone:
           type: object
           example: 2
+    searchUserByPhone:
+      type: object
+      properties:
+        phone:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        latin_name:
+          type: string
+        latin_surname:
+          type: string
+        ipn:
+          type: string
+        dob:
+          type: string
+        vehicles:
+          type: array
+          items:
+            type: object
+            properties:
+              brand:
+                type: string
+              model:
+                type: string
+              vin:
+                type: string
+              state_number:
+                type: string
+              address:
+                type: string
+              year:
+                type: string
     innInfo:
       type: object
       properties:

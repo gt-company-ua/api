@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Data\InnInfoRequest;
+use App\Http\Requests\Data\SearchUserByPhoneRequest;
 use App\Mail\AssistMe;
 use App\Mail\OrderPayment;
 use App\Models\Order;
+use App\Services\api\Bitrix;
 use App\Services\api\Ingo;
 use App\Services\OrderService;
 use App\Traits\ApiResponser;
@@ -26,6 +28,15 @@ class DataController extends Controller
         $parse =  (new OrderService(null))->parseInn($data['search']);
 
         return $this->sendResponse($parse);
+    }
+
+    public function searchUserByPhone(SearchUserByPhoneRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $search = (new Bitrix())->getContact($data['phone']);
+
+        return $this->sendResponse($search);
     }
 
     public function test($oderID)

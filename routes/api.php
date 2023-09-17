@@ -75,6 +75,7 @@ Route::prefix('orders')->group(function () {
 Route::prefix('data')->group(function () {
     Route::get('/inn', [\App\Http\Controllers\DataController::class, 'innInfo'])->name('data.inn');
     Route::get('/pdf/{order_id}', [\App\Http\Controllers\DataController::class, 'test'])->name('data.pdf');
+    Route::post('/search-by-phone', [\App\Http\Controllers\DataController::class, 'searchUserByPhone']);
 });
 
 Route::prefix('v2')->group(function () {
