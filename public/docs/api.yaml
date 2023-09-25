@@ -1679,6 +1679,10 @@ components:
                     type: integer
                     nullable: true
                     description: model_code модели из справочника `/handbooks/cars/findIngo`
+                  car_mark:
+                    $ref: '#/components/schemas/orderCarMark'
+                  car_model:
+                    $ref: '#/components/schemas/orderCarModel'
                   gov_num:
                     $ref: '#/components/schemas/orderGovNum'
                   vin:
