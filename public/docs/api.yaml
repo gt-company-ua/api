@@ -316,6 +316,8 @@ paths:
                     $ref: '#/components/schemas/cashback_amount'
                   assist_me_price:
                     $ref: '#/components/schemas/calculatePrice'
+                  assist_me_old_price:
+                    $ref: '#/components/schemas/calculatePrice'
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: Greencard

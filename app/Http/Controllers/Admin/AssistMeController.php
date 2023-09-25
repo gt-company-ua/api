@@ -18,12 +18,14 @@ class AssistMeController extends Controller
         $transportCategories = TransportCategory::orderBy('ordering')->get();
 
         $prices = [];
+        $oldPrices = [];
 
         foreach ($transportCategories as $category) {
             $prices[$category->id] = AssistMePrice::where('transport_category_id', $category->id)->pluck('price', 'trip_duration');
+            $oldPrices[$category->id] = AssistMePrice::where('transport_category_id', $category->id)->pluck('old_price', 'trip_duration');
         }
 
-        return view('assist-me', compact('transportCategories', 'prices'));
+        return view('assist-me', compact('transportCategories', 'prices', 'oldPrices'));
     }
 
     public function update(UpdateAssistMePricesRequest $request): RedirectResponse
@@ -34,7 +36,7 @@ class AssistMeController extends Controller
             foreach ($data['price'][$key] as $tripDuration => $price) {
                 AssistMePrice::updateOrCreate(
                     ['transport_category_id' => $key, 'trip_duration' => $tripDuration],
-                    ['price' => $price]
+                    ['price' => $price, 'old_price' => $data['old_price'][$key][$tripDuration]]
                 );
             }
         }

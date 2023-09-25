@@ -28,6 +28,8 @@ class UpdateAssistMePricesRequest extends FormRequest
             'trip_duration.*.*' => 'required|numeric|min:0',
             'price' => 'array',
             'price.*.*' => 'nullable|numeric|min:0',
+            'old_price' => 'array',
+            'old_price.*.*' => 'nullable|numeric|min:0',
             'transport_category_id.*' => 'required|exists:App\Models\TransportCategory,id',
         ];
     }

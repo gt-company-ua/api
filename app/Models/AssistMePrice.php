@@ -10,5 +10,5 @@ class AssistMePrice extends Model
     use HasFactory;
 
     protected $guarded = [];
-    protected $casts = ['price' => 'float'];
+    protected $casts = ['price' => 'float', 'old_price' => 'float'];
 }

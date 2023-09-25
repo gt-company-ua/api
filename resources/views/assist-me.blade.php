@@ -39,9 +39,9 @@
                             <thead>
                             <tr class="info">
                                 <th class="col-1">Тип ТС</th>
-                                <th class="col-1">15 дней</th>
+                                <th class="col-auto">15 дней</th>
                                 @for($months = 1; $months <=12; $months++)
-                                    <th class="col-1">{{ $months }} мес.</th>
+                                    <th class="col-auto">{{ $months }} мес.</th>
                                 @endfor
                             </tr>
                             </thead>
@@ -54,7 +54,8 @@
                                     @for($months = 0; $months <=12; $months++)
                                         <td class="success">
                                             <input type="hidden" name="trip_duration[{{ $category->id }}][{{ $months }}]" value="{{ $months }}">
-                                            <input type="text" name="price[{{ $category->id }}][{{ $months }}]" class="form-control" value="{{ $prices[$category->id][$months] ?? '' }}">
+                                            <input type="text" name="price[{{ $category->id }}][{{ $months }}]" class="form-control" placeholder="Price" value="{{ $prices[$category->id][$months] ?? '' }}">
+                                            <input type="text" name="old_price[{{ $category->id }}][{{ $months }}]" placeholder="Old price" class="form-control" value="{{ $oldPrices[$category->id][$months] ?? '' }}">
                                         </td>
                                     @endfor
                                 </tr>
