@@ -495,7 +495,7 @@ class Ingo
             'vehicleType' => $order->transport->power->type_auto ?? null,
             'vehicleBrandCode' => $order->transport->carMark->external_id ?? "11487",
             'vehicleModelCode' => $order->transport->carModel->external_id ?? "0",
-            'vehicleTitle' => $order->transport->car_mark ?? '' . ' ' . $order->transport->car_model ?? '',
+            'vehicleTitle' => $order->transport->car_mark . ' ' . $order->transport->car_model,
             'vehicleRegNo' => $order->transport->gov_num,
             'vehicleVin' => $order->transport->vin,
             'vehicleYear' => $order->transport->car_year,
