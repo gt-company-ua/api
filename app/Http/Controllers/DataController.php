@@ -4,18 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Data\InnInfoRequest;
 use App\Http\Requests\Data\SearchUserByPhoneRequest;
-use App\Mail\AssistMe;
-use App\Mail\OrderPayment;
-use App\Models\Order;
+use App\Http\Requests\Data\SendSmsRequest;
+use App\Models\SmsConfirm;
 use App\Services\api\Bitrix;
-use App\Services\api\Ingo;
+use App\Services\api\Turbosms;
 use App\Services\OrderService;
 use App\Traits\ApiResponser;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 
 class DataController extends Controller
 {
@@ -34,9 +29,55 @@ class DataController extends Controller
     {
         $data = $request->validated();
 
+        $code = SmsConfirm::where('phone', $data['phone'])->where('code', $data['code'])->where('status', 'sent')->first();
+
+        if (is_null($code)) {
+            return $this->sendError('Неправильний код, спробуйте ще раз');
+        }
+
+        $code->status = 'used';
+        $code->save();
+
         $search = (new Bitrix())->getContact($data['phone']);
 
         return $this->sendResponse($search);
+    }
+
+    public function sendUserSms(SendSmsRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $code = mt_rand(1000, 9999);
+
+        $send = (new Turbosms())->messageSend($data['phone'], $code);
+        if (count($send) === 0) {
+            return $this->sendError('Не вдалося надіслати повідомлення, перевірте номер і спробуйте ще раз.');
+        }
+
+        $responseCode = $send['response_code'] ?? null;
+        $responseStatus = $send['response_status'] ?? null;
+        $externalId = null;
+
+        if (isset($send['response_result'])) {
+            foreach ($send['response_result'] as $result) {
+                if ($result['phone'] === $data['phone']) {
+                    $responseCode = $result['response_code'] ?? null;
+                    $responseStatus = $result['response_status'] ?? null;
+                    $externalId = $result['message_id'] ?? null;
+                    break;
+                }
+            }
+        }
+
+        SmsConfirm::create([
+            'phone' => $data['phone'],
+            'code' => $code,
+            'external_id' => $externalId,
+            'response_status' => $responseStatus,
+            'response_code' => $responseCode,
+            'status' => 'sent'
+        ]);
+
+        return $this->sendSuccess();
     }
 
     public function test($oderID)

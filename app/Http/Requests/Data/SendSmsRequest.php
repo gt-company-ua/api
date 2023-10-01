@@ -5,9 +5,10 @@ namespace App\Http\Requests\Data;
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SearchUserByPhoneRequest extends FormRequest
+class SendSmsRequest extends FormRequest
 {
     use RequestFailedValidationResponse;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,8 +27,7 @@ class SearchUserByPhoneRequest extends FormRequest
     public function rules()
     {
         return [
-            'phone' => 'required|string|min:12',
-            'code' => 'required|digits:4'
+            'phone' => 'required|digits_between:12,20'
         ];
     }
 }

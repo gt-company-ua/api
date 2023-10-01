@@ -805,6 +805,9 @@ components:
               phone:
                 type: string
                 minimum: 12
+              code:
+                type: string
+                minimum: 12
     greencardCalculate:
       content:
         application/json:
