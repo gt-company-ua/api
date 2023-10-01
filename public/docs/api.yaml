@@ -57,7 +57,21 @@ paths:
                 $ref: '#/components/schemas/searchUserByPhone'
         '422':
           $ref: '#/components/responses/resp422'
-      x-swagger-router-controller: Inn
+      x-swagger-router-controller: user
+  /data/send-sms:
+    post:
+      tags:
+        - data
+      operationId: sendSmsUser
+      requestBody:
+        $ref: '#/components/requestBodies/sendSmsUser'
+      summary: Отправка СМС пользователю, для подтверждения телефона
+      responses:
+        '200':
+          description: response
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: user
   /handbooks/cars:
     get:
       tags:
@@ -801,12 +815,25 @@ components:
             type: object
             required:
               - phone
+              - code
             properties:
               phone:
                 type: string
+                description: Только цифры, без знаков, пробелов и т.д.
                 minimum: 12
               code:
+                type: number
+    sendSmsUser:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - phone
+            properties:
+              phone:
                 type: string
+                description: Только цифры, без знаков, пробелов и т.д.
                 minimum: 12
     greencardCalculate:
       content:
