@@ -815,7 +815,6 @@ components:
             type: object
             required:
               - phone
-              - code
             properties:
               phone:
                 type: string
@@ -823,6 +822,7 @@ components:
                 minimum: 12
               code:
                 type: number
+                description: Если код не будет отправлен, то вернется только статус (200 - найдена информация, 404 - информации о пользователе нет)
     sendSmsUser:
       content:
         application/json:

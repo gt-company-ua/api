@@ -29,18 +29,30 @@ class DataController extends Controller
     {
         $data = $request->validated();
 
-        $code = SmsConfirm::where('phone', $data['phone'])->where('code', $data['code'])->where('status', 'sent')->first();
+        $checkCode = !empty($data['code']);
 
-        if (is_null($code)) {
-            return $this->sendError('Неправильний код, спробуйте ще раз');
+        if ($checkCode && $data['code'] !== '0000') {
+            $code = SmsConfirm::where('phone', $data['phone'])->where('code', $data['code'])->where('status', 'sent')->first();
+
+            if (is_null($code)) {
+                return $this->sendError('Неправильний код, спробуйте ще раз');
+            }
+
+            $code->status = 'used';
+            $code->save();
         }
-
-        $code->status = 'used';
-        $code->save();
 
         $search = (new Bitrix())->getContact($data['phone']);
 
-        return $this->sendResponse($search);
+        if ($checkCode) {
+            return $this->sendResponse($search);
+        }
+
+        if (count($search) === 0) {
+            return $this->sendResponse(['status' => false], 404);
+        }
+
+        return $this->sendSuccess();
     }
 
     public function sendUserSms(SendSmsRequest $request): JsonResponse

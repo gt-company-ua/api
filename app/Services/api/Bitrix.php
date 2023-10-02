@@ -17,7 +17,7 @@ class Bitrix
         $this->password = env('BITRIX_PASSWORD');
     }
 
-    private function request(string $uri, array $params, ?string $filename = null): array
+    private function request(string $uri, array $params): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
@@ -39,8 +39,6 @@ class Bitrix
                 Log::info($body);
 
                 return [];
-            } elseif ( ! is_null($filename)) {
-                return ['status' => true];
             }
 
             return json_decode($body, true);

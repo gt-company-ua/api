@@ -27,7 +27,7 @@ class SearchUserByPhoneRequest extends FormRequest
     {
         return [
             'phone' => 'required|string|min:12',
-            'code' => 'required|digits:4'
+            'code' => 'nullable|digits:4'
         ];
     }
 }
