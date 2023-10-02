@@ -331,6 +331,8 @@ class OrderService
                     $response = (new Ingo())->osagoConfirm($this->order);
 
                     if (! empty($response['data']['id'])) {
+                        sleep(5);
+
                         $files = (new Ingo())->osagoPrintForm($this->order);
 
                         if (count($files) > 0) {
@@ -358,6 +360,8 @@ class OrderService
         $response = $ingo->greenCardConfirm($this->order);
 
         if (! empty($response['data']) && ! empty($response['data']['id'])) {
+            sleep(5);
+
             $files = $ingo->greenCardPrintForm($this->order);
 
             if (count($files) > 0) {
@@ -383,6 +387,8 @@ class OrderService
         $sent = $ingo->vzrConfirm($this->order);
 
         if ($sent) {
+            sleep(5);
+
             $files = $ingo->vzrPrintForm($this->order);
 
             if (count($files) > 0) {
