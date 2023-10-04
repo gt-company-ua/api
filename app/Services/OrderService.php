@@ -18,6 +18,7 @@ use App\Services\api\Ingo;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 use App\Services\api\Salamandra;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -328,17 +329,7 @@ class OrderService
                     (new Profitsoft())->confirm($this->order);
                     break;
                 case Ingo::API_NAME:
-                    $response = (new Ingo())->osagoConfirm($this->order);
-
-                    if (! empty($response['data']['id'])) {
-                        sleep(5);
-
-                        $files = (new Ingo())->osagoPrintForm($this->order);
-
-                        if (count($files) > 0) {
-                            Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
-                        }
-                    }
+                    (new Ingo())->osagoConfirm($this->order);
                     break;
                 default:
                     break;
@@ -357,17 +348,7 @@ class OrderService
 
         $ingo = new Ingo();
 
-        $response = $ingo->greenCardConfirm($this->order);
-
-        if (! empty($response['data']) && ! empty($response['data']['id'])) {
-            sleep(5);
-
-            $files = $ingo->greenCardPrintForm($this->order);
-
-            if (count($files) > 0) {
-                Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
-            }
-        }
+        $ingo->greenCardConfirm($this->order);
     }
 
     public function saveVzr1C()
@@ -384,17 +365,7 @@ class OrderService
 
         $ingo = new Ingo();
 
-        $sent = $ingo->vzrConfirm($this->order);
-
-        if ($sent) {
-            sleep(5);
-
-            $files = $ingo->vzrPrintForm($this->order);
-
-            if (count($files) > 0) {
-                Mail::to($this->order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
-            }
-        }
+        $ingo->vzrConfirm($this->order);
     }
 
     public function usePromocode(?string $code, float $basePrice, string $orderType)
@@ -430,5 +401,39 @@ class OrderService
         $promocode = Promocode::where('code', $code)->active($orderType)->first();
 
         $this->order->promocode_id = $promocode->id ?? null;
+    }
+
+    public function sentPolicyToClients()
+    {
+        $ingo = new Ingo();
+
+        $orders = Order::whereHas('contract', function (Builder $query) {
+                $query->where('api_name', Ingo::API_NAME);
+                $query->where('sent_police', false);
+                $query->where('state', 'Signed');
+            })
+            ->limit(10)
+            ->get();
+
+        foreach ($orders as $order) {
+            switch ($order->order_type){
+                case Order::ORDER_TYPE_GC:
+                    $files = $ingo->greenCardPrintForm($order);
+                    break;
+                case Order::ORDER_TYPE_OSAGO:
+                    $files = $ingo->osagoPrintForm($order);
+                    break;
+                case Order::ORDER_TYPE_VZR:
+                    $files = $ingo->vzrPrintForm($order);
+                    break;
+                default:
+                    $files = [];
+                    break;
+            }
+
+            if (count($files) > 0) {
+                Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
+            }
+        }
     }
 }

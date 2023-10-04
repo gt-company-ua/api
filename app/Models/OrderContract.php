@@ -15,4 +15,5 @@ class OrderContract extends Model
 
     protected $guarded = [];
     protected $hidden = ['id', 'order_id', 'created_at', 'updated_at'];
+    protected $casts = ['sent_police' => 'bool'];
 }

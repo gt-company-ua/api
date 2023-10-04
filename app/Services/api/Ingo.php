@@ -94,7 +94,7 @@ class Ingo
 
                 return json_decode($body, true);
             } elseif ( ! is_null($filename)) {
-                return ['status' => true];
+                return ['status' => true, 'status_code' => $code];
             }
 
 //            if ($uri === '/osago/calculate') {
@@ -215,17 +215,33 @@ class Ingo
         $files = [];
 
         if (! is_null($order->contract) && ! empty($order->contract->number)) {
+            $statusCode = 200;
+
             foreach (['form', 'certificate'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
                 $response = $this->request('/greencard/' . $order->contract->number . '/pdf?formType=' . $formType, [], true, $filename);
 
-                if (isset($response['status']) && $response['status'] === true) {
+                if (isset($response['status_code']) && $statusCode < $response['status_code']) {
+                    $statusCode = $response['status_code'];
+                }
+
+                if (isset($response['status']) && $response['status'] === true && $response['status_code'] === 200) {
                     $files[] = $filename;
                 }
             }
+
+            $this->updateContractDownload($order->contract, $statusCode);
         }
 
         return $files;
+    }
+
+    private function updateContractDownload(OrderContract $contract, $statusCode)
+    {
+        $contract->download_attempts ++;
+        $contract->download_status_code = $statusCode;
+        $contract->sent_police = $statusCode === 200;
+        $contract->save();
     }
 
     private function calculateVzrDays(array $data): int
@@ -390,14 +406,22 @@ class Ingo
         $files = [];
 
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+            $statusCode = 200;
+
             foreach (['form'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
                 $response = $this->request('/travel/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
 
-                if (isset($response['status']) && $response['status'] === true) {
+                if (isset($response['status_code']) && $statusCode < $response['status_code']) {
+                    $statusCode = $response['status_code'];
+                }
+
+                if (isset($response['status']) && $response['status'] === true && $response['status_code'] === 200) {
                     $files[] = $filename;
                 }
             }
+
+            $this->updateContractDownload($order->contract, $statusCode);
         }
 
         return $files;
@@ -564,14 +588,22 @@ class Ingo
         $files = [];
 
         if (! is_null($order->external_id) && ! empty($order->contract->external_id)) {
+            $statusCode = 200;
+
             foreach (['form'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
                 $response = $this->request('/osago/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
 
-                if (isset($response['status']) && $response['status'] === true) {
+                if (isset($response['status_code']) && $statusCode < $response['status_code']) {
+                    $statusCode = $response['status_code'];
+                }
+
+                if (isset($response['status']) && $response['status'] === true && $response['status_code'] === 200) {
                     $files[] = $filename;
                 }
             }
+
+            $this->updateContractDownload($order->contract, $statusCode);
         }
 
         return $files;
