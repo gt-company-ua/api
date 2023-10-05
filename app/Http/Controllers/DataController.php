@@ -31,7 +31,7 @@ class DataController extends Controller
 
         $checkCode = !empty($data['code']);
 
-        if ($checkCode && $data['code'] !== '0000') {
+        if ($checkCode) {
             $code = SmsConfirm::where('phone', $data['phone'])->where('code', $data['code'])->where('status', 'sent')->first();
 
             if (is_null($code)) {
