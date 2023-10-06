@@ -282,6 +282,11 @@ class Ingo
             'email' => $order->email,
         ];
 
+        if ($order->tariff === 'ELIT') {
+            $params['accidentCover'] = 30000;
+            $params['accidentCurrency'] = 'UAH';
+        }
+
         if ($order->multiple_trip) {
             $params['period'] = '365d';
             $params['multi'] = true;
