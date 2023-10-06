@@ -347,6 +347,7 @@ class Ingo
 
         if ($medicalPocket === 'ELIT') {
             $params['accidentCover'] = 30000;
+            $params['accidentCurrency'] = 'UAH';
         }
 
         if ($data['multiple_trip'] === true) {
