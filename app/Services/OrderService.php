@@ -143,7 +143,9 @@ class OrderService
 
         $this->savePromocode($promocode, $orderType);
 
-        $this->createInvoice();
+        if (is_null($this->order->discount_check) || $this->order->discount_check === false) {
+            $this->createInvoice();
+        }
 
         (new CrmService($this->order))->sendCrm();
 
