@@ -15,10 +15,9 @@ class CreateVignetteProductsTable extends Migration
     {
         Schema::create('vignette_products', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Country::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Country::class)
                 ->constrained()
-                ->nullOnDelete();
+                ->restrictOnDelete();
             $table->string('name');
             $table->string('vehicle_type');
             $table->timestamps();

@@ -64,7 +64,7 @@ class Vignette
 
     public function products(int $countryID): array
     {
-        $getProducts = $this->request('/public/products?currency=UAH');
+        $getProducts = $this->request('/public/products?currency=UAH', [], true);
         if (!isset($getProducts['result'])) {
             return [];
         }
@@ -72,8 +72,8 @@ class Vignette
         $vignetteProducts = VignetteProduct::where('country_id', $countryID)->pluck('id', 'name');
         $products = [];
 
-        foreach ($getProducts as $product) {
-            if ( ! is_array($vignetteProducts[$product['name']])) {
+        foreach ($getProducts['result'] as $product) {
+            if ( ! isset($vignetteProducts[$product['name']])) {
                 continue;
             }
 
@@ -105,11 +105,11 @@ class Vignette
     {
         $params = [
             'terms_and_privacy_accepted' => true,
-            'order_has_been_paid' => false,
+            'order_has_been_paid' => true,
             'email' => $order->email,
             'cars' => [],
             'products' => [[
-                'custom_id' => $order->id,
+                'custom_id' => (string) $order->id,
                 'name' => $order->product->name,
                 'start_date' => strtotime($order->start_date),
                 'period' => $order->period,
@@ -124,6 +124,8 @@ class Vignette
         }
 
         $send = $this->request('/public/orders?bug_report=true', $params);
+
+        Log::debug("Response save order", $send);
 
         if (!isset($send['result']) || !isset($send['result']['orders'][0])) {
             return false;
