@@ -20,6 +20,6 @@ class VignetteOrder extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(VignetteProduct::class);
+        return $this->belongsTo(VignetteProduct::class, 'vignette_product_id', 'id');
     }
 }

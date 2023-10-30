@@ -38,7 +38,7 @@ class VignetteController extends Controller
 
         $vignette = VignetteOrder::create($data);
 
-        $vignette->cars()->saveMany($cars);
+        $vignette->cars()->createMany($cars);
 
         (new Vignette())->order($vignette);
 
