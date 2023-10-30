@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Data\InnInfoRequest;
+use App\Http\Requests\Data\SearchUserByHashRequest;
 use App\Http\Requests\Data\SearchUserByPhoneRequest;
 use App\Http\Requests\Data\SendSmsRequest;
 use App\Models\SmsConfirm;
@@ -53,6 +54,24 @@ class DataController extends Controller
         }
 
         return $this->sendSuccess();
+    }
+
+    public function searchUserByHash(SearchUserByHashRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $encodeHash = base64_decode($data['hash']);
+        $hash = substr($encodeHash, -4) . substr($encodeHash, 0, strlen($encodeHash) - 4);
+
+        $phone = base64_decode($hash);
+
+        $search = (new Bitrix())->getContact($phone);
+
+        if (count($search) === 0) {
+            return $this->sendResponse(['status' => false, 'phone' => $phone], 404);
+        }
+
+        return $this->sendResponse($search);
     }
 
     public function sendUserSms(SendSmsRequest $request): JsonResponse

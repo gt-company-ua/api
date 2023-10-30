@@ -58,6 +58,24 @@ paths:
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: user
+  /data/search-by-hash:
+    post:
+      tags:
+        - data
+      operationId: searchUserByHash
+      requestBody:
+        $ref: '#/components/requestBodies/searchByHash'
+      summary: Поиск информации о пользователе, по хешу из ссылки письма
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/searchUserByPhone'
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: user
   /data/send-sms:
     post:
       tags:
@@ -823,6 +841,18 @@ components:
               code:
                 type: number
                 description: Если код не будет отправлен, то вернется только статус (200 - найдена информация, 404 - информации о пользователе нет)
+    searchByHash:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - hash
+            properties:
+              hash:
+                type: string
+                description: Хеш из ссылки письма
+
     sendSmsUser:
       content:
         application/json:
