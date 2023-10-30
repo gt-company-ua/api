@@ -68,7 +68,7 @@ class DataController extends Controller
         $search = (new Bitrix())->getContact($phone);
 
         if (count($search) === 0) {
-            return $this->sendResponse(['status' => false, 'phone' => $phone], 404);
+            return $this->sendResponse(['status' => false], 404);
         }
 
         return $this->sendResponse($search);
