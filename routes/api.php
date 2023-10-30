@@ -79,6 +79,12 @@ Route::prefix('data')->group(function () {
     Route::post('/send-sms', [\App\Http\Controllers\DataController::class, 'sendUserSms']);
 });
 
+Route::prefix('vignettes')->group(function () {
+    Route::get('/products', [\App\Http\Controllers\VignetteController::class, 'products']);
+    Route::post('/', [\App\Http\Controllers\VignetteController::class, 'save']);
+    Route::post('/checkVehicles', [\App\Http\Controllers\VignetteController::class, 'checkVehicles']);
+});
+
 Route::prefix('v2')->group(function () {
     Route::prefix('vzr')->group(function () {
         Route::post('/', [\App\Http\Controllers\v2\VzrController::class, 'store']);
