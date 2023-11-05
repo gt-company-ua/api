@@ -29,4 +29,17 @@ class InnInfoRequest extends FormRequest
             'search' => 'required|digits:10|integer'
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'search.required' => 'Не заповнений ІПН',
+            'search.digits' => 'ІПН має містити 10 цифр',
+        ];
+    }
 }
