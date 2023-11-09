@@ -415,6 +415,7 @@ class OrderService
                 $query->where('state', 'Signed');
             })
             ->limit(10)
+            ->orderByDesc('created_at')
             ->get();
 
         foreach ($orders as $order) {
