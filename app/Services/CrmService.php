@@ -153,9 +153,7 @@ class CrmService
             'UF_CRM_1538482354207' => 'epolis', // Доставка по Украине (1 день бесплатно) string
         ];
 
-        if ( ! is_null($this->order->assist)) {
-            $fields['UF_CRM_1594379052'] = 'YES';
-        }
+        $fields['UF_CRM_1594379052'] = ! is_null($this->order->assist) ? 647 : 648;
 
         if ($this->order->order_type === Order::ORDER_TYPE_OSAGO || $this->order->order_type === Order::ORDER_TYPE_GC){
             $fields['UF_CRM_5BC76EACF1061'] = $this->order->transport->vin; // VIN код авто
