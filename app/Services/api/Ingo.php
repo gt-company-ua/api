@@ -241,6 +241,11 @@ class Ingo
         $contract->download_attempts ++;
         $contract->download_status_code = $statusCode;
         $contract->sent_police = $statusCode === 200;
+
+        if ($contract->download_attempts > 10) {
+            $contract->state = 'Error';
+        }
+
         $contract->save();
     }
 
