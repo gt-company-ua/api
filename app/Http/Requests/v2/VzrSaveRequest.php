@@ -67,7 +67,8 @@ class VzrSaveRequest extends FormRequest
             'code' => 'nullable|string',
             'code_date_end' => 'nullable|date',
 
-            'ga_id' => 'nullable'
+            'ga_id' => 'nullable',
+            'uuid' => 'exists:App\Models\Order,uuid'
         ];
     }
 }

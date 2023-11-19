@@ -49,12 +49,14 @@ Route::prefix('osago')->group(function () {
 
     Route::prefix('ingo')->group(function () {
         Route::post('/', [\App\Http\Controllers\Osago\IngoController::class, 'store']);
+        Route::post('/draft', [\App\Http\Controllers\Osago\IngoController::class, 'draft']);
         Route::post('/calculate', [\App\Http\Controllers\Osago\IngoController::class, 'calculate']);
     });
 });
 
 Route::prefix('greencard')->group(function () {
     Route::post('/', [\App\Http\Controllers\GreenCardController::class, 'store']);
+    Route::post('/draft', [\App\Http\Controllers\GreenCardController::class, 'draft']);
     Route::post('/calculate', [\App\Http\Controllers\GreenCardController::class, 'calculate']);
 });
 
@@ -89,6 +91,7 @@ Route::prefix('vignettes')->group(function () {
 Route::prefix('v2')->group(function () {
     Route::prefix('vzr')->group(function () {
         Route::post('/', [\App\Http\Controllers\v2\VzrController::class, 'store']);
+        Route::post('/draft', [\App\Http\Controllers\v2\VzrController::class, 'draft']);
         Route::post('/calculate', [\App\Http\Controllers\v2\VzrController::class, 'calculate']);
         Route::get('/territories', [\App\Http\Controllers\v2\VzrController::class, 'territories']);
         Route::get('/documents', [\App\Http\Controllers\v2\VzrController::class, 'documents']);

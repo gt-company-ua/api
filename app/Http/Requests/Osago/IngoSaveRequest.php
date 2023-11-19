@@ -74,7 +74,8 @@ class IngoSaveRequest extends FormRequest
 
             'promocode' => 'nullable|string',
 
-            'ga_id' => 'nullable'
+            'ga_id' => 'nullable',
+            'uuid' => 'exists:App\Models\Order,uuid'
         ];
     }
 }

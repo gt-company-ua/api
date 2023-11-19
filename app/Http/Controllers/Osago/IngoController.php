@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Osago;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Draft\OsagoDraftRequest;
 use App\Http\Requests\Osago\IngoCalculateRequest;
 use App\Http\Requests\Osago\IngoSaveRequest;
+use App\Models\Order;
 use App\Services\api\Ingo;
+use App\Services\OrderService;
 use App\Services\OsagoService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +26,20 @@ class IngoController extends Controller
         }
 
         return $this->sendResponse($saveOrder);
+    }
+    public function draft(OsagoDraftRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        try {
+            $data['draft'] = true;
+
+            $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_OSAGO);
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse($order);
     }
     public function calculate(IngoCalculateRequest $request): JsonResponse
     {

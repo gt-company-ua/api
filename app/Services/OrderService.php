@@ -56,7 +56,7 @@ class OrderService
         }
     }
 
-    public function saveOrder(array $request, string $orderType): ?Order
+    public function saveOrderInfo(array $request, string $orderType): ?Order
     {
         $transport = new OrderTransport($request['transport'] ?? []);
         $insurant = new OrderInsurant($request['insurant'] ?? []);
@@ -67,18 +67,20 @@ class OrderService
         }
 
         $promocode = $request['promocode'] ?? null;
-        $assistMe = $request['with_assist_me'] ?? false;
 
         unset($request['transport'], $request['insurant'], $request['files'], $request['tourists'], $request['promocode'], $request['with_assist_me']);
 
         $request['order_type'] = $orderType;
-        $request['full_price'] = $request['price'];
+        $request['full_price'] = $request['price'] ?? null;
 
         if (empty($request['city_name'])) {
             $request['city_name'] = 'Київ';
         }
 
-        $request['price'] = $this->usePromocode($promocode, $request['price'], $orderType);
+        if (isset($request['price'])) {
+            $request['price'] = $this->usePromocode($promocode, $request['price'], $orderType);
+        }
+
         $request['dont_call'] = (isset($request['dont_call']) && $request['dont_call']);
 
         if (isset($request['territories'])) {
@@ -87,14 +89,29 @@ class OrderService
             unset($request['territories']);
         }
 
-        $order = Order::create($request);
+        $request['draft'] = ! empty($request['draft']) && $request['draft'] === true;
 
+        if ( ! empty($request['uuid'])) {
+            $order = Order::where('uuid', $request['uuid'])->first();
+
+            if (is_null($order)) {
+                return null;
+            }
+
+            $order->fill($request);
+            $order->save();
+            $order->refresh();
+        } else {
+            $order = Order::create($request);
+        }
+
+        $order->transport()->delete();
         $order->transport()->save($transport);
 
         if (count($tourists) > 0) {
             $saveTourists = [];
             foreach ($tourists as $tourist) {
-                $tourist['birth'] = date('Y-m-d', strtotime($tourist['birth']));
+                if (!empty($tourist['birth'])) $tourist['birth'] = date('Y-m-d', strtotime($tourist['birth']));
 
                 if (!isset($tourist['full_name']) && isset($tourist['name'])) {
                     $tourist['full_name'] = $tourist['surname'] . ' ' . $tourist['name'];
@@ -115,6 +132,7 @@ class OrderService
                 $saveTourists[] = new OrderTourist($tourist);
             }
 
+            $order->tourists()->delete();
             $order->tourists()->saveMany($saveTourists);
         }
 
@@ -122,6 +140,7 @@ class OrderService
             $insurant->birth = date('Y-m-d', strtotime($insurant->birth));
         }
 
+        $order->insurant()->delete();
         $order->insurant()->save($insurant);
 
         if (isset($files)) {
@@ -134,6 +153,20 @@ class OrderService
                 return null;
             }
         }
+
+        return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
+    }
+
+    public function saveOrder(array $request, string $orderType): ?Order
+    {
+        $order = $this->saveOrderInfo($request, $orderType);
+
+        if (is_null($order) || $order->draft) {
+            return $order;
+        }
+
+        $assistMe = $request['with_assist_me'] ?? false;
+        $promocode = $request['promocode'] ?? null;
 
         if ($assistMe) {
             (new AssistMeService())->create($order);

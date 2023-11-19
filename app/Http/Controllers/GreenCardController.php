@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Draft\GreenCardDraftRequest;
 use App\Http\Requests\GreenCardCalculateRequest;
 use App\Http\Requests\GreenCardSaveRequest;
+use App\Models\Order;
 use App\Services\api\Ingo;
 use App\Services\AssistMeService;
 use App\Services\GreenCardService;
+use App\Services\OrderService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,6 +52,21 @@ class GreenCardController extends Controller
         }
 
         return $this->sendResponse($saveOrder, 201);
+    }
+
+    public function draft(GreenCardDraftRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        try {
+            $data['draft'] = true;
+
+            $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse($order, 200);
     }
 
 }

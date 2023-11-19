@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v2;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Draft\VzrDraftRequest;
 use App\Http\Requests\v2\VzrCalculateRequest;
 use App\Http\Requests\v2\VzrSaveRequest;
 use App\Models\Order;
@@ -68,6 +69,21 @@ class VzrController extends Controller
         }
 
         return $this->sendResponse($order, 201);
+    }
+
+    public function draft(VzrDraftRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        try {
+            $data['draft'] = true;
+
+            $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_VZR);
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        return $this->sendResponse($order, 200);
     }
 
     public function territories(): JsonResponse
