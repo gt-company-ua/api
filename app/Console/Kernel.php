@@ -48,12 +48,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt("04:00")
             ->withoutOverlapping();
 
-//        $schedule->call(function () {
-//            (new DraftOrderService())->sendDraftOrders();
-//        })
-//            ->name('draft:sent')
-//            ->everyMinute()
-//            ->withoutOverlapping();
+        $schedule->call(function () {
+            (new DraftOrderService())->sendDraftOrders();
+        })
+            ->name('draft:sent')
+            ->everyThreeMinutes()
+            ->withoutOverlapping();
     }
 
     /**
