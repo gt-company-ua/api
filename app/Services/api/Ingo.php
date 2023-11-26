@@ -37,7 +37,8 @@ class Ingo
 //        14 => 'іноземне посвідчення водія'
     ];
 
-    const VZR_TARIFFS = ['ECONOM', 'STANDARD', 'ELIT'];
+    const VZR_TARIFFS = ['ECONOM', 'STANDARD', self::VZR_ELIT];
+    const VZR_ELIT = 'ELIT';
 
     const TERRITORIES_IDS = [5, 6, 7, 8];
     const TERRITORIES = [
@@ -355,7 +356,10 @@ class Ingo
             'tourists' => [],
         ];
 
-        if ($medicalPocket === 'ELIT') {
+        if ($medicalPocket === self::VZR_ELIT) {
+            if (intval($data['insured_sum']) === 30000) {
+                return [];
+            }
             $params['accidentCover'] = 30000;
             $params['accidentCurrency'] = 'UAH';
         }
