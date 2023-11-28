@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 
 class DraftOrderService
 {
@@ -11,7 +12,7 @@ class DraftOrderService
         $orders = Order::where('draft', true)
             ->whereNotNull('email')
             ->where('draft_sent', false)
-            ->where('updated_at', '<=', date('Y-m-d H:i:s', strtotime('-3 minutes')));
+            ->where('updated_at', '<=', date('Y-m-d H:i:s', strtotime('-3 minutes')))->get();
 
         foreach ($orders as $order) {
             $order->draft_sent = true;

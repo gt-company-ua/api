@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
             (new DraftOrderService())->sendDraftOrders();
         })
             ->name('draft:sent')
-            ->everyThreeMinutes()
+            ->everyMinute()
             ->withoutOverlapping();
     }
 
