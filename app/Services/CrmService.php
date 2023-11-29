@@ -153,6 +153,10 @@ class CrmService
             'UF_CRM_1538482354207' => 'epolis', // Доставка по Украине (1 день бесплатно) string
         ];
 
+        if ($this->order->draft === true) {
+            $fields['STAGE_ID'] = 'C5:NEW';
+        }
+
         $fields['UF_CRM_1594379052'] = ! is_null($this->order->assist) ? 647 : 648;
 
         if ($this->order->order_type === Order::ORDER_TYPE_OSAGO || $this->order->order_type === Order::ORDER_TYPE_GC){
