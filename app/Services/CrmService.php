@@ -154,6 +154,7 @@ class CrmService
         ];
 
         if ($this->order->draft === true) {
+            $fields['TYPE_ID'] = 'UC_EPQLWX';
             $fields['STAGE_ID'] = 'C5:NEW';
         }
 
