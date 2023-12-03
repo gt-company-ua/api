@@ -120,11 +120,11 @@ class OrderService
                 }
 
                 if (is_null($insurant->surname)) {
-                    $fullNameParts = explode(' ', $tourist['full_name']);
+                    $fullNameParts = explode(' ', $tourist['full_name'] ?? null);
                     $insurant->surname = $fullNameParts[0] ?? null;
                     $insurant->name = $fullNameParts[1] ?? null;
                     $insurant->patronymic = $fullNameParts[2] ?? null;
-                    $insurant->birth = $tourist['birth'];
+                    $insurant->birth = $tourist['birth'] ?? null;
                     $insurant->doc_number = $tourist['doc_number'] ?? null;
                 }
 

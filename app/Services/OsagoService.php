@@ -196,6 +196,8 @@ class OsagoService
             unset($data['transport']['car_model_code']);
         }
 
+        unset($data['transport']['car_mark_code'], $data['transport']['car_model_code']);
+
         if (!empty($data['transport']['car_mark_id'])) {
             $carMark = CarMark::find($data['transport']['car_mark_id']);
             $data['transport']['car_mark'] = $carMark->name;

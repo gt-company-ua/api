@@ -51,8 +51,6 @@ class OsagoDraftRequest extends FormRequest
             'transport.transport_power_id' => 'nullable|exists:App\Models\TransportPower,id',
             'transport.car_mark_id' => 'nullable|exists:App\Models\CarMark,id',
             'transport.car_model_id' => 'nullable|exists:App\Models\CarModel,id',
-            'transport.car_mark_code' => 'nullable|exists:App\Models\CarMark,external_id',
-            'transport.car_model_code' => 'nullable|exists:App\Models\CarModel,external_id',
             'transport.car_mark' => 'nullable|string',
             'transport.car_model' => 'nullable|string',
             'transport.gov_num' => 'nullable|string|min:6',
