@@ -1290,6 +1290,12 @@ components:
                 type: string
                 nullable: true
                 description: Телефон для Cashback
+              partner:
+                type: string
+                description: Код партнера
+              paid:
+                type: boolean
+                description: Если true - полис оплачен на стороне партнера. Обязательно при заполненном значении атрибута `partner`
               transport:
                 type: object
                 description: Данные траспортного средства

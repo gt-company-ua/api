@@ -18,6 +18,7 @@ use App\Services\api\Ingo;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 use App\Services\api\Salamandra;
+use App\Services\api\Vignette;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -115,9 +116,9 @@ class OrderService
 
                 if (!isset($tourist['full_name']) && isset($tourist['name'])) {
                     $tourist['full_name'] = $tourist['surname'] . ' ' . $tourist['name'];
-
-                    unset($tourist['surname'], $tourist['name']);
                 }
+
+                unset($tourist['surname'], $tourist['name']);
 
                 if (is_null($insurant->surname)) {
                     $fullNameParts = explode(' ', $tourist['full_name'] ?? null);
@@ -176,7 +177,7 @@ class OrderService
 
         $this->savePromocode($promocode, $orderType);
 
-        if (is_null($this->order->discount_check) || $this->order->discount_check === false) {
+        if ((is_null($this->order->discount_check) || $this->order->discount_check === false) && $this->order->paid === false) {
             $this->createInvoice();
         }
 
@@ -468,7 +469,16 @@ class OrderService
             }
 
             if (count($files) > 0) {
-                Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
+                if ($order->partner === Order::PARTNER_VIGNETTE) {
+                    $params = [
+                        'uuid' => $order->uuid,
+                        'files' => $files
+                    ];
+
+                    (new Vignette())->webhook('webhook', $params);
+                } else {
+                    Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderPayment($files));
+                }
             }
         }
     }

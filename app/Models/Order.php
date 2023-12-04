@@ -51,6 +51,9 @@ class Order extends Model
     const TARGETS = ['rest', 'work', 'learn', 'sport'];
     const VZR_INSURED_SUMS = [30000, 50000, 75000];
 
+    const PARTNER_VIGNETTE = 'vignette';
+    const PARTNERS = [self::PARTNER_VIGNETTE];
+
     use HasFactory;
 
     protected $guarded = [];
@@ -82,6 +85,7 @@ class Order extends Model
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
         'cashback_amount' => 'float',
+        'paid' => 'bool'
     ];
 
     protected static function boot()

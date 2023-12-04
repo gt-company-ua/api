@@ -72,6 +72,7 @@ Route::prefix('orders')->group(function () {
     Route::get('/{uuid}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     Route::post('/{uuid}/sms/send', [\App\Http\Controllers\OrderController::class, 'sendSms'])->name('orders.sendSms');
     Route::post('/{uuid}/sms/confirm', [\App\Http\Controllers\OrderController::class, 'confirmSms'])->name('orders.confirmSms');
+    Route::get('/{uuid}/{file_name}', [\App\Http\Controllers\OrderController::class, 'getFile'])->name('orders.files');
 });
 
 Route::prefix('data')->group(function () {

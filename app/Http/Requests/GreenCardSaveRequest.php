@@ -64,6 +64,9 @@ class GreenCardSaveRequest extends FormRequest
             'ga_id' => 'nullable',
             'with_assist_me' => ['nullable', new Boolean],
 
+            'partner' => ['string', Rule::in(Order::PARTNERS)],
+            'paid' => ['required_with:partner', new Boolean],
+
         ];
     }
 }

@@ -118,7 +118,7 @@ class GreenCardService
         foreach ($orders as $order) {
             (new Ingo())->greenCardDraft($order);
 
-            if ($order->payment_status === OrderService::PAYMENT_STATUS_OK) {
+            if ($order->payment_status === OrderService::PAYMENT_STATUS_OK || (!is_null($order->partner) && $order->paid)) {
                 (new OrderService($order))->saveGreenCard1C();
             }
         }

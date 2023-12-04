@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -190,5 +191,16 @@ class OrderController extends Controller
             'discount' => $promocode->discount,
             'expired_at' => $promocode->expired_at
         ]);
+    }
+
+    public function getFile(string $uuid, string $filename)
+    {
+        Order::where('uuid', $uuid)->firstOrFail();
+
+        if (Storage::disk('public')->exists('/policies/' . $filename)) {
+            return Storage::disk('public')->download('/policies/' . $filename, $filename);
+        }
+
+        return $this->sendError("File " . $filename . " not found", 404);
     }
 }

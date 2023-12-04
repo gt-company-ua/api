@@ -44,6 +44,34 @@ class Vignette
         }
     }
 
+    public function webhook(string $uri, array $params = []): array
+    {
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+
+        try{
+            $requestUrl = env('VIGNETTE_URL') . $uri;
+
+            $client = Http::withToken(env('VIGNETTE_TOKEN'))
+                ->timeout(100)
+                ->withBody($json, 'application/json; charset=UTF-8');
+
+            $response = $client->post($requestUrl);
+
+            $body = $response->body();
+            $code = $response->status();
+
+            if ($code > 300) {
+                Log::info('Webhook request() code: ' . $code . '. URL: ' . $requestUrl);
+                Log::info($json);
+                Log::info($body);
+            }
+
+            return json_decode($body, true);
+        }catch (RequestException $e){
+            return [];
+        }
+    }
+
     public function checkVehicles(array $cars): bool
     {
         $checkCars = [];
