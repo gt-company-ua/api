@@ -18,6 +18,10 @@ class Ingo
     const GREENCARD_TRANSPORT_CATEGORIES = ['car' => 'A', 'moto' => 'B', 'bus' => 'E', 'truck' => 'C', 'trailer' => 'F'];
     const API_NAME = "INGO";
 
+    const METHOD_GET = 'GET';
+    const METHOD_PATCH = 'PATCH';
+    const METHOD_POST = 'POST';
+
     const OSAGO_FRANCHISES = [0, 1600, 3200];
 
     const DOC_TYPES = [
@@ -57,7 +61,7 @@ class Ingo
         'SE' => 'Екстремальний спорт',
         //'SA' => 'Активний спорт'
     ];
-    private function request(string $uri, array $params, $get = false, ?string $filename = null): array
+    private function request(string $uri, array $params, $method = self::METHOD_POST, ?string $filename = null): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
@@ -78,8 +82,10 @@ class Ingo
                 $client->sink($tempName);
             }
 
-            if ($get) {
+            if ($method === self::METHOD_GET) {
                 $response = $client->get($requestUrl);
+            } else if ($method === self::METHOD_PATCH) {
+                $response = $client->patch($requestUrl);
             } else {
                 $response = $client->post($requestUrl);
             }
@@ -88,8 +94,7 @@ class Ingo
             $code = $response->status();
 
             if ($code > 300) {
-                $getPost = ($get) ? 'GET' : 'POST';
-                Log::info('Request() code: ' . $code . '. URL: ' . $getPost . ' ' . $requestUrl);
+                Log::info('Request() code: ' . $code . '. URL: ' . $method . ' ' . $requestUrl);
                 Log::info($json);
                 Log::info($body);
 
@@ -220,7 +225,7 @@ class Ingo
 
             foreach (['form', 'certificate'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
-                $response = $this->request('/greencard/' . $order->contract->number . '/pdf?formType=' . $formType, [], true, $filename);
+                $response = $this->request('/greencard/' . $order->contract->number . '/pdf?formType=' . $formType, [], self::METHOD_GET, $filename);
 
                 if (isset($response['status_code']) && $statusCode < $response['status_code']) {
                     $statusCode = $response['status_code'];
@@ -395,7 +400,7 @@ class Ingo
     public function vzrConfirm(Order $order): bool
     {
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', []);
+            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
             if (! empty($response['data']['registered_at'])) {
@@ -425,7 +430,7 @@ class Ingo
 
             foreach (['form'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
-                $response = $this->request('/travel/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
+                $response = $this->request('/travel/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], self::METHOD_GET, $filename);
 
                 if (isset($response['status_code']) && $statusCode < $response['status_code']) {
                     $statusCode = $response['status_code'];
@@ -444,28 +449,28 @@ class Ingo
 
     public function carBrands()
     {
-        $response = $this->request('/osago/car-brands', [], true);
+        $response = $this->request('/osago/car-brands', [], self::METHOD_GET);
 
         return $response['data']['exportData'] ?? [];
     }
 
     public function carModels()
     {
-        $response = $this->request('/osago/car-models', [], true);
+        $response = $this->request('/osago/car-models', [], self::METHOD_GET);
 
         return $response['data']['exportData'] ?? [];
     }
 
     public function findCarByNum(string $number)
     {
-        $response = $this->request('/osago/plate-parse?regNo=' . $number, [], true);
+        $response = $this->request('/osago/plate-parse?regNo=' . $number, [], self::METHOD_GET);
 
         return $response['data'] ?? [];
     }
 
     public function getCities()
     {
-        $response = $this->request('/osago/cities', [], true);
+        $response = $this->request('/osago/cities', [], self::METHOD_GET);
 
         return $response['data']['exportData'] ?? [];
     }
@@ -607,7 +612,7 @@ class Ingo
 
             foreach (['form'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
-                $response = $this->request('/osago/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], true, $filename);
+                $response = $this->request('/osago/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], self::METHOD_GET, $filename);
 
                 if (isset($response['status_code']) && $statusCode < $response['status_code']) {
                     $statusCode = $response['status_code'];
