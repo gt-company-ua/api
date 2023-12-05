@@ -66,7 +66,7 @@ class GreenCardSaveRequest extends FormRequest
 
             'partner' => ['string', Rule::in(Order::PARTNERS)],
             'paid' => ['required_with:partner', new Boolean],
-
+            'uuid' => 'exists:App\Models\Order,uuid'
         ];
     }
 }
