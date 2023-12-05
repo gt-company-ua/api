@@ -323,11 +323,12 @@ class Ingo
             Log::debug("Save VZR (order: ".$order->id.") request", $params);
             Log::debug("Save VZR (order: ".$order->id.") response", $response);
 
-            if (! empty($response['data']) && ! empty($response['data']['id'])) {
-                $startDate = $response['data']['startFrom'] ?? null;
-                $endDate = $response['data']['untilTo'] ?? null;
+            if (! empty($response['info']) && ! empty($response['info']['id'])) {
+                $startDate = $response['info']['startFrom'] ?? null;
+                $endDate = $response['info']['untilTo'] ?? null;
                 $contract = [
-                    'external_id' => $response['data']['id'],
+                    'external_id' => $response['info']['id'],
+                    'number' => $response['info']['number'] ?? null,
                     'state' => 'Draft',
                     'start_date' => !is_null($startDate) ? date('Y-m-d', strtotime($startDate)) : null,
                     'end_date' => !is_null($endDate) ? date('Y-m-d', strtotime($endDate)) : null,
