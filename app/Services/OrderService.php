@@ -22,6 +22,7 @@ use App\Services\api\Vignette;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -472,8 +473,12 @@ class OrderService
                 if ($order->partner === Order::PARTNER_VIGNETTE) {
                     $params = [
                         'uuid' => $order->uuid,
-                        'files' => $files
+                        'files' => []
                     ];
+
+                    foreach ($files as $filename) {
+                        $params['files'][] = Storage::disk('public')->url('/policies/' . $filename);
+                    }
 
                     (new Vignette())->webhook('webhook', $params);
                 } else {

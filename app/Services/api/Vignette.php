@@ -49,7 +49,7 @@ class Vignette
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
         try{
-            $requestUrl = env('VIGNETTE_URL') . $uri;
+            $requestUrl = 'https://vignette.id/api/insurance/upload';
 
             $client = Http::withToken(env('VIGNETTE_TOKEN'))
                 ->timeout(100)
