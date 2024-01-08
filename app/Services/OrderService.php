@@ -473,6 +473,7 @@ class OrderService
                 if ($order->partner === Order::PARTNER_VIGNETTE) {
                     $params = [
                         'uuid' => $order->uuid,
+                        'link' => $order->contract->policy_link ?? null,
                         'files' => []
                     ];
 
