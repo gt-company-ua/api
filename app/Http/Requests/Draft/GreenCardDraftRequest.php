@@ -38,6 +38,7 @@ class GreenCardDraftRequest extends FormRequest
             'comment' => 'nullable|string',
             'promocode' => 'nullable|string',
             'cashback_phone' => 'nullable|string',
+            'cashback_card' => 'nullable|string',
             'cashback_to_vsu' => ['nullable', new Boolean],
             'dont_call' => ['nullable', new Boolean],
 

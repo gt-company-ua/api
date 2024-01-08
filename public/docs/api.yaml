@@ -1290,6 +1290,10 @@ components:
                 type: string
                 nullable: true
                 description: Телефон для Cashback
+              cashback_card:
+                type: string
+                nullable: true
+                description: Номер карты для Cashback
               partner:
                 type: string
                 description: Код партнера
@@ -2614,6 +2618,10 @@ components:
           type: string
           nullable: true
           description: Телефон для Cashback
+        cashback_card:
+          type: string
+          nullable: true
+          description: Номер карты для Cashback
         cashback_amount:
           $ref: '#/components/schemas/cashback_amount'
         cashback_to_vsu:

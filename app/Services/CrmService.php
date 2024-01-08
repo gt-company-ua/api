@@ -144,6 +144,7 @@ class CrmService
             'UF_CRM_1554120853140' => $this->order->id, // ID Заказа (сайт)
 
             'UF_CRM_1538415459284' => $this->order->insurant->phone, // Телефон О КЛИЕНТЕ - string
+            'UF_CRM_1704714194' => $this->order->cashback_card, // Номер карты - string
             'UF_CRM_1538416149715' => $this->order->email, // E-mail О КЛИЕНТЕ - string
             'UF_CRM_1538409137436' => $this->order->insurant->birth,
             'UF_CRM_1538483330399' => ($this->order->payment_type === 'cash') ? 'Наличными при получении страховки' : 'Картой онлайн', // Способ оплаты ОПЛАТА ВЗР - string
