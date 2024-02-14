@@ -44,7 +44,7 @@ class Vignette
         }
     }
 
-    public function webhook(string $uri, array $params = []): array
+    public function webhook(string $uri, array $params = [])
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
@@ -65,10 +65,8 @@ class Vignette
                 Log::info($json);
                 Log::info($body);
             }
-
-            return json_decode($body, true);
         }catch (RequestException $e){
-            return [];
+            Log::error('Webhook error:' . $e->getMessage());
         }
     }
 
