@@ -69,6 +69,10 @@ class OrderCreated extends Mailable
             break;
         }
 
+        if (!is_null($this->order->partner)) {
+            $title[] = mb_strtoupper($this->order->partner);
+        }
+
         $title[] = '№ ' . $this->order->id;
         $title[] = $this->order->insurant->fullname;
         $title[] = 'Статус оплаты ' . $this->order->payment_status;
