@@ -1706,6 +1706,8 @@ components:
                 example: 100000
               use_as_taxi:
                 $ref: '#/components/schemas/use_as_taxi'
+              use_scoring:
+                $ref: '#/components/schemas/use_scoring'
               discount_check:
                 $ref: '#/components/schemas/discountCheck'
               discount_type:
@@ -1873,6 +1875,8 @@ components:
                 example: 100000
               use_as_taxi:
                 $ref: '#/components/schemas/use_as_taxi'
+              use_scoring:
+                $ref: '#/components/schemas/use_scoring'
               discount_check:
                 $ref: '#/components/schemas/discountCheck'
               discount_type:
@@ -1881,7 +1885,7 @@ components:
                 $ref: '#/components/schemas/promocode'
               transport:
                 type: object
-                description: Данные траспортного средства
+                description: Данные траспортного средства. Значение `car_year` обязательно, при `use_scoring = true`
                 required:
                   - transport_power_id
                 properties:
@@ -1889,6 +1893,16 @@ components:
                     $ref: '#/components/schemas/orderTransportPowerId'
                   car_year:
                     $ref: '#/components/schemas/orderCarYear'
+              insurant:
+                type: object
+                required:
+                  - type
+                description: Данные страхователя. Значение `birth` обязательно, при `use_scoring = true`
+                properties:
+                  type:
+                    $ref: '#/components/schemas/insurantType'
+                  birth:
+                    $ref: '#/components/schemas/insurantBirth'
   schemas:
     calculatePrice:
       type: number
@@ -1946,7 +1960,11 @@ components:
     use_as_taxi:
       type: boolean
       nullable: true
-      description: Используется в такис
+      description: Используется в такси
+    use_scoring:
+      type: boolean
+      nullable: true
+      description: Расчет цены с учетом скоринга
     comment:
       type: string
       description: Комментарий

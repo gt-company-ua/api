@@ -65,6 +65,7 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'use_scoring' => 'bool',
         'draft' => 'bool',
         'draft_sent' => 'bool',
         'use_as_taxi' => 'bool',

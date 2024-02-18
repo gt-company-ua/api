@@ -43,7 +43,9 @@ class IngoCalculateRequest extends FormRequest
             'franchise' => ['required', Rule::in(Ingo::OSAGO_FRANCHISES)],
             'use_as_taxi' => ['nullable', new Boolean],
 
-            'insurant.birth' => 'nullable|date|before_or_equal:18 years ago',
+            'use_scoring' => 'boolean',
+
+            'insurant.birth' => 'required_if:use_scoring,true|date|before_or_equal:18 years ago',
             'insurant.type' => ['required', Rule::in(Order::INSURANT_TYPES)],
 
             'promocode' => 'nullable|string',

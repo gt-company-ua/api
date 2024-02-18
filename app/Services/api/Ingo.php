@@ -487,7 +487,6 @@ class Ingo
             $zone = $city->zone;
         }
 
-
         $params = [
             'startFrom' => date('Y-m-d H:i:s', strtotime('+1 day')),
             'period' => $this->periodFormat($data['trip_duration'] ?? 12),
@@ -500,6 +499,14 @@ class Ingo
             'customerIsPhysicalPerson' => ($data['insurant']['type'] === Order::INSURANT_PHYSICAL) ? 1 : 0,
             'customerIsResident' => 1,
         ];
+
+        $useScoring = (isset($data['use_scoring']) && $data['use_scoring'] === true);
+
+        if ($useScoring) {
+            $params['vehicleYear'] = $data['transport']['car_year'];
+            $params['customerBirthday'] = $data['insurant']['birth'];
+            $params['useScoring'] = $useScoring;
+        }
 
         if (isset($data['dgo_limit'])) {
             $params['subDgo'] = $data['dgo_limit'];
@@ -549,6 +556,10 @@ class Ingo
             'email' => $order->email,
             'docId' => (string) $order->id
         ];
+
+        if ($order->use_scoring) {
+            $params['useScoring'] = $useScoring;
+        }
 
         try {
             $response = $this->request('/osago/register', $params);

@@ -84,6 +84,7 @@ class OrderService
         }
 
         $request['dont_call'] = (isset($request['dont_call']) && $request['dont_call']);
+        $request['use_scoring'] = (isset($request['use_scoring']) && $request['use_scoring']);
 
         if (isset($request['territories'])) {
             $request['territory'] = json_encode($request['territories']);

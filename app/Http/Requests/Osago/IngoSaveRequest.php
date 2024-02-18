@@ -58,6 +58,8 @@ class IngoSaveRequest extends FormRequest
             'transport.vin' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.car_year' => 'nullable|required_if:upload_docs,0|digits:4|integer|min:1970|max:' . date('Y'),
 
+            'use_scoring' => ['nullable', new Boolean],
+
             'insurant.type' => ['required', Rule::in(Order::INSURANT_TYPES)],
             'insurant.phone' => 'nullable|required_if:upload_docs,0|string|min:6',
             'insurant.surname' => 'nullable|required_if:upload_docs,0|string',

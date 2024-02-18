@@ -15,6 +15,7 @@
 | Конец действия полиса | {{ $order->polis_end }} |
 | Иностранная регистрация | @if ($order->foreign_check) Да @else Нет @endif |
 | Есть льгота | @if ($order->discount_check) Да @else Нет @endif |
+| Использован скоринг | @if ($order->use_scoring) Да @else Нет @endif |
 | Страна | {{ $order->trip_country }} |
 | Продолжительность | {{ $order->trip_duration }} |
 | Email | {{ $order->email }} |
