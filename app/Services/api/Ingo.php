@@ -558,7 +558,7 @@ class Ingo
         ];
 
         if ($order->use_scoring) {
-            $params['useScoring'] = $useScoring;
+            $params['useScoring'] = true;
         }
 
         try {
