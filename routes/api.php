@@ -95,7 +95,9 @@ Route::prefix('v2')->group(function () {
         Route::post('/draft', [\App\Http\Controllers\v2\VzrController::class, 'draft']);
         Route::post('/calculate', [\App\Http\Controllers\v2\VzrController::class, 'calculate']);
         Route::get('/territories', [\App\Http\Controllers\v2\VzrController::class, 'territories']);
+        Route::get('/territories/{lang}', [\App\Http\Controllers\v2\VzrController::class, 'territories']);
         Route::get('/documents', [\App\Http\Controllers\v2\VzrController::class, 'documents']);
         Route::get('/goals', [\App\Http\Controllers\v2\VzrController::class, 'goals']);
+        Route::get('/goals/{lang}', [\App\Http\Controllers\v2\VzrController::class, 'goals']);
     });
 });

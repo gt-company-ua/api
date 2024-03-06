@@ -52,6 +52,13 @@ class Ingo
         8 => 'Шенгенська зона, Країни Європи, СНД, Грузія',
     ];
 
+    const TERRITORIES_RU = [
+        5 => 'Весь мир',
+        6 => 'Страны Европы, страны СНГ, Грузия, Турция, Египет, Болгария, Израиль, ОАЭ, Тунис',
+        7 => 'Весь мир кроме США, Канады, Японии',
+        8 => 'Шенгенская зона, Страны Европы, СНГ, Грузия',
+    ];
+
     const GOAL_IDS = ['T', 'W', 'PW', 'AR', 'SE', 'SA'];
     const GOALS = [
         'T' => 'Туризм, навчання',
@@ -61,6 +68,18 @@ class Ingo
         'SE' => 'Екстремальний спорт',
         //'SA' => 'Активний спорт'
     ];
+
+    const GOALS_RU = [
+        'T' => 'Туризм, обучение',
+        'W' => 'Работа (интеллектуальный труд)',
+        'PW' => 'Работа (Физический праця)',
+        'AR' => 'Активный спорт',
+        'SE' => 'Экстремальный спорт',
+        //'SA' => 'Активний спорт'
+    ];
+
+    const LANG_RU = 'ru';
+    const LANG_UA = 'ua';
     private function request(string $uri, array $params, $method = self::METHOD_POST, ?string $filename = null): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);

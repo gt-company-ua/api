@@ -86,9 +86,13 @@ class VzrController extends Controller
         return $this->sendResponse($order, 200);
     }
 
-    public function territories(): JsonResponse
+    public function territories($lang = Ingo::LANG_UA): JsonResponse
     {
-        return $this->sendResponse(Ingo::TERRITORIES);
+        if ($lang === Ingo::LANG_RU) {
+            return $this->sendResponse(Ingo::TERRITORIES_RU);
+        } else {
+            return $this->sendResponse(Ingo::TERRITORIES);
+        }
     }
 
     public function documents(): JsonResponse
@@ -96,8 +100,12 @@ class VzrController extends Controller
         return $this->sendResponse(Ingo::DOC_TYPES);
     }
 
-    public function goals(): JsonResponse
+    public function goals($lang = Ingo::LANG_UA): JsonResponse
     {
-        return $this->sendResponse(Ingo::GOALS);
+        if ($lang === Ingo::LANG_RU) {
+            return $this->sendResponse(Ingo::GOALS_RU);
+        } else {
+            return $this->sendResponse(Ingo::GOALS);
+        }
     }
 }
