@@ -189,7 +189,7 @@ class Ingo
 
             if (! empty($response['info']) && ! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['info']['mainCode'],
+                    //'number' => $response['info']['mainCode'],
                     'external_id' => $response['info']['id'],
                     'state' => 'Draft',
                     'policy_link' => $response['info']['directLink'] ?? '',
@@ -220,7 +220,7 @@ class Ingo
             Log::debug("Confirm GreenCard (order: ".$order->id.") response", $response);
             if (! empty($response['info']) && ! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['info']['mainCode'],
+                    //'number' => $response['info']['mainCode'],
                     'external_id' => $response['info']['id'],
                     'state' => 'Signed',
                     'policy_link' => $response['info']['directLink'] ?? '',
@@ -589,7 +589,7 @@ class Ingo
 
             if (! empty($response['info']) && ! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['info']['mainCode'],
+                    //'number' => $response['info']['mainCode'],
                     'external_id' => $response['info']['id'],
                     'state' => 'Draft',
                     'policy_link' => $response['info']['directLink'],
@@ -620,7 +620,7 @@ class Ingo
             Log::debug("Confirm OSAGO (order: ".$order->id.") response", $response);
             if (! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['info']['mainCode'],
+                    //'number' => $response['info']['mainCode'],
                     'external_id' => $response['info']['id'],
                     'state' => 'Signed',
                     'policy_link' => $response['info']['directLink'],
