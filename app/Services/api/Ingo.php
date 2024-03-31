@@ -187,12 +187,12 @@ class Ingo
             Log::debug("Save GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Save GreenCard (order: ".$order->id.") response", $response);
 
-            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+            if (! empty($response['info']) && ! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['data']['mainCode'],
-                    'external_id' => $response['data']['id'],
+                    'number' => $response['info']['mainCode'],
+                    'external_id' => $response['info']['id'],
                     'state' => 'Draft',
-                    'policy_link' => $response['data']['directLink'],
+                    'policy_link' => $response['info']['directLink'] ?? '',
                     'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
@@ -214,16 +214,16 @@ class Ingo
 
     public function greenCardConfirm(Order $order): ?array
     {
-        if (! is_null($order->contract) && ! empty($order->contract->number)) {
-            $response = $this->request('/greencard/' . $order->contract->number . '/confirm', []);
+        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+            $response = $this->request('/greencard/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm GreenCard (order: ".$order->id.") response", $response);
-            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+            if (! empty($response['info']) && ! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['data']['mainCode'],
-                    'external_id' => $response['data']['id'],
+                    'number' => $response['info']['mainCode'],
+                    'external_id' => $response['info']['id'],
                     'state' => 'Signed',
-                    'policy_link' => $response['data']['directLink'],
+                    'policy_link' => $response['info']['directLink'] ?? '',
                     'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
@@ -239,12 +239,12 @@ class Ingo
     {
         $files = [];
 
-        if (! is_null($order->contract) && ! empty($order->contract->number)) {
+        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
             $statusCode = 200;
 
             foreach (['form', 'certificate'] as $formType) {
                 $filename = $order->id . '-' . $formType . '.pdf';
-                $response = $this->request('/greencard/' . $order->contract->number . '/pdf?formType=' . $formType, [], self::METHOD_GET, $filename);
+                $response = $this->request('/greencard/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], self::METHOD_GET, $filename);
 
                 if (isset($response['status_code']) && $statusCode < $response['status_code']) {
                     $statusCode = $response['status_code'];
@@ -290,6 +290,7 @@ class Ingo
         $days = $this->calculateVzrDays(['polis_start' => $order->polis_start, 'polis_end' => $order->polis_end]);
 
         $params = [
+            'requestId' => (string) $order->id,
             'startFrom' => date('Y-m-d', strtotime($order->polis_start)) . ' 00:00:00',
             'period' => $days . 'd',
             'territories' => json_decode($order->territory),
@@ -423,7 +424,7 @@ class Ingo
             $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
-            if (! empty($response['data']['registered_at'])) {
+            if (! empty($response['info']['registered_at'])) {
                 $contract = [
                     'state' => 'Signed',
                     'api_name' => self::API_NAME
@@ -586,12 +587,12 @@ class Ingo
             Log::debug("Save OSAGO (order: ".$order->id.") request", $params);
             Log::debug("Save OSAGO (order: ".$order->id.") response", $response);
 
-            if (! empty($response['data']) && ! empty($response['data']['id'])) {
+            if (! empty($response['info']) && ! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['data']['mainCode'],
-                    'external_id' => $response['data']['id'],
+                    'number' => $response['info']['mainCode'],
+                    'external_id' => $response['info']['id'],
                     'state' => 'Draft',
-                    'policy_link' => $response['data']['directLink'],
+                    'policy_link' => $response['info']['directLink'],
                     'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
@@ -613,16 +614,16 @@ class Ingo
 
     public function osagoConfirm(Order $order): ?array
     {
-        if (! is_null($order->contract) && ! empty($order->contract->number)) {
-            $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', []);
+        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+            $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm OSAGO (order: ".$order->id.") response", $response);
-            if (! empty($response['data']['id'])) {
+            if (! empty($response['info']['id'])) {
                 $contract = [
-                    'number' => $response['data']['mainCode'],
-                    'external_id' => $response['data']['id'],
+                    'number' => $response['info']['mainCode'],
+                    'external_id' => $response['info']['id'],
                     'state' => 'Signed',
-                    'policy_link' => $response['data']['directLink'],
+                    'policy_link' => $response['info']['directLink'],
                     'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
