@@ -218,13 +218,9 @@ class Ingo
             $response = $this->request('/greencard/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm GreenCard (order: ".$order->id.") response", $response);
-            if (! empty($response['info']) && ! empty($response['info']['id'])) {
+            if (! empty($response['status_code']) && $response['status_code'] == 200) {
                 $contract = [
-                    //'number' => $response['info']['mainCode'],
-                    'external_id' => $response['info']['id'],
                     'state' => 'Signed',
-                    'policy_link' => $response['info']['directLink'] ?? '',
-                    'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
             }
@@ -424,7 +420,7 @@ class Ingo
             $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
-            if (! empty($response['info']['registered_at'])) {
+            if (! empty($response['status_code']) && $response['status_code'] == 200) {
                 $contract = [
                     'state' => 'Signed',
                     'api_name' => self::API_NAME
@@ -618,13 +614,9 @@ class Ingo
             $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
 
             Log::debug("Confirm OSAGO (order: ".$order->id.") response", $response);
-            if (! empty($response['info']['id'])) {
+            if (! empty($response['status_code']) && $response['status_code'] == 200) {
                 $contract = [
-                    //'number' => $response['info']['mainCode'],
-                    'external_id' => $response['info']['id'],
                     'state' => 'Signed',
-                    'policy_link' => $response['info']['directLink'],
-                    'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
             }
