@@ -44,8 +44,14 @@ class GreenCardService
 
         $transportType = 'default';
 
-        if (!is_null($transportCategory) && in_array($transportCategory->alias, ['truck', 'bus'])) {
-            $transportType = 'truck';
+        if (!is_null($transportCategory)) {
+            if ($transportCategory === 'bus') {
+                $transportType = 'truck';
+            }
+
+            if (in_array($transportCategory->alias, GreencardCashback::TRANSPORT_TYPE)) {
+                $transportType = $transportCategory->alias;
+            }
         }
 
         $cashback = GreencardCashback::where('months', $months)->where('trip_country', $tripCountry)->where('transport_type', $transportType)->first();

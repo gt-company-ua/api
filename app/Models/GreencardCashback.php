@@ -12,5 +12,5 @@ class GreencardCashback extends Model
     protected $guarded = [];
     protected $casts = ['amount' => 'float'];
 
-    const TRANSPORT_TYPE = ['truck', 'default'];
+    const TRANSPORT_TYPE = ['truck', 'moto', 'trailer', 'default'];
 }

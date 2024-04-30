@@ -49,14 +49,20 @@
                                             <thead>
                                             <tr class="info">
                                                 <th class="col-md-2" rowspan="2">Период</th>
-                                                <th class="col-md-5 text-center" colspan="2">Грузовые и Автобусы</th>
-                                                <th class="col-md-5 text-center" colspan="2">Остальные</th>
+                                                <th class="col-md-2 text-center" colspan="2">Грузовые и Автобусы</th>
+                                                <th class="col-md-2 text-center" colspan="2">Мотоцикл</th>
+                                                <th class="col-md-2 text-center" colspan="2">Прицеп</th>
+                                                <th class="col-md-2 text-center" colspan="2">Остальные</th>
                                             </tr>
                                             <tr class="info">
-                                                <th class="col-md-2">Сумма Европа</th>
-                                                <th class="col-md-2">Сумма СНГ</th>
-                                                <th class="col-md-2">Сумма Европа</th>
-                                                <th class="col-md-2">Сумма СНГ</th>
+                                                <th class="col-md-1">Сумма Европа</th>
+                                                <th class="col-md-1">Сумма СНГ</th>
+                                                <th class="col-md-1">Сумма Европа</th>
+                                                <th class="col-md-1">Сумма СНГ</th>
+                                                <th class="col-md-1">Сумма Европа</th>
+                                                <th class="col-md-1">Сумма СНГ</th>
+                                                <th class="col-md-1">Сумма Европа</th>
+                                                <th class="col-md-1">Сумма СНГ</th>
                                             </tr>
                                             </thead>
                                             <tbody>

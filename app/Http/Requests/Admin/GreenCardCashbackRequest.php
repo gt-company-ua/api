@@ -27,6 +27,10 @@ class GreenCardCashbackRequest extends FormRequest
             'months.*' => 'required|numeric|min:0|max:12',
             'amount_eu_truck.*' => 'nullable|numeric|min:0',
             'amount_sng_truck.*' => 'nullable|numeric|min:0',
+            'amount_eu_moto.*' => 'nullable|numeric|min:0',
+            'amount_sng_moto.*' => 'nullable|numeric|min:0',
+            'amount_eu_trailer.*' => 'nullable|numeric|min:0',
+            'amount_sng_trailer.*' => 'nullable|numeric|min:0',
             'amount_eu_default.*' => 'nullable|numeric|min:0',
             'amount_sng_default.*' => 'nullable|numeric|min:0',
         ];
