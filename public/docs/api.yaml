@@ -441,6 +441,25 @@ paths:
         '422':
           $ref: '#/components/responses/resp422'
       x-swagger-router-controller: VZR
+  /v2/vzr/calculate-with-cashback:
+    post:
+      tags:
+        - vzr
+      summary: Расчет тарифов по ВЗР
+      operationId: postVzrCalculate-v2-with-cashback
+      requestBody:
+        $ref: '#/components/requestBodies/vzrCalculateV2'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {"ECONOM": {"price": 500, "cashback": null}, "STANDART": {"price": 700, "cashback": 30}}
+        '422':
+          $ref: '#/components/responses/resp422'
+      x-swagger-router-controller: VZR
 
   /v2/vzr/territories:
     get:
@@ -1106,6 +1125,16 @@ components:
                 $ref: '#/components/schemas/insured_sum'
               promocode:
                 $ref: '#/components/schemas/promocode'
+              cashback_to_vsu:
+                $ref: '#/components/schemas/cashback_to_vsu'
+              cashback_phone:
+                type: string
+                nullable: true
+                description: Телефон для Cashback
+              cashback_card:
+                type: string
+                nullable: true
+                description: Номер карты для Cashback
               dont_call:
                 $ref: '#/components/schemas/dont_call'
               tourists:

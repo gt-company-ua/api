@@ -34,5 +34,8 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/greencard', [\App\Http\Controllers\Admin\GreenCardController::class, 'index']);
         Route::put('/greencard/cashback', [\App\Http\Controllers\Admin\GreenCardController::class, 'updateCashback'])->name('greencard.cashback');
+
+        Route::get('/vzr', [\App\Http\Controllers\Admin\VzrController::class, 'index']);
+        Route::put('/vzr/cashback', [\App\Http\Controllers\Admin\VzrController::class, 'updateCashback'])->name('vzr.cashback');
     });
 });

@@ -320,6 +320,11 @@ return [
             'url'  => 'admin/greencard',
             'icon' => 'fas fa-calculator',
         ],
+        [
+            'text' => 'ВЗР',
+            'url'  => 'admin/vzr',
+            'icon' => 'fas fa-calculator',
+        ],
     ],
 
     /*

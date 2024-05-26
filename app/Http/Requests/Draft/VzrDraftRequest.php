@@ -69,7 +69,11 @@ class VzrDraftRequest extends FormRequest
             'code' => 'nullable|string',
             'code_date_end' => 'nullable|date',
 
-            'ga_id' => 'nullable'
+            'ga_id' => 'nullable',
+
+            'cashback_phone' => 'nullable|string',
+            'cashback_card' => 'nullable|string',
+            'cashback_to_vsu' => ['nullable', new Boolean],
         ];
     }
 }

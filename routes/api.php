@@ -94,6 +94,7 @@ Route::prefix('v2')->group(function () {
         Route::post('/', [\App\Http\Controllers\v2\VzrController::class, 'store']);
         Route::post('/draft', [\App\Http\Controllers\v2\VzrController::class, 'draft']);
         Route::post('/calculate', [\App\Http\Controllers\v2\VzrController::class, 'calculate']);
+        Route::post('/calculate-with-cashback', [\App\Http\Controllers\v2\VzrController::class, 'calculateWithCashback']);
         Route::get('/territories', [\App\Http\Controllers\v2\VzrController::class, 'territories']);
         Route::get('/territories/{lang}', [\App\Http\Controllers\v2\VzrController::class, 'territories']);
         Route::get('/documents', [\App\Http\Controllers\v2\VzrController::class, 'documents']);

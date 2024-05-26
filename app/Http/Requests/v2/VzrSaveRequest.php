@@ -68,7 +68,11 @@ class VzrSaveRequest extends FormRequest
             'code_date_end' => 'nullable|date',
 
             'ga_id' => 'nullable',
-            'uuid' => 'exists:App\Models\Order,uuid'
+            'uuid' => 'exists:App\Models\Order,uuid',
+
+            'cashback_phone' => 'nullable|string',
+            'cashback_card' => 'nullable|string',
+            'cashback_to_vsu' => ['nullable', new Boolean],
         ];
     }
 }

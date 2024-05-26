@@ -43,6 +43,31 @@ class VzrController extends Controller
         return $this->sendResponse($tariffs);
     }
 
+    public function calculateWithCashback(VzrCalculateRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $tariffs = [];
+        $error = null;
+
+        foreach (Ingo::VZR_TARIFFS as $tariff) {
+            $calculate = (new Ingo())->vzrCalculate($data, $tariff);
+
+            if (isset($calculate['data']['amount'])) {
+                $amount = round($calculate['data']['amount'], 2);
+                $tariffs[$tariff]['price'] = $amount;
+                $tariffs[$tariff]['cashback'] = (new VzrService())->getCashback($tariff, $amount);
+            } else if (isset($calculate['message'])) {
+                $error = $calculate['message'];
+            }
+        }
+
+        if (count($tariffs) === 0 && ! is_null($error)) {
+            return $this->sendError($error, 422);
+        }
+
+        return $this->sendResponse($tariffs);
+    }
+
 
     public function store(VzrSaveRequest $request): JsonResponse
     {
@@ -59,6 +84,7 @@ class VzrController extends Controller
             }
 
             $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
+            $data['cashback_amount'] = (new VzrService())->getCashback($data['tariff'], $data['price']);
 
             $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_VZR);
 

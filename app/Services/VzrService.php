@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\VzrSaveRequest;
 use App\Models\CovidPrice;
 use App\Models\Order;
+use App\Models\VzrCashback;
 use App\Models\VzrRangeDay;
 use App\Services\api\CurrencyService;
 use Exception;
@@ -213,5 +214,16 @@ class VzrService
         }
 
         $this->prices = $csv;
+    }
+
+    public function getCashback($tariff, $amount): ?float
+    {
+        $cashback = VzrCashback::where('tariff', $tariff)->first();
+
+        if (is_null($cashback) || is_null($cashback->amount) || $cashback->amount <= 0) {
+            return null;
+        }
+
+        return round($amount / 100 * $cashback->amount, 0);
     }
 }
