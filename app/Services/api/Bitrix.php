@@ -53,6 +53,18 @@ class Bitrix
     {
         $param = ['phone' => '+'.preg_replace("/[^0-9]/", '', $phone)];
 
-        return $this->request('getContactDetails', $param);
+        $search = $this->request('getContactDetails', $param);
+
+        if (count($search) > 0) {
+            if( ! empty($search['latin_name']) && preg_match("/[А-Яа-я]/", $search['latin_name']) ) {
+                $search['latin_name'] = null;
+            }
+
+            if( ! empty($search['latin_surname']) && preg_match("/[А-Яа-я]/", $search['latin_surname']) ) {
+                $search['latin_surname'] = null;
+            }
+        }
+
+        return $search;
     }
 }
