@@ -224,6 +224,6 @@ class VzrService
             return null;
         }
 
-        return round($amount / 100 * $cashback->amount, 0);
+        return ceil(round($amount / 100 * $cashback->amount, 0) / 10) * 10;
     }
 }
