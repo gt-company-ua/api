@@ -24,6 +24,9 @@ class Ingo
 
     const OSAGO_FRANCHISES = [0, 1600, 3200];
 
+    const PHONE = '+380639583957';
+    const EMAIL = 'greencard.ukraine.online@gmail.com';
+
     const DOC_TYPES = [
 //        1 => 'паспорт',
 //        2 => 'ID-паспорт',
@@ -179,6 +182,8 @@ class Ingo
             'vehicleRegNo' => $order->transport->gov_num,
             'vehicleVin' => $order->transport->vin,
             'address' => $order->city_name,
+            'phone' => self::PHONE,
+            'email' => self::EMAIL
         ];
 
         try {
