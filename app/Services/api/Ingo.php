@@ -483,6 +483,20 @@ class Ingo
         return $response['data']['exportData'] ?? [];
     }
 
+    public function transportBrands()
+    {
+        $response = $this->request('/osago/transport-brands?vehicleType=B4', [], self::METHOD_GET);
+
+        return $response['data'] ?? [];
+    }
+
+    public function transportModels($brandID)
+    {
+        $response = $this->request('/osago/transport-models?brandId='.$brandID, [], self::METHOD_GET);
+
+        return $response['data'] ?? [];
+    }
+
     public function findCarByNum(string $number)
     {
         $response = $this->request('/osago/plate-parse?regNo=' . $number, [], self::METHOD_GET);

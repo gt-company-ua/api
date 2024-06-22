@@ -15,29 +15,29 @@ class CarService
     }
     private function updateBrands()
     {
-        $brands = (new Ingo())->carBrands();
+        $brands = (new Ingo())->transportBrands();
 
         foreach ($brands as $brand) {
             CarMark::updateOrCreate(
-                ['external_id' => $brand['DMarkID']],
-                ['name' => $brand['Name']]
+                ['external_id' => $brand['id']],
+                ['name' => $brand['title']]
             );
         }
     }
 
     private function updateModels()
     {
-        $models = (new Ingo())->carModels();
+        $marks = CarMark::whereNotNull('external_id')->get();
 
-        $marks = CarMark::whereNotNull('external_id')->get()->pluck('id', 'external_id')->toArray();
-
-        foreach ($models as $model) {
-            if ( ! isset($marks[$model['DMarkID']])) continue;
-
-            CarModel::updateOrCreate(
-                ['external_id' => $model['DModelID'], 'car_mark_id' => $marks[$model['DMarkID']]],
-                ['name' => $model['Name']]
-            );
+        foreach ($marks as $mark) {
+            $models = (new Ingo())->transportModels($mark->external_id);
+            foreach ($models as $model) {
+                CarModel::updateOrCreate(
+                    ['external_id' => $model['id']],
+                    ['name' => $model['title'], 'car_mark_id' => $mark->id]
+                );
+            }
         }
+
     }
 }
