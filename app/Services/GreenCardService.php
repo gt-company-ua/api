@@ -45,7 +45,7 @@ class GreenCardService
         $transportType = 'default';
 
         if (!is_null($transportCategory)) {
-            if ($transportCategory === 'bus') {
+            if ($transportCategory->alias === 'bus') {
                 $transportType = 'truck';
             }
 
