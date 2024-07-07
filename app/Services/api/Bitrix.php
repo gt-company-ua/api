@@ -41,7 +41,9 @@ class Bitrix
                 return [];
             }
 
-            return json_decode($body, true);
+            $result = json_decode($body, true);
+
+            return is_null($result) ? [] : $result;
         }catch (RequestException $e){
             Log::error('Bitrix request() error: ' . $e->getMessage());
 
