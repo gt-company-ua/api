@@ -27,6 +27,8 @@ class Ingo
     const PHONE = '+380639583957';
     const EMAIL = 'greencard.ukraine.online@gmail.com';
 
+    const TRAVEL_P6ID = 95;
+
     const DOC_TYPES = [
 //        1 => 'паспорт',
 //        2 => 'ID-паспорт',
@@ -312,6 +314,7 @@ class Ingo
             'address' => $order->insurant->address,
             'phone' => $order->insurant->phone,
             'email' => $order->email,
+            'p6id' => self::TRAVEL_P6ID
         ];
 
         if ($order->tariff === 'ELIT') {
@@ -380,6 +383,7 @@ class Ingo
             'medicalPocket' => $medicalPocket,
             'medicalCover' => $data['insured_sum'],
             'medicalCurrency' => 'EUR',
+            'p6id' => self::TRAVEL_P6ID,
             'tourists' => [],
         ];
 
@@ -422,7 +426,7 @@ class Ingo
     public function vzrConfirm(Order $order): bool
     {
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
+            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999), 'p6id' => self::TRAVEL_P6ID], self::METHOD_PATCH);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
             if (! empty($response['status_code']) && $response['status_code'] == 200) {
