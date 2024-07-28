@@ -264,6 +264,30 @@ class Ingo
         return $files;
     }
 
+    public function greenCardPrintOffer(Order $order): array
+    {
+        $files = [];
+
+        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+            $statusCode = 200;
+
+            foreach (['personal_offer'] as $formType) {
+                $filename = $order->id . '-' . $formType . '.pdf';
+                $response = $this->request('/greencard/' . $order->contract->external_id . '/pdf?formType=' . $formType, [], self::METHOD_GET, $filename);
+
+                if (isset($response['status_code']) && $statusCode < $response['status_code']) {
+                    continue;
+                }
+
+                if (isset($response['status']) && $response['status'] === true && $response['status_code'] === 200) {
+                    $files[] = $filename;
+                }
+            }
+        }
+
+        return $files;
+    }
+
     private function updateContractDownload(OrderContract $contract, $statusCode)
     {
         $contract->download_attempts ++;

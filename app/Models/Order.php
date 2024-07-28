@@ -86,7 +86,9 @@ class Order extends Model
         'insured_sum' => 'float',
         'gc_plus_price' => 'float',
         'cashback_amount' => 'float',
-        'paid' => 'bool'
+        'paid' => 'bool',
+        'sent_offer' => 'bool',
+        'confirm_sms' => 'bool',
     ];
 
     protected static function boot()

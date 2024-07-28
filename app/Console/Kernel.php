@@ -35,6 +35,20 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping();
 
         $schedule->call(function () {
+            (new GreenCardService())->sendGreenCardConfirm();
+        })
+            ->name('orders:greencard:confirm')
+            ->everyMinute()
+            ->withoutOverlapping();
+
+        $schedule->call(function () {
+            (new GreenCardService())->cronGreenCardOffers();
+        })
+            ->name('orders:greencard:offer')
+            ->everyMinute()
+            ->withoutOverlapping();
+
+        $schedule->call(function () {
             (new OrderService(null))->sentPolicyToClients();
         })
             ->name('orders:greencard:files')

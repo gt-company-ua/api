@@ -59,9 +59,12 @@ class OrderController extends Controller
     public function confirmSms(ConfirmSmsRequest $request, $uuid): JsonResponse
     {
         $data = $request->validated();
-        $count = Order::where('uuid', $uuid)->where('send_sms', $data['code'])->count();
+        $order = Order::where('uuid', $uuid)->where('send_sms', $data['code'])->first();
 
-        if ($count > 0) {
+        if (!is_null($order)) {
+            $order->confirm_sms = true;
+            $order->save();
+
             return $this->sendSuccess();
         }
 

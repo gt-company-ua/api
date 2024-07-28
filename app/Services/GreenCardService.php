@@ -3,14 +3,14 @@
 namespace App\Services;
 
 use App\Http\Requests\GreenCardSaveRequest;
+use App\Mail\OrderOffer;
 use App\Models\GreencardCashback;
 use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\TransportCategory;
 use App\Services\api\Ingo;
-use App\Services\api\OneC;
-use App\Services\api\Profitsoft;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Mail;
 
 class GreenCardService
 {
@@ -28,6 +28,7 @@ class GreenCardService
         $data['price'] = $amount;
         $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id']);
         $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
+        $data['sent_offer'] = false;
 
         $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
 
@@ -116,10 +117,8 @@ class GreenCardService
         $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
             ->where('upload_docs', false)
             ->where('status_contract', OrderContract::STATUS_CONTRACT_NOT_SENT)
-            ->limit(2)
+            ->limit(10)
             ->get();
-
-        $timeStart = date('d.m.Y H:i:s');
 
         foreach ($orders as $order) {
             (new Ingo())->greenCardDraft($order);
@@ -127,8 +126,58 @@ class GreenCardService
             if ($order->payment_status === OrderService::PAYMENT_STATUS_OK || (!is_null($order->partner) && $order->paid)) {
                 (new OrderService($order))->saveGreenCard1C();
             }
+
+            $order = Order::find($order->id);
+            $this->sendGreenCardOffer($order);
+        }
+    }
+
+    public function sendGreenCardConfirm()
+    {
+        $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
+            ->where('upload_docs', false)
+            ->where('confirm_sms', true)
+            ->where('status_contract', OrderContract::STATUS_CONTRACT_SENT)
+            ->whereHas('contract', function (Builder $query) {
+                $query->where('api_name', Ingo::API_NAME);
+                $query->where('state', 'Draft');
+            })
+            ->limit(10)
+            ->get();
+
+        foreach ($orders as $order) {
+            (new OrderService($order))->saveGreenCard1C();
+        }
+    }
+
+    public function cronGreenCardOffers()
+    {
+        $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
+            ->where('upload_docs', false)
+            ->where('status_contract', OrderContract::STATUS_CONTRACT_SENT)
+            ->where('sent_offer', false)
+            ->where('confirm_sms', false)
+            ->limit(5)
+            ->get();
+
+        foreach ($orders as $order) {
+            $this->sendGreenCardOffer($order);
+        }
+    }
+
+    private function sendGreenCardOffer(Order $order)
+    {
+        $files = (new Ingo())->greenCardPrintOffer($order);
+        if (count($files) === 0) {
+            return;
         }
 
-        //Log::debug('sendGreenCardDraft() Time start:' . $timeStart . '. Time end: '. date('d.m.Y H:i:s'));
+        $code = mt_rand(100000, 999999);
+
+        Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderOffer($files, $code));
+
+        $order->sms_code = $code;
+        $order->sent_offer = true;
+        $order->save();
     }
 }
