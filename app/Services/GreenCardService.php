@@ -137,6 +137,7 @@ class GreenCardService
         $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
             ->where('upload_docs', false)
             ->where('confirm_sms', true)
+            ->where('payment_status', OrderService::PAYMENT_STATUS_OK)
             ->where('status_contract', OrderContract::STATUS_CONTRACT_SENT)
             ->whereHas('contract', function (Builder $query) {
                 $query->where('api_name', Ingo::API_NAME);
