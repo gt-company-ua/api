@@ -32,7 +32,7 @@ class OrderOffer extends Mailable
      */
     public function build()
     {
-        $mail = $this->view('mails.orders.payment', ['code' => $this->code])->subject("Персональна оферта");
+        $mail = $this->view('mails.orders.offer', ['code' => $this->code])->subject("Персональна оферта");
 
         foreach ($this->files as $file) {
             $filePath = storage_path('app/public/policies') . DIRECTORY_SEPARATOR . $file;
