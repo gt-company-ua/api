@@ -177,7 +177,7 @@ class GreenCardService
 
         Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderOffer($files, $code));
 
-        $order->sms_code = $code;
+        $order->send_sms = $code;
         $order->sent_offer = true;
         $order->save();
     }
