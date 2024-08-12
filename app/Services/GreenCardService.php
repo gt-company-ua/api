@@ -175,8 +175,7 @@ class GreenCardService
 
         $code = mt_rand(100000, 999999);
 
-        Mail::to(env('MAIL_OFFICE'))->send(new OrderOffer($files, $code));
-        //Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderOffer($files, $code));
+        Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new OrderOffer($files, $code));
 
         $order->send_sms = $code;
         $order->sent_offer = true;
