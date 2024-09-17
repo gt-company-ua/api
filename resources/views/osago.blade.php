@@ -58,6 +58,7 @@
                                                 <tr class="info">
                                                     <th class="col-md-6">Объем двигателя/мощность</th>
                                                     <th class="col-md-2">Коэфф.</th>
+                                                    <th class="col-md-2">Объем</th>
                                                     <th class="col-md-2 danger">API ID</th>
                                                 </tr>
                                                 </thead>
@@ -68,6 +69,9 @@
                                                         <td class="success">
                                                             <input type="hidden" name="id[{{ $power->id }}]" value="{{ $power->id }}">
                                                             <input type="text" name="coefficient[{{ $power->id }}]" class="form-control" value="{{ $power->coefficient }}">
+                                                        </td>
+                                                        <td class="danger">
+                                                            <input type="text" name="capacity[{{ $power->id }}]" class="form-control" value="{{ $power->capacity }}">
                                                         </td>
                                                         <td class="danger">
                                                             <input type="text" name="api_id[{{ $power->id }}]" class="form-control" value="{{ $power->api_id }}">

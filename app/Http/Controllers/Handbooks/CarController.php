@@ -8,8 +8,11 @@ use App\Http\Requests\Handbooks\CarModelRequest;
 use App\Http\Requests\Handbooks\FindVehicleRequest;
 use App\Models\CarMark;
 use App\Models\CarModel;
+use App\Models\TransportCategory;
+use App\Models\TransportPower;
 use App\Services\api\Ingo;
 use App\Services\api\OneC;
+use App\Services\api\Opendatabot;
 use App\Traits\ApiResponser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -67,6 +70,35 @@ class CarController extends Controller
         if (!empty($search['model_code'])) {
             $carModel = CarModel::where('external_id', $search['model_code'])->first();
             $search['car_model_id'] = $carModel->id ?? null;
+        }
+
+        return $this->sendResponse($search);
+    }
+
+    public function findVehicleOpendatabot(FindVehicleRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $search = (new Opendatabot())->transport($data['search']);
+
+        if (!empty($search['brand'])) {
+            $carMark = CarMark::where('name', $search['brand'])->first();
+            $search['car_mark_id'] = $carMark->id ?? null;
+
+            if (!empty($search['model']) && !empty($search['car_mark_id'])) {
+                $carModel = CarModel::where('car_mark_id', $search['car_mark_id'])->where('name', $search['model'])->first();
+                $search['car_model_id'] = $carModel->id ?? null;
+            }
+        }
+
+        if (!empty($search['kind'])) {
+            $transportCategory = TransportCategory::where('kind', 'like', '%' . mb_substr($search['kind'], 0, 6) . '%')->first();
+            $search['transport_category_id'] = $transportCategory->id ?? null;
+
+            if (!empty($search['capacity']) && !is_null($transportCategory)) {
+                $transportPower = TransportPower::where('transport_category_id', $transportCategory->id)->where('capacity', '<=', $search['capacity'])->whereNotNull('capacity')->orderByDesc('capacity')->first();
+                $search['transport_power_id'] = $transportPower->id ?? null;
+            }
         }
 
         return $this->sendResponse($search);

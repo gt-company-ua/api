@@ -171,6 +171,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/findVehicleIngo'
       x-swagger-router-controller: Cars
+  /handbooks/cars/findBot:
+    get:
+      tags:
+        - handbooks
+      operationId: getFindVehicleBot
+      parameters:
+        - $ref: '#/components/parameters/search'
+      summary: Поиск информации по номеру авто в Open Data Bot
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/findVehicleIngo'
+      x-swagger-router-controller: Cars
   /handbooks/transport:
     get:
       tags:
@@ -2305,6 +2323,32 @@ components:
           nullable: true
         type:
           type: string
+          nullable: true
+    findVehicleBot:
+      type: object
+      properties:
+        vin:
+          type: string
+        makeYear:
+          type: integer
+          nullable: true
+        brand:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        car_mark_id:
+          type: integer
+          nullable: true
+        car_model_id:
+          type: integer
+          nullable: true
+        transport_category_id:
+          type: integer
+          nullable: true
+        transport_power_id:
+          type: integer
           nullable: true
 
     findVehicle:

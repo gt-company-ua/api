@@ -18,6 +18,7 @@ Route::prefix('handbooks')->group(function () {
     Route::get('/cars', [\App\Http\Controllers\Handbooks\CarController::class, 'marks']);
     Route::get('/cars/find', [\App\Http\Controllers\Handbooks\CarController::class, 'findVehicle']);
     Route::get('/cars/findIngo', [\App\Http\Controllers\Handbooks\CarController::class, 'findVehicleIngo']);
+    Route::get('/cars/findBot', [\App\Http\Controllers\Handbooks\CarController::class, 'findVehicleOpendatabot']);
     Route::get('/cars/{car_mark_id}/models', [\App\Http\Controllers\Handbooks\CarController::class, 'models']);
 
     Route::get('/transport', [\App\Http\Controllers\Handbooks\TransportController::class, 'categories']);

@@ -33,6 +33,7 @@ class OsagoController extends Controller
             $transportPower->update([
                 'coefficient' => $data['coefficient'][$key],
                 'api_id' => $data['api_id'][$key],
+                'capacity' => $data['capacity'][$key],
             ]);
         }
 
