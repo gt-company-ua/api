@@ -73,6 +73,7 @@ class VzrSaveRequest extends FormRequest
             'cashback_phone' => 'nullable|string',
             'cashback_card' => 'nullable|string',
             'cashback_to_vsu' => ['nullable', new Boolean],
+            'is_abroad' => ['nullable', new Boolean],
         ];
     }
 }

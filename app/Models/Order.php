@@ -89,6 +89,7 @@ class Order extends Model
         'paid' => 'bool',
         'sent_offer' => 'bool',
         'confirm_sms' => 'bool',
+        'is_abroad' => 'bool',
     ];
 
     protected static function boot()

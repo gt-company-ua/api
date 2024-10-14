@@ -56,6 +56,7 @@ class OsagoDraftRequest extends FormRequest
             'transport.gov_num' => 'nullable|string|min:6',
             'transport.vin' => 'nullable|string|min:6',
             'transport.car_year' => 'nullable',
+            'transport.otk_date' => 'nullable|date|before_or_equal:today',
 
             'insurant.type' => ['nullable', Rule::in(Order::INSURANT_TYPES)],
             'insurant.phone' => 'nullable|string|min:6',

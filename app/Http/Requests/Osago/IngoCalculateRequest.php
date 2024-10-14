@@ -36,6 +36,7 @@ class IngoCalculateRequest extends FormRequest
 
             'transport.transport_power_id' => 'required|exists:App\Models\TransportPower,id',
             'transport.car_year' => 'required|digits:4|integer|min:1970|max:' . date('Y'),
+            'transport.otk_date' => 'nullable|date|before_or_equal:today',
 
             'city_id' => 'nullable|exists:App\Models\OsagoCity,id',
             'dgo_limit' => 'nullable|integer',

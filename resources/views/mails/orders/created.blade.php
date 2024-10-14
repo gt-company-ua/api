@@ -47,6 +47,7 @@
 | Телефон для cashback | {{ $order->cashback_phone }} |
 | Карта для cashback | {{ $order->cashback_card }} |
 | Отправить cashback ВСУ | @if ($order->cashback_to_vsu) Да @else Нет @endif |
+| Находится за границей | @if ($order->is_abroad) Да @else Нет @endif |
 @if(!is_null($order->transport))
 | ИНФОРМАЦИЯ О ТРАНСПОРТЕ | - |
 | Марка | {{ $order->transport->car_mark }} |
@@ -54,6 +55,7 @@
 | Год | {{ $order->transport->car_year }} |
 | Гос. номер | {{ $order->transport->gov_num }} |
 | VIN | {{ $order->transport->vin }} |
+| Следующее ТО | {{ $order->transport->otk_date }} |
 @if(!is_null($order->transport->category))
 | Тип ТС | {{ $order->transport->category->name_ua }} |
 @endif

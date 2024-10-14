@@ -44,6 +44,7 @@ class VzrCalculateRequest extends FormRequest
             'ranges' => 'nullable|array',
             'ranges.*.range' => ['required', Rule::in(VzrService::AGE_RANGES)],
             'ranges.*.goal' => ['required', Rule::in(Ingo::GOAL_IDS)],
+            'is_abroad' => 'nullable|boolean',
         ];
     }
 }

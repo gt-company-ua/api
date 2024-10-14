@@ -57,6 +57,7 @@ class IngoSaveRequest extends FormRequest
             'transport.gov_num' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.vin' => 'nullable|required_if:upload_docs,0|string|min:6',
             'transport.car_year' => 'nullable|required_if:upload_docs,0|digits:4|integer|min:1970|max:' . date('Y'),
+            'transport.otk_date' => 'nullable|date|before_or_equal:today',
 
             'use_scoring' => ['nullable', new Boolean],
 

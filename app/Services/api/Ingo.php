@@ -443,7 +443,13 @@ class Ingo
             }
         }
 
-        return $this->request('/travel/calculate', $params);
+        $response = $this->request('/travel/calculate', $params);
+
+        if (isset($data['is_abroad']) && $data['is_abroad'] === true && isset($response['data']['amount'])) {
+            $response['data']['amount'] = round($response['data']['amount'], 2) * 2;
+        }
+
+        return $response;
     }
 
 
@@ -575,6 +581,10 @@ class Ingo
             $params['subDgo'] = $data['dgo_limit'];
         }
 
+        if (isset($data['transport']['otk_date'])) {
+            $params['nextInspection'] = $data['transport']['otk_date'];
+        }
+
         return $this->request('/osago/calculate', $params);
     }
 
@@ -619,6 +629,10 @@ class Ingo
             'email' => $order->email,
             'docId' => (string) $order->id
         ];
+
+        if (isset($data['transport']['otk_date'])) {
+            $params['nextInspection'] = $data['transport']['otk_date'];
+        }
 
         if ($order->use_scoring) {
             $params['useScoring'] = true;
