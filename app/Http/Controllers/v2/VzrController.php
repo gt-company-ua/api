@@ -27,6 +27,9 @@ class VzrController extends Controller
         $error = null;
 
         foreach (Ingo::VZR_TARIFFS as $tariff) {
+            if (((!isset($data['is_abroad']) || $data['is_abroad'] === false) && $tariff === Ingo::VZR_STANDARD_PLUS) || (isset($data['is_abroad']) && $data['is_abroad'] === true && $tariff !== Ingo::VZR_STANDARD_PLUS)) {
+                continue;
+            }
             $calculate = (new Ingo())->vzrCalculate($data, $tariff);
 
             if (isset($calculate['data']['amount'])) {
@@ -50,6 +53,10 @@ class VzrController extends Controller
         $error = null;
 
         foreach (Ingo::VZR_TARIFFS as $tariff) {
+            if (((!isset($data['is_abroad']) || $data['is_abroad'] === false) && $tariff === Ingo::VZR_STANDARD_PLUS) || (isset($data['is_abroad']) && $data['is_abroad'] === true && $tariff !== Ingo::VZR_STANDARD_PLUS)) {
+                continue;
+            }
+
             $calculate = (new Ingo())->vzrCalculate($data, $tariff);
 
             if (isset($calculate['data']['amount'])) {

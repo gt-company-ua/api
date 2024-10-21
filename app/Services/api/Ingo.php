@@ -46,8 +46,9 @@ class Ingo
 //        14 => 'іноземне посвідчення водія'
     ];
 
-    const VZR_TARIFFS = ['ECONOM', 'STANDARD', self::VZR_ELIT];
+    const VZR_TARIFFS = ['ECONOM', 'STANDARD', self::VZR_ELIT, self::VZR_STANDARD_PLUS];
     const VZR_ELIT = 'ELIT';
+    const VZR_STANDARD_PLUS = 'STANDARD_PLUS';
 
     const TERRITORIES_IDS = [5, 6, 7, 8];
     const TERRITORIES = [
@@ -443,13 +444,7 @@ class Ingo
             }
         }
 
-        $response = $this->request('/travel/calculate', $params);
-
-        if (isset($data['is_abroad']) && $data['is_abroad'] === true && isset($response['data']['amount'])) {
-            $response['data']['amount'] = round($response['data']['amount'], 2) * 2;
-        }
-
-        return $response;
+        return $this->request('/travel/calculate', $params);
     }
 
 
