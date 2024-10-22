@@ -71,6 +71,12 @@ class OsagoDraftRequest extends FormRequest
             'insurant.doc_series' => 'nullable|string',
             'insurant.doc_given' => 'nullable|string',
             'insurant.doc_date' => 'nullable|date',
+            'insurant.doc_adv' => 'nullable|string',
+
+            'insurant.discount_doc_number' => 'nullable|string',
+            'insurant.discount_doc_series' => 'nullable|string',
+            'insurant.discount_doc_given' => 'nullable|string',
+            'insurant.discount_doc_date' => 'nullable|date|before_or_equal:today',
 
             'promocode' => 'nullable|string',
 

@@ -63,4 +63,9 @@ class IngoController extends Controller
 
         return $this->sendResponse($prices);
     }
+
+    public function discountDocuments(): JsonResponse
+    {
+        return $this->sendResponse(Ingo::DISCOUNTS);
+    }
 }

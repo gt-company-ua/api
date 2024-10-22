@@ -1841,6 +1841,16 @@ components:
                     $ref: '#/components/schemas/insurantDocGiven'
                   doc_date:
                     $ref: '#/components/schemas/insurantDocDate'
+                  doc_adv:
+                    $ref: '#/components/schemas/insurantAdv'
+                  discount_doc_number:
+                    $ref: '#/components/schemas/insurantDocNumber'
+                  discount_doc_series:
+                    $ref: '#/components/schemas/insurantDocSeries'
+                  discount_doc_given:
+                    $ref: '#/components/schemas/insurantDocGiven'
+                  discount_doc_date:
+                    $ref: '#/components/schemas/insurantDocDate'
         multipart/form-data:
           schema:
             type: object
@@ -2174,6 +2184,10 @@ components:
       nullable: true
       format: date
       description: Дата выдачи
+    insurantAdv:
+      type: string
+      nullable: true
+      description: Номер записи
     created_at:
       type: string
       format: datetime

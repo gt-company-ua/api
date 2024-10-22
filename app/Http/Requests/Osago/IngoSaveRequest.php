@@ -74,6 +74,12 @@ class IngoSaveRequest extends FormRequest
             'insurant.doc_series' => 'nullable|string',
             'insurant.doc_given' => 'nullable|required_if:upload_docs,0|string',
             'insurant.doc_date' => 'nullable|required_if:upload_docs,0|date|before_or_equal:today',
+            'insurant.doc_adv' => 'nullable|string',
+
+            'insurant.discount_doc_number' => 'nullable|string',
+            'insurant.discount_doc_series' => 'nullable|string',
+            'insurant.discount_doc_given' => 'nullable|string',
+            'insurant.discount_doc_date' => 'nullable|date|before_or_equal:today',
 
             'promocode' => 'nullable|string',
 

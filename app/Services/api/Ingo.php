@@ -84,6 +84,13 @@ class Ingo
         //'SA' => 'Активний спорт'
     ];
 
+    const DISCOUNTS = [
+        1 => 'Учасники війни, що визначені законом',
+        2 => 'Інваліди II групи',
+        3 => 'Особи, які постраждали внаслідок Чорнобильської катастрофи',
+        4 => 'Пенсіонери громадяни'
+    ];
+
     const LANG_RU = 'ru';
     const LANG_UA = 'ua';
     private function request(string $uri, array $params, $method = self::METHOD_POST, ?string $filename = null): array
@@ -625,12 +632,16 @@ class Ingo
             'docId' => (string) $order->id
         ];
 
-        if (isset($data['transport']['otk_date'])) {
-            $params['nextInspection'] = $data['transport']['otk_date'];
+        if (!is_null($order->transport->otk_date)) {
+            $params['nextInspection'] = $order->transport->otk_date;
         }
 
         if ($order->use_scoring) {
             $params['useScoring'] = true;
+        }
+
+        if ($order->insurant->doc_type == 2 && !is_null($order->insurant->doc_adv)) {
+            $params['customerDocAdv'] = $order->insurant->doc_adv;
         }
 
         try {

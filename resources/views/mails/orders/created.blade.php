@@ -81,6 +81,15 @@
 | Серия документа | {{ $order->insurant->doc_series }} |
 | Дата выдачи документа | {{ $order->insurant->doc_date }} |
 | Кем выдан документ | {{ $order->insurant->doc_given }} |
+| Номер записи | {{ $order->insurant->doc_adv }} |
+@if ($order->discount_check)
+| ИНФОРМАЦИЯ О ЛЬГОТЕ | - |
+| Тип документа | {{ \App\Services\api\Ingo::DISCOUNTS[$order->discount_type] ?? '' }} |
+| Номер документа | {{ $order->insurant->discount_doc_number }} |
+| Серия документа | {{ $order->insurant->discount_doc_series }} |
+| Дата выдачи документа | {{ $order->insurant->discount_doc_date }} |
+| Кем выдан документ | {{ $order->insurant->discount_doc_given }} |
+@endif
 @endif
 @if(!is_null($order->contract))
 | ИНФОРМАЦИЯ О ПОЛИСЕ | - |

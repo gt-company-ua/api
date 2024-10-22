@@ -52,6 +52,7 @@ Route::prefix('osago')->group(function () {
         Route::post('/', [\App\Http\Controllers\Osago\IngoController::class, 'store']);
         Route::post('/draft', [\App\Http\Controllers\Osago\IngoController::class, 'draft']);
         Route::post('/calculate', [\App\Http\Controllers\Osago\IngoController::class, 'calculate']);
+        Route::get('/discounts', [\App\Http\Controllers\Osago\IngoController::class, 'discountDocuments']);
     });
 });
 
