@@ -179,7 +179,7 @@ class OrderService
 
         $this->savePromocode($promocode, $orderType);
 
-        if ((is_null($this->order->discount_check) || $this->order->discount_check === false) && $this->order->paid === false) {
+        if ($this->order->paid === false) {
             $this->createInvoice();
         }
 
