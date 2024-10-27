@@ -230,20 +230,12 @@ class Ingo
     public function greenCardConfirm(Order $order): ?array
     {
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            $response = $this->request('/greencard/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
+            $sms = (!empty($order->send_sms)) ? $order->send_sms : mt_rand(100000, 999999);
+
+            $response = $this->request('/greencard/' . $order->contract->external_id . '/confirm', ['validationCode' => $sms], self::METHOD_PATCH);
 
             Log::debug("Confirm GreenCard (order: ".$order->id.") response", $response);
-            if (! empty($response['status_code']) && $response['status_code'] == 200) {
-                $contract = [
-                    'state' => 'Signed',
-                ];
-                (new OrderService($order))->saveContract($contract);
-            } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
-                $contract = [
-                    'state' => 'Error',
-                ];
-                (new OrderService($order))->saveContract($contract);
-            }
+            $this->updateContractState($order, $response);
 
             return $response;
         }
@@ -463,23 +455,11 @@ class Ingo
     public function vzrConfirm(Order $order): bool
     {
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999), 'p6id' => self::TRAVEL_P6ID], self::METHOD_PATCH);
+            $sms = (!empty($order->send_sms)) ? $order->send_sms : mt_rand(100000, 999999);
+            $response = $this->request('/travel/' . $order->contract->external_id . '/confirm', ['validationCode' => $sms, 'p6id' => self::TRAVEL_P6ID], self::METHOD_PATCH);
 
             Log::debug("Confirm VZR (order: ".$order->id.") response", $response);
-            if (! empty($response['status_code']) && $response['status_code'] == 200) {
-                $contract = [
-                    'state' => 'Signed',
-                    'api_name' => self::API_NAME
-                ];
-                (new OrderService($order))->saveContract($contract);
-
-                return true;
-            } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
-                $contract = [
-                    'state' => 'Error',
-                ];
-                (new OrderService($order))->saveContract($contract);
-            }
+            $this->updateContractState($order, $response);
 
             return false;
         }
@@ -688,20 +668,11 @@ class Ingo
     public function osagoConfirm(Order $order): ?array
     {
         if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
-            $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', ['validationCode' => mt_rand(100000, 999999)], self::METHOD_PATCH);
+            $sms = (!empty($order->send_sms)) ? $order->send_sms : mt_rand(100000, 999999);
+            $response = $this->request('/osago/' . $order->contract->external_id . '/confirm', ['validationCode' => $sms], self::METHOD_PATCH);
 
             Log::debug("Confirm OSAGO (order: ".$order->id.") response", $response);
-            if (! empty($response['status_code']) && $response['status_code'] == 200) {
-                $contract = [
-                    'state' => 'Signed',
-                ];
-                (new OrderService($order))->saveContract($contract);
-            } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
-                $contract = [
-                    'state' => 'Error',
-                ];
-                (new OrderService($order))->saveContract($contract);
-            }
+            $this->updateContractState($order, $response);
 
             return $response;
         }
@@ -733,5 +704,20 @@ class Ingo
         }
 
         return $files;
+    }
+
+    private function updateContractState($order, $response)
+    {
+        if (! empty($response['status_code']) && $response['status_code'] == 200) {
+            $contract = [
+                'state' => 'Signed',
+            ];
+            (new OrderService($order))->saveContract($contract);
+        } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
+            $contract = [
+                'state' => 'Error',
+            ];
+            (new OrderService($order))->saveContract($contract);
+        }
     }
 }
