@@ -238,6 +238,11 @@ class Ingo
                     'state' => 'Signed',
                 ];
                 (new OrderService($order))->saveContract($contract);
+            } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
+                $contract = [
+                    'state' => 'Error',
+                ];
+                (new OrderService($order))->saveContract($contract);
             }
 
             return $response;
@@ -469,6 +474,11 @@ class Ingo
                 (new OrderService($order))->saveContract($contract);
 
                 return true;
+            } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
+                $contract = [
+                    'state' => 'Error',
+                ];
+                (new OrderService($order))->saveContract($contract);
             }
 
             return false;
@@ -684,6 +694,11 @@ class Ingo
             if (! empty($response['status_code']) && $response['status_code'] == 200) {
                 $contract = [
                     'state' => 'Signed',
+                ];
+                (new OrderService($order))->saveContract($contract);
+            } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
+                $contract = [
+                    'state' => 'Error',
                 ];
                 (new OrderService($order))->saveContract($contract);
             }
