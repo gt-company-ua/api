@@ -178,6 +178,10 @@ class OsagoService
             if (isset($calculate['data']['dgo'])) {
                 $data['price'] += round($calculate['data']['dgo'], 2);
             }
+
+            if (isset($calculate['cashback'])) {
+                $data['cashback_amount'] = $calculate['cashback'];
+            }
         }
 
         $city = OsagoCity::find($data['city_id']);

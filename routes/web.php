@@ -25,6 +25,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/osago/k1', [\App\Http\Controllers\Admin\OsagoController::class, 'updateK1'])->name('osago.k1');
         Route::put('/osago/k2', [\App\Http\Controllers\Admin\OsagoController::class, 'updateK2'])->name('osago.k2');
         Route::put('/osago/tariffs', [\App\Http\Controllers\Admin\OsagoController::class, 'updateTariffs'])->name('osago.tariffs');
+        Route::put('/osago/cashback', [\App\Http\Controllers\Admin\OsagoController::class, 'updateCashback'])->name('osago.cashback');
         Route::get('/prices', [\App\Http\Controllers\Admin\PricesController::class, 'index'])->name('prices.index');
         Route::get('/prices/download/{filename}', [\App\Http\Controllers\Admin\PricesController::class, 'download'])->name('prices.download');
         Route::post('/prices/upload', [\App\Http\Controllers\Admin\PricesController::class, 'upload'])->name('prices.upload');

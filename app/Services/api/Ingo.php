@@ -4,6 +4,7 @@ namespace App\Services\api;
 
 use App\Models\Order;
 use App\Models\OrderContract;
+use App\Models\OsagoCashback;
 use App\Models\OsagoCity;
 use App\Models\TransportCategory;
 use App\Models\TransportPower;
@@ -577,7 +578,20 @@ class Ingo
             $params['nextInspection'] = $data['transport']['otk_date'];
         }
 
-        return $this->request('/osago/calculate', $params);
+        $response = $this->request('/osago/calculate', $params);
+        if (isset($response['data']['amount'])) {
+            $cashback = OsagoCashback::where('franchise', $data['franchise'])->first();
+            if (!is_null($cashback)) {
+                $total = round($response['data']['amount'], 2);
+                if (isset($response['data']['dgo'])) {
+                    $total += round($response['data']['dgo'], 2);
+                }
+
+                $response['cashback'] = round($total / 100 * $cashback->amount);
+            }
+        }
+
+        return $response;
     }
 
     public function osagoDraft(Order $order): array

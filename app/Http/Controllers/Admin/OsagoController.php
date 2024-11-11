@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\OsagoCashbackRequest;
 use App\Http\Requests\Admin\UpdateK1Request;
 use App\Http\Requests\Admin\UpdateK2Request;
 use App\Http\Requests\Admin\UpdateTariffsRequest;
+use App\Models\OsagoCashback;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
 use App\Models\TransportCategory;
 use App\Models\TransportPower;
+use App\Services\api\Ingo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -20,8 +23,9 @@ class OsagoController extends Controller
         $transportCategories = TransportCategory::orderBy('ordering')->with('powers')->get();
         $coefficients = OsagoCoefficient::all();
         $tariffs = OsagoTariff::all();
+        $cashback = OsagoCashback::pluck('amount', 'franchise');
 
-        return view('osago', compact('transportCategories', 'coefficients', 'tariffs'));
+        return view('osago', compact('transportCategories', 'coefficients', 'tariffs', 'cashback'));
     }
 
     public function updateK1(UpdateK1Request $request): RedirectResponse
@@ -70,5 +74,20 @@ class OsagoController extends Controller
 
         return back()
             ->with('success','Тарифы успешно обновлены');
+    }
+
+    public function updateCashback(OsagoCashbackRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+
+        foreach (Ingo::OSAGO_FRANCHISES as $franchise) {
+            OsagoCashback::updateOrCreate(
+                ['franchise' => $franchise],
+                ['amount' => $data['cashback'][$franchise]]
+            );
+        }
+
+        return back()
+            ->with('success','Cashback успешно обновлен');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\Draft\OsagoDraftRequest;
 use App\Http\Requests\Osago\IngoCalculateRequest;
 use App\Http\Requests\Osago\IngoSaveRequest;
 use App\Models\Order;
+use App\Models\OsagoCashback;
 use App\Services\api\Ingo;
 use App\Services\OrderService;
 use App\Services\OsagoService;
@@ -54,6 +55,7 @@ class IngoController extends Controller
         $prices = [
             'total' => round($calculate['data']['amount'], 2),
             'amount' => round($calculate['data']['amount'], 2),
+            'cashback' => $calculate['cashback'] ?? null,
         ];
 
         if (isset($calculate['data']['dgo'])) {
