@@ -727,7 +727,7 @@ class Ingo
                 'state' => 'Signed',
             ];
             (new OrderService($order))->saveContract($contract);
-        } else if (! empty($response['status_code']) && $response['status_code'] > 400 && $response['status_code'] < 500) {
+        } else if (! empty($response['status_code']) && $response['status_code'] >= 400 && $response['status_code'] < 500) {
             $contract = [
                 'state' => 'Error',
             ];
