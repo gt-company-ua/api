@@ -159,6 +159,10 @@ class CrmService
             $fields['SOURCE_ID'] = 8;
         }
 
+        if (!is_null($this->order->dgo_limit)) {
+            $fields['UF_CRM_1733328539678'] = $this->order->dgo_limit;
+        }
+
         if ($this->order->draft === true) {
             $fields['TYPE_ID'] = 'UC_EPQLWX';
             $fields['STAGE_ID'] = 'C5:NEW';

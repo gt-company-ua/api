@@ -644,6 +644,10 @@ class Ingo
             $params['useScoring'] = true;
         }
 
+        if (!is_null($order->dgo_limit)) {
+            $params['subDgo'] = $order->dgo_limit;
+        }
+
         if ($order->insurant->doc_type == 2 && !is_null($order->insurant->doc_adv)) {
             $params['customerDocAdv'] = $order->insurant->doc_adv;
         }
