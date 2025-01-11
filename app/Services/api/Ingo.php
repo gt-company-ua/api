@@ -23,7 +23,7 @@ class Ingo
     const METHOD_PATCH = 'PATCH';
     const METHOD_POST = 'POST';
 
-    const OSAGO_FRANCHISES = [0, 1600, 3200];
+    const OSAGO_FRANCHISES = [0];
 
     const PHONE = '+380639583957';
     const EMAIL = 'greencard.ukraine.online@gmail.com';
@@ -543,10 +543,12 @@ class Ingo
         $transportPower = TransportPower::whereId($data['transport']['transport_power_id'])->first();
 
         if (empty($data['city_id'])) {
-            $zone = 5;
+            $ariaValue = 5;
+            $ariaKey = 'zoneId';
         } else {
             $city = OsagoCity::find($data['city_id']);
-            $zone = $city->zone;
+            $ariaValue = $city->external_id;
+            $ariaKey = 'cityCode';
         }
 
         $params = [
@@ -555,7 +557,7 @@ class Ingo
             //'bonusMalus' => 1,
             'privelege' => ($data['discount_check']) ? $data['discount_type'] : 0,
             'franchise' => $data['franchise'],
-            'zoneId' => $zone,
+            $ariaKey => $ariaValue,
             'usage' => '111111111111',
             'vehicleType' => $transportPower->type_auto ?? null,
             'customerIsPhysicalPerson' => ($data['insurant']['type'] === Order::INSURANT_PHYSICAL) ? 1 : 0,
