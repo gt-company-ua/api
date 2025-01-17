@@ -18,6 +18,7 @@ use App\Services\api\Ingo;
 use App\Services\api\OneC;
 use App\Services\api\Profitsoft;
 use App\Services\api\Salamandra;
+use App\Services\api\TasIns;
 use App\Services\api\Vignette;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
@@ -211,7 +212,7 @@ class OrderService
                 'public_key' => env('LIQPAY_POLICE_PUBLIC_KEY'),
                 'amount' => $this->order->price,
                 'commission_payer' => 'receiver',
-                'server_url' => route('orders.liqpay.status', ['order' => $this->order->uuid])
+                'server_url' => route('orders.liqpay.status.uuid', ['order' => $this->order->uuid])
             ];
 
             $price += $this->order->assist->price;
@@ -230,7 +231,7 @@ class OrderService
             'email'        => $this->order->email,
             'amount'       => $price,
             'currency'     => 'UAH',
-            'server_url'   => route('orders.liqpay.status', ['order' => $this->order->uuid]),
+            'server_url'   => route('orders.liqpay.status.uuid', ['order' => $this->order->uuid]),
             'result_url'   => route('orders.liqpay.result', ['order' => $this->order->uuid]),
             'order_id'     => $orderUid,
             'expired_date' => date('Y-m-d H:i:s', strtotime('+1 day')),
@@ -242,7 +243,14 @@ class OrderService
             $invoiceParams['split_rules'] = $splitRules;
         }
 
-        $sendInvoice = (new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY')))->api('request', $invoiceParams);
+        $publicKey = env('LIQPAY_PUBLIC_KEY');
+        $privateKey = env('LIQPAY_PRIVATE_KEY');
+        if (!empty($this->order->insurance_company) && $this->order->insurance_company == TasIns::API_NAME) {
+            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
+            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
+        }
+
+        $sendInvoice = (new LiqPay($publicKey, $privateKey))->api('request', $invoiceParams);
 
         if (isset($sendInvoice->status)) {
             $this->order->payment_type = 'liqpay';
@@ -384,9 +392,13 @@ class OrderService
             return;
         }
 
-        $ingo = new Ingo();
-
-        $ingo->greenCardConfirm($this->order);
+        if ($this->order->insurance_company === TasIns::API_NAME) {
+            $tas = new TasIns();
+            $tas->greenCardConfirm($this->order);
+        } else {
+            $ingo = new Ingo();
+            $ingo->greenCardConfirm($this->order);
+        }
     }
 
     public function saveVzr1C()

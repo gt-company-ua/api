@@ -4,7 +4,10 @@
 @component('mail::table')
 | Поле       | Значение     |
 | ---------- |:-------------|
-| Дата создадния | {{ $order->created_at }} |
+@if(!is_null($order->insurance_company))
+| Страховая компания | {{ $order->insurance_company }} |
+@endif
+| Дата создания | {{ $order->created_at }} |
 | Тип полиса | {{ $order->order_type }} |
 | Тариф | {{ $order->tariff }} |
 | Франшиза | {{ $order->franchise }} |

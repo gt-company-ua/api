@@ -57,8 +57,8 @@ class LiqPay
      */
     public function __construct(string $publicKey, string $privateKey)
     {
-        $this->_public_key  = $publicKey;//env('LIQPAY_PUPLIC_KEY');
-        $this->_private_key = $privateKey;//env('LIQPAY_PRIVATE_KEY');
+        $this->_public_key  = $publicKey;
+        $this->_private_key = $privateKey;
 
         if (empty($this->_public_key) || empty($this->_private_key)) {
             throw new InvalidArgumentException('LiqPay keys is empty');

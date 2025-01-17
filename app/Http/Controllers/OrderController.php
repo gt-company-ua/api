@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Promocode;
 use App\Services\api\OneC;
 use App\Services\api\Salamandra;
+use App\Services\api\TasIns;
 use App\Services\LiqPay;
 use App\Services\OrderService;
 use App\Traits\ApiResponser;
@@ -74,7 +75,7 @@ class OrderController extends Controller
 
     public function liqPayStatus(Request $request)
     {
-        $liqpay = new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY'));
+        $liqpay = new LiqPay(env('LIQPAY_PUBLIC_KEY'), env('LIQPAY_PRIVATE_KEY'));
 
         $signature = $liqpay->str_to_sign($request->post('data'));
 
@@ -96,12 +97,48 @@ class OrderController extends Controller
             (new OrderService($order))->actionsAfterPayment();
         }
     }
+    public function liqPayStatusUuid(Request $request, string $uuid)
+    {
+        $order = Order::where('uuid', $uuid)->firstOrFail();
+        $publicKey = env('LIQPAY_PUBLIC_KEY');
+        $privateKey = env('LIQPAY_PRIVATE_KEY');
+
+        if (!empty($order->insurance_company) && $order->insurance_company === TasIns::API_NAME) {
+            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
+            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
+        }
+
+        $liqpay = new LiqPay($publicKey, $privateKey);
+
+        $signature = $liqpay->str_to_sign($request->post('data'));
+
+        Log::debug('Liqpay status request', $request->all());
+        Log::debug('Liqpay signature ' . $signature);
+
+        $data = $liqpay->decode_params($request->post('data'));
+        Log::debug('Liqpay data', $data);
+
+        if ($data['status'] !== 'error' && $order->payment_status === 'invoice_wait') {
+            $order->payment_status = $data['status'];
+            $order->save();
+
+            (new OrderService($order))->actionsAfterPayment();
+        }
+    }
 
     public function liqPayResult(string $uuid)
     {
-        $liqpay = new LiqPay(env('LIQPAY_PUPLIC_KEY'), env('LIQPAY_PRIVATE_KEY'));
-
         $order = Order::where('uuid', $uuid)->firstOrFail();
+
+        $publicKey = env('LIQPAY_PUBLIC_KEY');
+        $privateKey = env('LIQPAY_PRIVATE_KEY');
+
+        if (!empty($order->insurance_company) && $order->insurance_company == TasIns::API_NAME) {
+            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
+            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
+        }
+
+        $liqpay = new LiqPay($publicKey, $privateKey);
 
         $data = $liqpay->api("request", array(
             'action'        => 'status',

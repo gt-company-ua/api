@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\TransportCategory;
 use App\Services\api\Ingo;
+use App\Services\api\TasIns;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Mail;
 
@@ -23,6 +24,37 @@ class GreenCardService
         $amount = 0;
         if ( ! empty($calculate['data'])) {
             $amount = round($calculate['data']['amount'], 2);
+        }
+
+        $data['price'] = $amount;
+        $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id']);
+        $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
+        $data['sent_offer'] = false;
+
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_GC);
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
+    }
+
+    public function saveOrderV2(\App\Http\Requests\v2\GreenCardSaveRequest $request): ?Order
+    {
+        $data = $request->validated();
+        $amount = 0;
+
+        if ($data['insurance_company'] === Ingo::API_NAME) {
+            $calculate = (new Ingo())->greenCardCalculate($data);
+            if ( ! empty($calculate['data'])) {
+                $amount = round($calculate['data']['amount'], 2);
+            }
+        } else if ($data['insurance_company'] === TasIns::API_NAME) {
+            $calculate = (new TasIns())->greenCardCalculate($data);
+            if (!empty($calculate) && $calculate['result']) {
+                $amount = round($calculate['InsPremium'], 2);
+            }
         }
 
         $data['price'] = $amount;
@@ -121,7 +153,11 @@ class GreenCardService
             ->get();
 
         foreach ($orders as $order) {
-            (new Ingo())->greenCardDraft($order);
+            if ($order->insurance_company === TasIns::API_NAME) {
+                (new TasIns())->greenCardRegister($order);
+            } else {
+                (new Ingo())->greenCardDraft($order);
+            }
 
             if ($order->payment_status === OrderService::PAYMENT_STATUS_OK || (!is_null($order->partner) && $order->paid)) {
                 (new OrderService($order))->saveGreenCard1C();
@@ -140,7 +176,7 @@ class GreenCardService
             ->where('payment_status', OrderService::PAYMENT_STATUS_OK)
             ->where('status_contract', OrderContract::STATUS_CONTRACT_SENT)
             ->whereHas('contract', function (Builder $query) {
-                $query->where('api_name', Ingo::API_NAME);
+                $query->whereIn('api_name', [Ingo::API_NAME, TasIns::API_NAME]);
                 $query->where('state', 'Draft');
             })
             ->limit(10)

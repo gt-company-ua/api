@@ -70,6 +70,7 @@ Route::prefix('vzr')->group(function () {
 Route::prefix('orders')->group(function () {
     Route::get('/promocode', [\App\Http\Controllers\OrderController::class, 'promocode'])->name('orders.promocode');
     Route::post('/liqpay/status', [\App\Http\Controllers\OrderController::class, 'liqPayStatus'])->name('orders.liqpay.status');
+    Route::post('/liqpay/status/{order}', [\App\Http\Controllers\OrderController::class, 'liqPayStatusUuid'])->name('orders.liqpay.status.uuid');
     Route::post('/liqpay/status/assist', [\App\Http\Controllers\OrderController::class, 'liqPayStatusAssist'])->name('orders.liqpay.status.assist');
     Route::get('/{uuid}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     Route::post('/{uuid}/sms/send', [\App\Http\Controllers\OrderController::class, 'sendSms'])->name('orders.sendSms');
@@ -102,5 +103,10 @@ Route::prefix('v2')->group(function () {
         Route::get('/documents', [\App\Http\Controllers\v2\VzrController::class, 'documents']);
         Route::get('/goals', [\App\Http\Controllers\v2\VzrController::class, 'goals']);
         Route::get('/goals/{lang}', [\App\Http\Controllers\v2\VzrController::class, 'goals']);
+    });
+    Route::prefix('greencard')->group(function () {
+        Route::post('/', [\App\Http\Controllers\v2\GreenCardController::class, 'store']);
+        Route::post('/draft', [\App\Http\Controllers\v2\GreenCardController::class, 'draft']);
+        Route::post('/calculate', [\App\Http\Controllers\v2\GreenCardController::class, 'calculate']);
     });
 });

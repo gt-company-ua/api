@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\api\Ingo;
+use App\Services\api\TasIns;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,6 +32,12 @@ class Order extends Model
     ];
     const DOC_API_ID = [
         self::DOC_PASSPORT => 1,
+        self::DOC_LICENSE => 5
+    ];
+
+    const DOC_TAS_API_ID = [
+        self::DOC_PASSPORT => 1,
+        self::DOC_ID => 2,
         self::DOC_LICENSE => 5
     ];
 
@@ -63,6 +71,8 @@ class Order extends Model
         'id', 'send_sms', 'contract_response', 'crm_contact_id', 'crm_deal_id',
         'crm_car_id', 'ga_id', 'promocode_id', 'code'
     ];
+
+    const INSURANCE_COMPANIES = [Ingo::API_NAME, TasIns::API_NAME];
 
     protected $casts = [
         'use_scoring' => 'bool',
