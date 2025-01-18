@@ -94,7 +94,7 @@ class Ingo
 
     const LANG_RU = 'ru';
     const LANG_UA = 'ua';
-    private function request(string $uri, array $params, $method = self::METHOD_POST, ?string $filename = null): array
+    private function request(string $uri, array $params, $method = self::METHOD_POST, ?string $filename = null, $timeout = 100): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
@@ -105,7 +105,7 @@ class Ingo
                 'authid' => env('INGO_LOGIN'),
                 'authkey' => env('INGO_PASSWORD')
             ])
-                ->timeout(100)
+                ->timeout($timeout)
                 ->withBody($json, 'application/json; charset=UTF-8');
 
             if ( ! is_null($filename)) {
@@ -168,7 +168,7 @@ class Ingo
             'zone' => $this->greenCardZone($data['trip_country']),
         ];
 
-        return $this->request('/greencard/calculate', $params);
+        return $this->request('/greencard/calculate', $params, self::METHOD_POST, null, 10);
     }
 
     public function greenCardDraft(Order $order): array

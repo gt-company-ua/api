@@ -34,7 +34,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/assist-me/tariffs', [\App\Http\Controllers\Admin\AssistMeController::class, 'update'])->name('assist.tariffs');
 
         Route::get('/greencard', [\App\Http\Controllers\Admin\GreenCardController::class, 'index']);
-        Route::put('/greencard/cashback', [\App\Http\Controllers\Admin\GreenCardController::class, 'updateCashback'])->name('greencard.cashback');
+        Route::put('/greencard/cashback/{company}', [\App\Http\Controllers\Admin\GreenCardController::class, 'updateCashback'])->name('greencard.cashback');
 
         Route::get('/vzr', [\App\Http\Controllers\Admin\VzrController::class, 'index']);
         Route::put('/vzr/cashback', [\App\Http\Controllers\Admin\VzrController::class, 'updateCashback'])->name('vzr.cashback');

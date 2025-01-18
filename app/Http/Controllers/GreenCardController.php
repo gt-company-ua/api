@@ -37,7 +37,7 @@ class GreenCardController extends Controller
         return $this->sendResponse([
             'price' => $amount,
             'price_gos' => $amount,
-            'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id']),
+            'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], Ingo::API_NAME),
             'assist_me_price' => $assist->price ?? null,
             'assist_me_old_price' => $assist->old_price ?? null
         ]);

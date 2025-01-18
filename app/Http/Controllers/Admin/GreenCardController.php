@@ -17,16 +17,18 @@ class GreenCardController extends Controller
     {
         $prices = [];
 
-        foreach (GreencardCashback::TRANSPORT_TYPE as $type) {
-            foreach (Order::TRIP_COUNTRIES as $tripCountry) {
-                $prices[$tripCountry][$type] = GreencardCashback::where('trip_country', $tripCountry)->where('transport_type', $type)->orderBy('months')->pluck('amount', 'months');
+        foreach (Order::INSURANCE_COMPANIES as $company) {
+            foreach (GreencardCashback::TRANSPORT_TYPE as $type) {
+                foreach (Order::TRIP_COUNTRIES as $tripCountry) {
+                    $prices[$company][$tripCountry][$type] = GreencardCashback::where('insurance_company', $company)->where('trip_country', $tripCountry)->where('transport_type', $type)->orderBy('months')->pluck('amount', 'months');
+                }
             }
         }
 
         return view('greencard', compact('prices'));
     }
 
-    public function updateCashback(GreenCardCashbackRequest $request)
+    public function updateCashback(GreenCardCashbackRequest $request, string $company)
     {
         $data = $request->validated();
 
@@ -34,7 +36,7 @@ class GreenCardController extends Controller
             foreach (GreencardCashback::TRANSPORT_TYPE as $type) {
                 foreach (Order::TRIP_COUNTRIES as $tripCountry) {
                     GreencardCashback::updateOrCreate(
-                        ['months' => $month, 'trip_country' => $tripCountry, 'transport_type' => $type],
+                        ['insurance_company' => $company, 'months' => $month, 'trip_country' => $tripCountry, 'transport_type' => $type],
                         ['amount' => $data['amount_' . $tripCountry . '_' . $type][$key]]
                     );
                 }

@@ -30,6 +30,7 @@ class GreenCardController extends Controller
             $price = round($calculate['data']['amount'], 2);
             $prices[] = [
                 'insurance_company' => Ingo::API_NAME,
+                'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], Ingo::API_NAME),
                 'price' => $price,
                 'price_gos' => $price,
             ];
@@ -41,6 +42,7 @@ class GreenCardController extends Controller
             $price = round($calculate['InsPremium'], 2);
             $prices[] = [
                 'insurance_company' => TasIns::API_NAME,
+                'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], TasIns::API_NAME),
                 'price' => $price,
                 'price_gos' => $price,
             ];
@@ -52,7 +54,6 @@ class GreenCardController extends Controller
 
         return $this->sendResponse([
             'prices' => $prices,
-            'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id']),
             'assist_me_price' => $assist->price ?? null,
             'assist_me_old_price' => $assist->old_price ?? null
         ]);

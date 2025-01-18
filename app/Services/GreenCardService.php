@@ -27,7 +27,7 @@ class GreenCardService
         }
 
         $data['price'] = $amount;
-        $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id']);
+        $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id'], Ingo::API_NAME);
         $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
         $data['sent_offer'] = false;
 
@@ -58,7 +58,7 @@ class GreenCardService
         }
 
         $data['price'] = $amount;
-        $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id']);
+        $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id'], $data['insurance_company']);
         $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
         $data['sent_offer'] = false;
 
@@ -71,7 +71,7 @@ class GreenCardService
         return $order->load(['transport', 'insurant', 'contract', 'files', 'tourists', 'assist'])->refresh();
     }
 
-    public function getCashback($months, $tripCountry, $transportCategoryID)
+    public function getCashback($months, $tripCountry, $transportCategoryID, $insuranceCompany)
     {
         $transportCategory = TransportCategory::find($transportCategoryID);
 
@@ -87,7 +87,7 @@ class GreenCardService
             }
         }
 
-        $cashback = GreencardCashback::where('months', $months)->where('trip_country', $tripCountry)->where('transport_type', $transportType)->first();
+        $cashback = GreencardCashback::where('months', $months)->where('trip_country', $tripCountry)->where('transport_type', $transportType)->where('insurance_company', $insuranceCompany)->first();
 
         return $cashback->amount ?? 0;
     }

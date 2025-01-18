@@ -6,6 +6,8 @@ use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\TransportCategory;
 use App\Services\OrderService;
+use Doctrine\DBAL\ConnectionException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +27,7 @@ class TasIns
             $response = Http::withHeaders([
                 'authid' => env('TAS_LOGIN'),
                 'authkey' => env('TAS_PASSWORD')
-            ])->withBody($json, 'application/json')->post($requestUrl);
+            ])->timeout(10)->withBody($json, 'application/json')->post($requestUrl);
 
             $body = $response->body();
             $code = $response->status();
@@ -39,7 +41,7 @@ class TasIns
             }
 
             return json_decode($body, true);
-        }catch (RequestException $e){
+        } catch (\Exception $e){
             Log::error($e->getMessage());
 
             return [];
