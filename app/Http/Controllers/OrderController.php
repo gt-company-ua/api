@@ -158,11 +158,12 @@ class OrderController extends Controller
 
     public function liqPayStatusAssist(Request $request)
     {
+        Log::debug('Liqpay assist status request', $request->all());
+
         $liqpay = new LiqPay(env('LIQPAY_ASSIST_PUPLIC_KEY'), env('LIQPAY_ASSIST_PRIVATE_KEY'));
 
         $signature = $liqpay->str_to_sign($request->post('data'));
 
-        Log::debug('Liqpay assist status request', $request->all());
         Log::debug('Liqpay assist signature ' . $signature);
 
         $data = $liqpay->decode_params($request->post('data'));
@@ -189,6 +190,8 @@ class OrderController extends Controller
 
     public function liqPayResultAssist(string $uuid)
     {
+        Log::debug('Liqpay assist result order UUID '. $uuid);
+
         $liqpay = new LiqPay(env('LIQPAY_ASSIST_PUPLIC_KEY'), env('LIQPAY_ASSIST_PRIVATE_KEY'));
 
         $order = Order::where('uuid', $uuid)->firstOrFail();
