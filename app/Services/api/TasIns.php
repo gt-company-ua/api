@@ -18,7 +18,7 @@ class TasIns
     const API_NAME = "TAS";
     const PHONE = '+380639583957';
     const EMAIL = 'greencard.ukraine.online@gmail.com';
-    private function request(string $uri, array $params): array
+    private function request(string $uri, array $params, $timeout = 10): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
@@ -27,7 +27,7 @@ class TasIns
             $response = Http::withHeaders([
                 'authid' => env('TAS_LOGIN'),
                 'authkey' => env('TAS_PASSWORD')
-            ])->timeout(10)->withBody($json, 'application/json')->post($requestUrl);
+            ])->timeout($timeout)->withBody($json, 'application/json')->post($requestUrl);
 
             $body = $response->body();
             $code = $response->status();
@@ -94,8 +94,8 @@ class TasIns
             'CarModel' => $order->transport->car_model,
             "ProdYear" => $order->transport->car_year,
 
-            'DocTypeID' => Order::DOC_TAS_API_ID[$order->insurant->doc_type],
-            'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type],
+            'DocTypeID' => Order::DOC_TAS_API_ID[$order->insurant->doc_type] ?? 1,
+            'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type] ?? Order::DOC_NAMES[Order::DOC_PASSPORT],
             "DocSeries" => $order->insurant->doc_series,
             "DocNumber" => preg_replace('/\D/', '', $order->insurant->doc_number),
             //'DocIssued' => $order->insurant->doc_given,
@@ -103,7 +103,7 @@ class TasIns
         ];
 
         try {
-            $response = $this->request('GC?operation=register', $params);
+            $response = $this->request('GC?operation=register', $params, 20);
 
             Log::debug("Save Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Save Tas GreenCard (order: ".$order->id.") response", $response);
@@ -145,7 +145,7 @@ class TasIns
                 'Otp' => $sms,
             ];
 
-            $response =  $this->request('GC?operation=confirm', $params);
+            $response =  $this->request('GC?operation=confirm', $params, 20);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") response", $response);
 
