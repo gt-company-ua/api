@@ -11,7 +11,7 @@
 @section('content')
     <x-adminlte-card theme-mode="outline">
         @php
-            $columns = ['#', 'Дата', 'Полис', 'ФИО', 'Телефон', 'Сумма', 'Статус', 'Liqpay'];
+            $columns = ['#', 'Дата', 'Полис', 'ФИО', 'Телефон', 'Сумма', 'Статус', 'Liqpay', 'Assist'];
             $config = ['ordering' => false];
         @endphp
 
@@ -31,6 +31,7 @@
                     <td>{{ $row->price }}</td>
                     <td>{{ $row->payment_status }}</td>
                     <td>{{ $row->payment_url }}</td>
+                    <td>@if (!is_null($row->assist)) {{ $row->assist->price }} | {{ $row->assist->payment_status }} @endif</td>
                 </tr>
             @endforeach
         </x-adminlte-datatable>
