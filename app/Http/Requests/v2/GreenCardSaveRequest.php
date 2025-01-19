@@ -5,6 +5,7 @@ namespace App\Http\Requests\v2;
 use App\Models\Order;
 use App\Rules\Boolean;
 use App\Rules\Inn;
+use App\Services\api\TasIns;
 use App\Traits\RequestFailedValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -62,6 +63,8 @@ class GreenCardSaveRequest extends FormRequest
 
             'insurant.inn' => ['nullable', new Inn],
             'insurant.birth' => 'nullable|required_if:upload_docs,0|date|before_or_equal:18 years ago',
+            'insurant.doc_number' => 'required_if:insurance_company,'.TasIns::API_NAME.'|string',
+            'insurant.doc_series' => 'required_if:insurance_company,'.TasIns::API_NAME.'|string',
 
             'ga_id' => 'nullable',
             'with_assist_me' => ['nullable', new Boolean],

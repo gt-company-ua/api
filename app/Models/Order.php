@@ -22,11 +22,13 @@ class Order extends Model
     const INSURANT_JURISTIC = 'juristic';
     const INSURANT_TYPES = [self::INSURANT_PHYSICAL, self::INSURANT_JURISTIC];
     const DOC_PASSPORT = 'passport';
+    const DOC_FOREIGN_PASSPORT = 'foreignPassport';
     const DOC_LICENSE = 'license';
     const DOC_ID = 'id';
     const DOC_TYPES = [self::DOC_PASSPORT, self::DOC_LICENSE, self::DOC_ID];
     const DOC_NAMES = [
         self::DOC_PASSPORT => 'Паспорт',
+        self::DOC_FOREIGN_PASSPORT => 'Закордонний паспорт',
         self::DOC_LICENSE => 'Водительское удостоверение',
         self::DOC_ID => 'ID'
     ];
@@ -37,6 +39,7 @@ class Order extends Model
 
     const DOC_TAS_API_ID = [
         self::DOC_PASSPORT => 1,
+        self::DOC_FOREIGN_PASSPORT => 3,
         self::DOC_ID => 2,
         self::DOC_LICENSE => 5
     ];

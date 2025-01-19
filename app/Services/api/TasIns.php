@@ -83,7 +83,7 @@ class TasIns
             'Surname' => $order->insurant->surname,
             'Surname_eng' => $order->insurant->surname_latin,
             'PName' => $order->insurant->patronymic,
-            'Country' => "", //TODO узнать
+            'Country' => "Україна",
             "Address" => $order->insurant->address,
             "PhoneNumber" => self::PHONE,
 
@@ -94,8 +94,8 @@ class TasIns
             'CarModel' => $order->transport->car_model,
             "ProdYear" => $order->transport->car_year,
 
-            'DocTypeID' => Order::DOC_TAS_API_ID[$order->insurant->doc_type] ?? 1,
-            'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type] ?? Order::DOC_NAMES[Order::DOC_PASSPORT],
+            'DocTypeID' => Order::DOC_TAS_API_ID[$order->insurant->doc_type] ?? Order::DOC_FOREIGN_PASSPORT,
+            'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type] ?? Order::DOC_NAMES[Order::DOC_FOREIGN_PASSPORT],
             "DocSeries" => $order->insurant->doc_series,
             "DocNumber" => preg_replace('/\D/', '', $order->insurant->doc_number),
             //'DocIssued' => $order->insurant->doc_given,
