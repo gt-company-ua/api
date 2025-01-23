@@ -31,8 +31,9 @@ class TasIns
 
             $body = $response->body();
             $code = $response->status();
+            $jsonResponse = json_decode($body, true);
 
-            if ($code >= 300) {
+            if ($code >= 300 || (isset($jsonResponse['result']) && $jsonResponse['result'] === false)) {
                 Log::info('Request() code: ' . $code . '. URL: ' . $requestUrl);
                 Log::info($json);
                 Log::info($body);
@@ -66,7 +67,7 @@ class TasIns
     public function greenCardRegister(Order $order): array
     {
         $params = [
-            "contractId" => env('TAS_CONTRACT_ID'),
+            'contractId' => 'tas-' . $order->id,
             "agentId" => env('TAS_AGENT_ID'),
             "StartDate" => date('Y-m-d', strtotime($order->polis_start)),
             "DPeriodID" => (string) $this->periodFormat($order->trip_duration),
@@ -84,7 +85,7 @@ class TasIns
             'Surname_eng' => $order->insurant->surname_latin,
             'PName' => $order->insurant->patronymic,
             'Country' => "Україна",
-            "Address" => $order->insurant->address,
+            "Address" => $order->city_name,
             "PhoneNumber" => self::PHONE,
 
             'RegNo' => $order->transport->gov_num,
@@ -108,12 +109,12 @@ class TasIns
             Log::debug("Save Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Save Tas GreenCard (order: ".$order->id.") response", $response);
 
-            if (! empty($response['Result'])) {
+            if (! empty($response['result'])) {
                 $contract = [
                     'number' => $response['Number'],
-                    'external_id' => $response['MainCode'],
+                    'file_link' => $response['MainCode'],
                     'state' => 'Draft',
-                    'policy_link' => $response['OfferForm'] ?? '',
+                    'policy_link' => $response['offerForm'] ?? '',
                     'api_name' => self::API_NAME
                 ];
                 (new OrderService($order))->saveContract($contract);
@@ -135,11 +136,11 @@ class TasIns
 
     public function greenCardConfirm(Order $order): ?array
     {
-        if (! is_null($order->contract) && ! empty($order->contract->external_id)) {
+        if (! is_null($order->contract) && ! empty($order->contract->number)) {
             $sms = (!empty($order->send_sms)) ? $order->send_sms : mt_rand(100000, 999999);
 
             $params = [
-                'contractId' => env('TAS_CONTRACT_ID'),
+                'contractId' => 'tas-' . $order->id,
                 'agentId' => env('TAS_AGENT_ID'),
                 'Number' => $order->contract->number,
                 'Otp' => $sms,
@@ -149,15 +150,15 @@ class TasIns
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") response", $response);
 
-            if (! empty($response['Result'])) {
+            if (! empty($response['result'])) {
                 $contract = [
                     'state' => 'Signed',
                     'number' => $response['Number'],
-                    'external_id' => $response['MainCode'],
+                    'file_link' => $response['MainCode'],
                     'policy_link' => $response['printForm'] ?? '',
                 ];
                 (new OrderService($order))->saveContract($contract);
-            } else if (isset($response['Result'])) {
+            } else if (isset($response['result'])) {
                 $contract = [
                     'state' => 'Error',
                     'response' => $response['Texterror'] ?? '',
@@ -177,5 +178,40 @@ class TasIns
     private function greenCardZone(string $country): string
     {
         return ($country === Order::TRIP_COUNTRY_SNG) ? 7 : 6;
+    }
+
+    public function downloadPolicy(Order $order, $filename): array
+    {
+        if (is_null($order->contract) || empty($order->contract->policy_link)) {
+            Log::debug("Order hasn't contract: ", $order->id);
+            return [];
+        }
+
+        $files = [];
+        $client = Http::timeout(30);
+        $tempName = storage_path('app/public/policies')
+            . DIRECTORY_SEPARATOR . $filename;
+
+        $client->sink($tempName);
+
+        $response = $client->get($order->contract->policy_link);
+        if ($response->status() === 200) {
+            $files[] = $filename;
+        }
+
+        return $files;
+    }
+
+    public function updateContractDownload(OrderContract $contract, $statusCode)
+    {
+        $contract->download_attempts ++;
+        $contract->download_status_code = $statusCode;
+        $contract->sent_police = $statusCode === 200;
+
+        if ($contract->download_attempts > 10) {
+            $contract->state = 'Error';
+        }
+
+        $contract->save();
     }
 }

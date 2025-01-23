@@ -456,9 +456,10 @@ class OrderService
     public function sentPolicyToClients()
     {
         $ingo = new Ingo();
+        $tas = new TasIns();
 
         $orders = Order::whereHas('contract', function (Builder $query) {
-                $query->where('api_name', Ingo::API_NAME);
+                $query->whereIn('api_name', [Ingo::API_NAME, TasIns::API_NAME]);
                 $query->where('sent_police', false);
                 $query->where('state', 'Signed');
             })
@@ -467,20 +468,31 @@ class OrderService
             ->get();
 
         foreach ($orders as $order) {
-            switch ($order->order_type){
-                case Order::ORDER_TYPE_GC:
-                    $files = $ingo->greenCardPrintForm($order);
+            switch ($order->contract->api_name) {
+                case TasIns::API_NAME:
+                    $files = $tas->downloadPolicy($order, 'policy-' . $order->id . '.pdf');
+                    $tas->updateContractDownload($order->contract, (count($files) > 0) ? 200 : 400);
                     break;
-                case Order::ORDER_TYPE_OSAGO:
-                    $files = $ingo->osagoPrintForm($order);
+                case Ingo::API_NAME:
+                    switch ($order->order_type){
+                        case Order::ORDER_TYPE_GC:
+                            $files = $ingo->greenCardPrintForm($order);
+                            break;
+                        case Order::ORDER_TYPE_OSAGO:
+                            $files = $ingo->osagoPrintForm($order);
+                            break;
+                        case Order::ORDER_TYPE_VZR:
+                            $files = $ingo->vzrPrintForm($order);
+                            break;
+                        default:
+                            $files = [];
+                            break;
+                    }
                     break;
-                case Order::ORDER_TYPE_VZR:
-                    $files = $ingo->vzrPrintForm($order);
-                    break;
-                default:
-                    $files = [];
-                    break;
+                    default:
+                        break;
             }
+
 
             if (count($files) > 0) {
                 if ($order->partner === Order::PARTNER_VIGNETTE) {

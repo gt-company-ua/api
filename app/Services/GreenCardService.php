@@ -11,6 +11,7 @@ use App\Models\TransportCategory;
 use App\Services\api\Ingo;
 use App\Services\api\TasIns;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class GreenCardService
@@ -194,7 +195,12 @@ class GreenCardService
             ->where('status_contract', OrderContract::STATUS_CONTRACT_SENT)
             ->where('sent_offer', false)
             ->where('confirm_sms', false)
+            ->whereHas('contract', function (Builder $query) {
+                $query->whereIn('api_name', [Ingo::API_NAME, TasIns::API_NAME]);
+                $query->where('state', 'Draft');
+            })
             ->limit(5)
+            ->orderBy('created_at', 'desc')
             ->get();
 
         foreach ($orders as $order) {
@@ -204,7 +210,13 @@ class GreenCardService
 
     private function sendGreenCardOffer(Order $order)
     {
-        $files = (new Ingo())->greenCardPrintOffer($order);
+        if ($order->insurance_company === TasIns::API_NAME) {
+            $files = (new TasIns())->downloadPolicy($order, 'offer-' . $order->id . '.pdf');
+            Log::debug("Order has files: " . count($files));
+        } else {
+            $files = (new Ingo())->greenCardPrintOffer($order);
+        }
+
         if (count($files) === 0) {
             return;
         }
