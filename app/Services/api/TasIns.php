@@ -38,7 +38,7 @@ class TasIns
                 Log::info($json);
                 Log::info($body);
 
-                return [];
+                return (isset($jsonResponse['result'])) ? $jsonResponse : [];
             }
 
             return json_decode($body, true);
@@ -183,7 +183,7 @@ class TasIns
     public function downloadPolicy(Order $order, $filename): array
     {
         if (is_null($order->contract) || empty($order->contract->policy_link)) {
-            Log::debug("Order hasn't contract: ", $order->id);
+            Log::debug("Order hasn't contract: " . $order->id);
             return [];
         }
 

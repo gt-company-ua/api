@@ -212,7 +212,6 @@ class GreenCardService
     {
         if ($order->insurance_company === TasIns::API_NAME) {
             $files = (new TasIns())->downloadPolicy($order, 'offer-' . $order->id . '.pdf');
-            Log::debug("Order has files: " . count($files));
         } else {
             $files = (new Ingo())->greenCardPrintOffer($order);
         }
