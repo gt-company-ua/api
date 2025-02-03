@@ -74,7 +74,10 @@ class OrderService
         unset($request['transport'], $request['insurant'], $request['files'], $request['tourists'], $request['promocode'], $request['with_assist_me']);
 
         $request['order_type'] = $orderType;
-        $request['full_price'] = $request['price'] ?? null;
+
+        if (!isset($request['full_price'])) {
+            $request['full_price'] = $request['price'] ?? null;
+        }
 
         if (empty($request['city_name'])) {
             $request['city_name'] = 'Київ';

@@ -73,7 +73,7 @@ class TasIns
             "DPeriodID" => (string) $this->periodFormat($order->trip_duration),
             'DExpAgeID' => "1",
             'Territory' => $this->greenCardZone($order->trip_country),
-            "InsPremium" => $order->price,
+            "InsPremium" => $order->full_price,
             "DPersonStatusID" => ($order->insurant->type == Order::INSURANT_JURISTIC) ? "U" : "P",
             "DCitizenStatusID" => ($order->foreign_check) ? "2" : "1",
 

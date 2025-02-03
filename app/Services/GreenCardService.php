@@ -45,20 +45,30 @@ class GreenCardService
     {
         $data = $request->validated();
         $amount = 0;
+        $fullPrice = 0;
 
         if ($data['insurance_company'] === Ingo::API_NAME) {
             $calculate = (new Ingo())->greenCardCalculate($data);
             if ( ! empty($calculate['data'])) {
                 $amount = round($calculate['data']['amount'], 2);
+                $fullPrice = $amount;
+                if (!empty(env('DISCOUNT_INGO')) && env('DISCOUNT_INGO') > 0) {
+                    $amount = round($amount - ($amount / 100 * env('DISCOUNT_INGO')) , 0);
+                }
             }
         } else if ($data['insurance_company'] === TasIns::API_NAME) {
             $calculate = (new TasIns())->greenCardCalculate($data);
             if (!empty($calculate) && $calculate['result']) {
                 $amount = round($calculate['InsPremium'], 2);
+                $fullPrice = $amount;
+                if (!empty(env('DISCOUNT_TAS')) && env('DISCOUNT_TAS') > 0) {
+                    $amount = round($amount - ($amount / 100 * env('DISCOUNT_TAS')) , 0);
+                }
             }
         }
 
         $data['price'] = $amount;
+        $data['full_price'] = $fullPrice;
         $data['cashback_amount'] = $this->getCashback($data['trip_duration'], $data['trip_country'], $data['transport']['transport_category_id'], $data['insurance_company']);
         $data['status_contract'] = OrderContract::STATUS_CONTRACT_NOT_SENT;
         $data['sent_offer'] = false;
