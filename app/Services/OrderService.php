@@ -211,21 +211,23 @@ class OrderService
         $splitRules = [];
 
         if (!is_null($this->order->assist) && $this->order->assist->price > 0) {
-            $splitRules[] = [
-                'public_key' => env('LIQPAY_POLICE_PUBLIC_KEY'),
-                'amount' => $this->order->price,
-                'commission_payer' => 'receiver',
-                'server_url' => route('orders.liqpay.status.uuid', ['order' => $this->order->uuid])
-            ];
+            if (empty($this->order->insurance_company) || $this->order->insurance_company == Ingo::API_NAME) {
+                $splitRules[] = [
+                    'public_key' => env('LIQPAY_POLICE_PUBLIC_KEY'),
+                    'amount' => $this->order->price,
+                    'commission_payer' => 'receiver',
+                    'server_url' => route('orders.liqpay.status.uuid', ['order' => $this->order->uuid])
+                ];
+
+                $splitRules[] = [
+                    'public_key' => env('LIQPAY_ASSIST_PUPLIC_KEY'),
+                    'amount' => $this->order->assist->price,
+                    'commission_payer' => 'receiver',
+                    'server_url' => route('orders.liqpay.status.assist', ['order' => $this->order->uuid])
+                ];
+            }
 
             $price += $this->order->assist->price;
-
-            $splitRules[] = [
-                'public_key' => env('LIQPAY_ASSIST_PUPLIC_KEY'),
-                'amount' => $this->order->assist->price,
-                'commission_payer' => 'receiver',
-                'server_url' => route('orders.liqpay.status.assist', ['order' => $this->order->uuid])
-            ];
         }
 
         $invoiceParams = [
@@ -238,8 +240,7 @@ class OrderService
             'result_url'   => route('orders.liqpay.result', ['order' => $this->order->uuid]),
             'order_id'     => $orderUid,
             'expired_date' => date('Y-m-d H:i:s', strtotime('+1 day')),
-            'description'  => $this->getInsurantFullName() . ', ІПН: '
-                . $this->order->insurant->inn
+            'description'  => $this->getInsurantFullName() . ', ІПН: ' . $this->order->insurant->inn
         ];
 
         if (count($splitRules) > 0) {
@@ -249,8 +250,8 @@ class OrderService
         $publicKey = env('LIQPAY_PUBLIC_KEY');
         $privateKey = env('LIQPAY_PRIVATE_KEY');
         if (!empty($this->order->insurance_company) && $this->order->insurance_company == TasIns::API_NAME) {
-            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
-            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
+            $publicKey = env('LIQPAY_ASSIST_PUPLIC_KEY');
+            $privateKey = env('LIQPAY_ASSIST_PRIVATE_KEY');
         }
 
         $sendInvoice = (new LiqPay($publicKey, $privateKey))->api('request', $invoiceParams);

@@ -104,8 +104,8 @@ class OrderController extends Controller
         $privateKey = env('LIQPAY_PRIVATE_KEY');
 
         if (!empty($order->insurance_company) && $order->insurance_company === TasIns::API_NAME) {
-            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
-            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
+            $publicKey = env('LIQPAY_ASSIST_PUPLIC_KEY');
+            $privateKey = env('LIQPAY_ASSIST_PRIVATE_KEY');
         }
 
         $liqpay = new LiqPay($publicKey, $privateKey);
@@ -124,6 +124,20 @@ class OrderController extends Controller
 
             (new OrderService($order))->actionsAfterPayment();
         }
+
+        if (!is_null($order->assist)) {
+            $contract = [
+                'payment_status' => $data['status']
+            ];
+
+            (new OrderService($order))->saveAssistMe($contract);
+
+            if ($data['status'] === 'success' && $order->assist->payment_status === 'invoice_wait') {
+                Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
+            }
+
+            Log::debug('Liqpay assist order ID '. $order->id . ' Status: ' . $data['status']);
+        }
     }
 
     public function liqPayResult(string $uuid)
@@ -134,8 +148,8 @@ class OrderController extends Controller
         $privateKey = env('LIQPAY_PRIVATE_KEY');
 
         if (!empty($order->insurance_company) && $order->insurance_company == TasIns::API_NAME) {
-            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
-            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
+            $publicKey = env('LIQPAY_ASSIST_PUPLIC_KEY');
+            $privateKey = env('LIQPAY_ASSIST_PRIVATE_KEY');
         }
 
         $liqpay = new LiqPay($publicKey, $privateKey);
@@ -152,6 +166,21 @@ class OrderController extends Controller
 
             (new OrderService($order))->actionsAfterPayment();
         }
+
+        if (!is_null($order->assist)) {
+            $contract = [
+                'payment_status' => $data['status']
+            ];
+
+            (new OrderService($order))->saveAssistMe($contract);
+
+            if ($data['status'] === 'success' && $order->assist->payment_status === 'invoice_wait') {
+                Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
+            }
+
+            Log::debug('Liqpay assist order ID '. $order->id . ' Status: ' . $data['status']);
+        }
+
 
         return redirect(env('LIQPAY_REDIRECT_URL') . '?order=' . $uuid);
     }
