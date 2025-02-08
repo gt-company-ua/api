@@ -61,6 +61,9 @@ class OrderService
 
     public function saveOrderInfo(array $request, string $orderType): ?Order
     {
+        if (isset($request['transport']['gov_num'])) {
+            $request['transport']['gov_num'] = str_replace(' ', '', $request['transport']['gov_num']);
+        }
         $transport = new OrderTransport($request['transport'] ?? []);
         $insurant = new OrderInsurant($request['insurant'] ?? []);
         $tourists = $request['tourists'] ?? [];
