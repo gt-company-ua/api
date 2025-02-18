@@ -109,4 +109,9 @@ Route::prefix('v2')->group(function () {
         Route::post('/draft', [\App\Http\Controllers\v2\GreenCardController::class, 'draft']);
         Route::post('/calculate', [\App\Http\Controllers\v2\GreenCardController::class, 'calculate']);
     });
+    Route::prefix('osago')->group(function () {
+        Route::post('/', [\App\Http\Controllers\v2\OsagoController::class, 'store']);
+        Route::post('/draft', [\App\Http\Controllers\v2\OsagoController::class, 'draft']);
+        Route::post('/calculate', [\App\Http\Controllers\v2\OsagoController::class, 'calculate']);
+    });
 });

@@ -168,7 +168,11 @@ class Ingo
             'zone' => $this->greenCardZone($data['trip_country']),
         ];
 
-        return $this->request('/greencard/calculate', $params, self::METHOD_POST, null, 10);
+        $response = $this->request('/greencard/calculate', $params, self::METHOD_POST, null, 10);
+        //Log::debug("Calculate GreenCard request:", $params);
+        //Log::debug("Calculate GreenCard response:", $response);
+
+        return $response;
     }
 
     public function greenCardDraft(Order $order): array

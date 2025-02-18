@@ -384,6 +384,9 @@ class OrderService
                 case Ingo::API_NAME:
                     (new Ingo())->osagoConfirm($this->order);
                     break;
+                case TasIns::API_NAME:
+                    (new TasIns())->osagoConfirm($this->order);
+                    break;
                 default:
                     break;
             }

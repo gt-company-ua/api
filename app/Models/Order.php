@@ -44,6 +44,13 @@ class Order extends Model
         self::DOC_LICENSE => 5
     ];
 
+    const DOC_OSAGO_TAS_API_ID = [
+        self::DOC_PASSPORT => 1,
+        self::DOC_FOREIGN_PASSPORT => 2,
+        self::DOC_ID => 3,
+        self::DOC_LICENSE => 4
+    ];
+
     const DOC_SALAMANDRA_API_ID = [
         self::DOC_PASSPORT => 'Passport',
         self::DOC_LICENSE => 'DriverLicense',

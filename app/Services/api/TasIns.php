@@ -4,7 +4,10 @@ namespace App\Services\api;
 
 use App\Models\Order;
 use App\Models\OrderContract;
+use App\Models\OsagoCashback;
+use App\Models\OsagoCity;
 use App\Models\TransportCategory;
+use App\Models\TransportPower;
 use App\Services\OrderService;
 use Doctrine\DBAL\ConnectionException;
 use GuzzleHttp\Exception\ConnectException;
@@ -17,7 +20,11 @@ class TasIns
     const GREENCARD_TRANSPORT_CATEGORIES = ['car' => 'A', 'moto' => 'B', 'truck' => 'C', 'trailer' => 'F'];
     const API_NAME = "TAS";
     const PHONE = '+380639583957';
+    const POST_CODE = '01001';
     const EMAIL = 'greencard.ukraine.online@gmail.com';
+    const OSAGO_PERIOD = "13";
+    const DSphereUseID_REGULAR = "1";
+    const DSphereUseID_TAXI = "2";
     private function request(string $uri, array $params, $timeout = 10): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
@@ -213,5 +220,151 @@ class TasIns
         }
 
         $contract->save();
+    }
+
+    public function osagoCalculate(array $data): array
+    {
+        $power = TransportPower::find($data['transport']['transport_power_id']);
+
+        if (empty($data['city_id'])) {
+            $ariaValue = 5;
+            $ariaKey = 'Zone';
+        } else {
+            $city = OsagoCity::find($data['city_id']);
+            $ariaValue = $city->koatuu;
+            $ariaKey = 'CityCode';
+        }
+
+        $params = [
+            'agentId' => env('TAS_AGENT_ID'),
+            'DPeriodID' => self::OSAGO_PERIOD,
+            'DPrivelegeID' => ($data['discount_check']) ? "1" : "0",
+            "DCitizenStatusID" => empty($data['foreign_check']) ? "1" : "2",
+            "DPersonStatusID" => ($data['insurant']['type'] == Order::INSURANT_JURISTIC) ? "2" : "1",
+            $ariaKey => $ariaValue,
+            'isOwner' => true,
+            'ownerBirthYear' => date('Y', strtotime($data['insurant']['birth'])),
+            'DVehicleTypeID' => $power->api_id,
+            'DSphereUseID' => ($data['use_as_taxi']) ? self::DSphereUseID_TAXI : self::DSphereUseID_REGULAR,
+            'DAgeExpID' => "1",
+            'isUaRegistration' => empty($data['foreign_check']),
+        ];
+
+        $response = $this->request('Osago/?operation=calculate', $params);
+
+        if (!empty($response['result'])) {
+            $cashback = OsagoCashback::where('franchise', $data['franchise'])->first();
+            if (!is_null($cashback)) {
+                $total = round($response['InsPremium'], 2);
+                $response['cashback'] = round($total / 100 * $cashback->amount);
+            }
+        } else {
+            Log::debug("Osago Calculate Error", $response);
+        }
+
+        return $response;
+    }
+
+    public function osagoRegister(Order $order): array
+    {
+        $params = [
+            'contractId' => 'tas-' . $order->id,
+            "agentId" => env('TAS_AGENT_ID'),
+            "СalcId" => $order->contract_num,
+            "StartDate" => date('Y-m-d H:i:s', strtotime($order->polis_start)),
+            "PaymentDate" => date('Y-m-d'),
+
+            "InsPremium" => $order->full_price,
+            "DPersonStatusID" => ($order->insurant->type == Order::INSURANT_JURISTIC) ? "U" : "P",
+            "DCitizenStatusID" => ($order->foreign_check) ? "2" : "1",
+
+            "IdentCode" => $order->insurant->inn,
+            "BirthDate" => date('Y-m-d',strtotime($order->insurant->birth)),
+            'Name' => $order->insurant->name,
+            'Surname' => $order->insurant->surname,
+            'PName' => $order->insurant->patronymic,
+            "Address" => $order->city_name,
+            "PostCode" => '01001',
+            "PhoneNumber" => self::PHONE,
+
+            'RegNo' => $order->transport->gov_num,
+            'VIN' => $order->transport->vin,
+            'CarMake' => $order->transport->car_mark,
+            'CarModel' => $order->transport->car_model,
+            'AutoDescr' => $order->transport->car_mark . ' ' . $order->transport->car_model,
+            "ProdYear" => $order->transport->car_year,
+
+            'DocumentType' => Order::DOC_OSAGO_TAS_API_ID[$order->insurant->doc_type] ?? Order::DOC_FOREIGN_PASSPORT,
+            'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type] ?? Order::DOC_NAMES[Order::DOC_FOREIGN_PASSPORT],
+            "DocSeries" => $order->insurant->doc_series,
+            "DocNumber" => preg_replace('/\D/', '', $order->insurant->doc_number),
+            'DocIssued' => $order->insurant->doc_given,
+            'DocIssueDate' => date('Y-m-d',strtotime($order->insurant->doc_date)),
+        ];
+
+        try {
+            $response = $this->request('Osago?operation=register', $params, 20);
+
+            Log::debug("Save Tas Osago (order: ".$order->id.") request", $params);
+            Log::debug("Save Tas Osago (order: ".$order->id.") response", $response);
+
+            if (! empty($response['result'])) {
+                $contract = [
+                    'number' => $response['MainCode'],
+                    'file_link' => $response['policyDirectLink'],
+                    'state' => 'Draft',
+                    'policy_link' => $response['offerForm'] ?? '',
+                    'api_name' => self::API_NAME
+                ];
+                (new OrderService($order))->saveContract($contract);
+            }
+
+            $order->status_contract = OrderContract::STATUS_CONTRACT_SENT;
+            $order->save();
+        } catch (\Exception $e) {
+            Log::error('Save Tas GreenCard request error:' . $e->getMessage());
+
+            $order->status_contract = OrderContract::STATUS_CONTRACT_ERROR;
+            $order->save();
+
+            return [];
+        }
+
+        return $response;
+    }
+
+    public function osagoConfirm(Order $order): ?array
+    {
+        if (! is_null($order->contract) && ! empty($order->contract->number)) {
+            $sms = (!empty($order->send_sms)) ? $order->send_sms : mt_rand(100000, 999999);
+
+            $params = [
+                'agentId' => env('TAS_AGENT_ID'),
+                'MainCode' => $order->contract->number,
+                'Otp' => $sms,
+            ];
+
+            $response =  $this->request('GC?operation=signconfirm', $params, 20);
+            Log::debug("Confirm Tas Osago (order: ".$order->id.") request", $params);
+            Log::debug("Confirm Tas Osago (order: ".$order->id.") response", $response);
+
+            if (! empty($response['result'])) {
+                $contract = [
+                    'state' => 'Signed',
+                    'number' => $response['Number'],
+                    'file_link' => $response['MainCode'],
+                    'policy_link' => $response['printForm'] ?? '',
+                ];
+                (new OrderService($order))->saveContract($contract);
+            } else if (isset($response['result'])) {
+                $contract = [
+                    'state' => 'Error',
+                    'response' => $response['Texterror'] ?? '',
+                ];
+                (new OrderService($order))->saveContract($contract);
+            }
+        }
+
+        return null;
     }
 }

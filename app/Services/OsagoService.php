@@ -16,6 +16,7 @@ use App\Models\TransportPower;
 use App\Services\api\Ingo;
 use App\Services\api\Profitsoft;
 use App\Services\api\Salamandra;
+use App\Services\api\TasIns;
 
 class OsagoService
 {
@@ -220,6 +221,85 @@ class OsagoService
 
         if ($order->upload_docs === false) {
             (new Ingo())->osagoDraft($order);
+        }
+
+        return $order;
+    }
+
+    public function saveOrderV2(\App\Http\Requests\v2\OsagoSaveRequest $request): ?Order
+    {
+        $data = $request->validated();
+        $amount = 0;
+        $fullPrice = 0;
+
+        if ($data['insurance_company'] === Ingo::API_NAME) {
+            $calculate = (new Ingo())->osagoCalculate($data);
+            if (isset($calculate['data']['amount'])) {
+                $amount = round($calculate['data']['amount'], 2);
+                $fullPrice = $amount;
+                if (isset($calculate['data']['dgo'])) {
+                    $amount += round($calculate['data']['dgo'], 2);
+                }
+
+                if (isset($calculate['cashback'])) {
+                    $data['cashback_amount'] = $calculate['cashback'];
+                }
+            }
+        } else if ($data['insurance_company'] === TasIns::API_NAME) {
+            $calculate = (new TasIns())->osagoCalculate($data);
+            if (!empty($calculate) && $calculate['result']) {
+                $amount = round($calculate['InsPremium'], 2);
+                $fullPrice = $amount;
+                $data['contract_num'] = $calculate['CalcId'];
+                if (isset($calculate['cashback'])) {
+                    $data['cashback_amount'] = $calculate['cashback'];
+                }
+            }
+        }
+
+        $data['price'] = $amount;
+        $data['full_price'] = $fullPrice;
+
+        $city = OsagoCity::find($data['city_id']);
+
+        $data['city_name'] = $city->name;
+
+        if (!empty($data['transport']['car_mark_code'])) {
+            $carMark = CarMark::where('external_id', $data['transport']['car_mark_code'])->first();
+            $data['transport']['car_mark_id'] = $carMark->id;
+            unset($data['transport']['car_mark_code']);
+        }
+
+        if (!empty($data['transport']['car_model_code'])) {
+            $carModel = CarModel::where('external_id', $data['transport']['car_model_code'])->first();
+            $data['transport']['car_model_id'] = $carModel->id;
+            unset($data['transport']['car_model_code']);
+        }
+
+        unset($data['transport']['car_mark_code'], $data['transport']['car_model_code']);
+
+        if (!empty($data['transport']['car_mark_id'])) {
+            $carMark = CarMark::find($data['transport']['car_mark_id']);
+            $data['transport']['car_mark'] = $carMark->name;
+        }
+
+        if (!empty($data['transport']['car_model_id'])) {
+            $carModel = CarModel::find($data['transport']['car_model_id']);
+            $data['transport']['car_model'] = $carModel->name;
+        }
+
+        $order = (new OrderService(null))->saveOrder($data, Order::ORDER_TYPE_OSAGO);
+
+        if (is_null($order)) {
+            return null;
+        }
+
+        if ($order->upload_docs === false) {
+            if ($data['insurance_company'] === Ingo::API_NAME) {
+                (new Ingo())->osagoDraft($order);
+            } else if ($data['insurance_company'] === TasIns::API_NAME) {
+                (new TasIns())->osagoRegister($order);
+            }
         }
 
         return $order;
