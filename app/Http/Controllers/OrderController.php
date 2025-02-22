@@ -169,16 +169,16 @@ class OrderController extends Controller
 
         if (!is_null($order->assist)) {
             $contract = [
-                'payment_status' => $data['status']
+                'payment_status' => $data->status
             ];
 
             (new OrderService($order))->saveAssistMe($contract);
 
-            if ($data['status'] === 'success' && $order->assist->payment_status === 'invoice_wait') {
+            if ($data->status === 'success' && $order->assist->payment_status === 'invoice_wait') {
                 Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
             }
 
-            Log::debug('Liqpay assist order ID '. $order->id . ' Status: ' . $data['status']);
+            Log::debug('Liqpay assist order ID '. $order->id . ' Status: ' . $data->status);
         }
 
 
