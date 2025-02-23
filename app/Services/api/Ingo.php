@@ -142,7 +142,7 @@ class Ingo
 //            }
 
             return json_decode($body, true);
-        }catch (RequestException $e){
+        }catch (\Exception $e){
             return [];
         }
     }
