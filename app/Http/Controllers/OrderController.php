@@ -90,7 +90,7 @@ class OrderController extends Controller
 
         $order = Order::where('id', $orderUuid)->firstOrFail();
 
-        if ($data['status'] !== 'error' && $order->payment_status === 'invoice_wait') {
+        if ($data['status'] !== 'error' && ($order->payment_status === 'invoice_wait' || $order->payment_status === 'wait_secure')) {
             $order->payment_status = $data['status'];
             $order->save();
 
@@ -118,7 +118,7 @@ class OrderController extends Controller
         $data = $liqpay->decode_params($request->post('data'));
         Log::debug('Liqpay data', $data);
 
-        if ($data['status'] !== 'error' && $order->payment_status === 'invoice_wait') {
+        if ($data['status'] !== 'error' && ($order->payment_status === 'invoice_wait' || $order->payment_status === 'wait_secure')) {
             $order->payment_status = $data['status'];
             $order->save();
 
@@ -132,7 +132,7 @@ class OrderController extends Controller
 
             (new OrderService($order))->saveAssistMe($contract);
 
-            if ($data['status'] === 'success' && $order->assist->payment_status === 'invoice_wait') {
+            if ($data['status'] === 'success' && ($order->assist->payment_status === 'invoice_wait' || $order->assist->payment_status === 'wait_secure')) {
                 Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
             }
 
@@ -160,7 +160,7 @@ class OrderController extends Controller
             'order_id'      => $order->payment_id
         ));
 
-        if ($data->status !== 'error' && $order->payment_status === 'invoice_wait') {
+        if ($data->status !== 'error' && ($order->payment_status === 'invoice_wait' || $order->payment_status === 'wait_secure')) {
             $order->payment_status = $data->status;
             $order->save();
 
@@ -174,7 +174,7 @@ class OrderController extends Controller
 
             (new OrderService($order))->saveAssistMe($contract);
 
-            if ($data->status === 'success' && $order->assist->payment_status === 'invoice_wait') {
+            if ($data->status === 'success' && ($order->assist->payment_status === 'invoice_wait' || $order->assist->payment_status === 'wait_secure')) {
                 Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
             }
 
@@ -209,7 +209,7 @@ class OrderController extends Controller
 
         (new OrderService($order))->saveAssistMe($contract);
 
-        if ($data['status'] === 'success' && $order->assist->payment_status === 'invoice_wait') {
+        if ($data['status'] === 'success' && ($order->assist->payment_status === 'invoice_wait' || $order->assist->payment_status === 'wait_secure')) {
             Mail::to($order->email)->bcc(env('MAIL_OFFICE'))->send(new AssistMe($order));
             Log::debug('Liqpay assist order ID '. $orderUuid . ' Status: ' . $data['status']);
 
@@ -233,7 +233,7 @@ class OrderController extends Controller
 
         Log::debug('Liqpay assist result order ID '. $order->id . ' Status: ' . $data->status);
 
-        if ($data->status !== 'error' && $order->assist->payment_status === 'invoice_wait') {
+        if ($data->status !== 'error' && ($order->assist->payment_status === 'invoice_wait' || $order->assist->payment_status === 'wait_secure')) {
             $contract = [
                 'payment_status' => $data->status
             ];
