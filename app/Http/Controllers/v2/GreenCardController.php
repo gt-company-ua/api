@@ -43,9 +43,16 @@ class GreenCardController extends Controller
 
         if (!empty($calculate) && $calculate['result']) {
             $priceGos = $price = round($calculate['InsPremium'], 2);
-            if (!empty(env('DISCOUNT_TAS')) && env('DISCOUNT_TAS') > 0) {
-                $price = round($price - ($price / 100 * env('DISCOUNT_TAS')) , 0);
+            $discount = !empty(env('DISCOUNT_TAS')) && env('DISCOUNT_TAS') > 0 ? env('DISCOUNT_TAS') : null;
+
+            if ($data['trip_duration'] === 12) {
+                $discount = !empty(env('DISCOUNT_TAS12')) && env('DISCOUNT_TAS12') > 0 ? env('DISCOUNT_TAS12') : null;
             }
+
+            if (! is_null($discount)) {
+                $price = round($price - ($price / 100 * $discount) , 0);
+            }
+
             $prices[] = [
                 'insurance_company' => TasIns::API_NAME,
                 'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], TasIns::API_NAME),

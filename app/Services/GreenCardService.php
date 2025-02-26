@@ -61,8 +61,14 @@ class GreenCardService
             if (!empty($calculate) && $calculate['result']) {
                 $amount = round($calculate['InsPremium'], 2);
                 $fullPrice = $amount;
-                if (!empty(env('DISCOUNT_TAS')) && env('DISCOUNT_TAS') > 0) {
-                    $amount = round($amount - ($amount / 100 * env('DISCOUNT_TAS')) , 0);
+                $discount = !empty(env('DISCOUNT_TAS')) && env('DISCOUNT_TAS') > 0 ? env('DISCOUNT_TAS') : null;
+
+                if ($data['trip_duration'] === 12) {
+                    $discount = !empty(env('DISCOUNT_TAS12')) && env('DISCOUNT_TAS12') > 0 ? env('DISCOUNT_TAS12') : null;
+                }
+
+                if (! is_null($discount)) {
+                    $amount = round($amount - ($amount / 100 * $discount) , 0);
                 }
             }
         }
