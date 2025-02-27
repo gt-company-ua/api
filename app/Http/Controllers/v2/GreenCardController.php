@@ -45,7 +45,7 @@ class GreenCardController extends Controller
             $priceGos = $price = round($calculate['InsPremium'], 2);
             $discount = !empty(env('DISCOUNT_TAS')) && env('DISCOUNT_TAS') > 0 ? env('DISCOUNT_TAS') : null;
 
-            if ($data['trip_duration'] === 12) {
+            if ($data['trip_duration'] == 12) {
                 $discount = !empty(env('DISCOUNT_TAS12')) && env('DISCOUNT_TAS12') > 0 ? env('DISCOUNT_TAS12') : null;
             }
 
