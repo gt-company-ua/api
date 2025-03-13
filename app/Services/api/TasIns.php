@@ -111,7 +111,7 @@ class TasIns
         ];
 
         try {
-            $response = $this->request('GC?operation=register', $params, 20);
+            $response = $this->request('GC?operation=register', $params, 30);
 
             Log::debug("Save Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Save Tas GreenCard (order: ".$order->id.") response", $response);
@@ -153,7 +153,7 @@ class TasIns
                 'Otp' => $sms,
             ];
 
-            $response =  $this->request('GC?operation=confirm', $params, 20);
+            $response =  $this->request('GC?operation=confirm', $params, 30);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") response", $response);
 
