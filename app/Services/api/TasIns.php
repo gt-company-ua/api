@@ -153,7 +153,7 @@ class TasIns
                 'Otp' => $sms,
             ];
 
-            $response =  $this->request('GC?operation=confirm', $params, 30);
+            $response =  $this->request('GC?operation=confirm', $params, 59);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") response", $response);
 

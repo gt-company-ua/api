@@ -196,7 +196,7 @@ class GreenCardService
                 $query->whereIn('api_name', [Ingo::API_NAME, TasIns::API_NAME]);
                 $query->where('state', 'Draft');
             })
-            ->limit(10)
+            ->limit(2)
             ->get();
 
         foreach ($orders as $order) {
