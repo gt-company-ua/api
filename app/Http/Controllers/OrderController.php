@@ -104,8 +104,8 @@ class OrderController extends Controller
         $privateKey = env('LIQPAY_PRIVATE_KEY');
 
         if (!empty($order->insurance_company) && $order->insurance_company === TasIns::API_NAME) {
-            $publicKey = env('LIQPAY_ASSIST_PUPLIC_KEY');
-            $privateKey = env('LIQPAY_ASSIST_PRIVATE_KEY');
+            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
+            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
         }
 
         $liqpay = new LiqPay($publicKey, $privateKey);
@@ -148,8 +148,8 @@ class OrderController extends Controller
         $privateKey = env('LIQPAY_PRIVATE_KEY');
 
         if (!empty($order->insurance_company) && $order->insurance_company == TasIns::API_NAME) {
-            $publicKey = env('LIQPAY_ASSIST_PUPLIC_KEY');
-            $privateKey = env('LIQPAY_ASSIST_PRIVATE_KEY');
+            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
+            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
         }
 
         $liqpay = new LiqPay($publicKey, $privateKey);

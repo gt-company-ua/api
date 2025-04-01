@@ -253,8 +253,8 @@ class OrderService
         $publicKey = env('LIQPAY_PUBLIC_KEY');
         $privateKey = env('LIQPAY_PRIVATE_KEY');
         if (!empty($this->order->insurance_company) && $this->order->insurance_company == TasIns::API_NAME) {
-            $publicKey = env('LIQPAY_ASSIST_PUPLIC_KEY');
-            $privateKey = env('LIQPAY_ASSIST_PRIVATE_KEY');
+            $publicKey = env('LIQPAY_PUBLIC_KEY_TAS');
+            $privateKey = env('LIQPAY_PRIVATE_KEY_TAS');
         }
 
         $sendInvoice = (new LiqPay($publicKey, $privateKey))->api('request', $invoiceParams);
