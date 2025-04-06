@@ -31,6 +31,12 @@ class GreenCardController extends Controller
             if (!empty(env('DISCOUNT_INGO')) && env('DISCOUNT_INGO') > 0) {
                 $price = round($price - ($price / 100 * env('DISCOUNT_INGO')) , 0);
             }
+
+            $localPrice = (new GreenCardService())->getPrice($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], Ingo::API_NAME);
+            if ($localPrice > 0) {
+                $price = $localPrice;
+            }
+
             $prices[] = [
                 'insurance_company' => Ingo::API_NAME,
                 'cashback_amount' => (new GreenCardService())->getCashback($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], Ingo::API_NAME),
@@ -51,6 +57,11 @@ class GreenCardController extends Controller
 
             if (! is_null($discount)) {
                 $price = round($price - ($price / 100 * $discount) , 0);
+            }
+
+            $localPrice = (new GreenCardService())->getPrice($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], TasIns::API_NAME);
+            if ($localPrice > 0) {
+                $price = $localPrice;
             }
 
             $prices[] = [

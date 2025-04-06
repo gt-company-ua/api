@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\GreenCardSaveRequest;
 use App\Mail\OrderOffer;
 use App\Models\GreencardCashback;
+use App\Models\GreenCardPrice;
 use App\Models\Order;
 use App\Models\OrderContract;
 use App\Models\TransportCategory;
@@ -55,6 +56,11 @@ class GreenCardService
                 if (!empty(env('DISCOUNT_INGO')) && env('DISCOUNT_INGO') > 0) {
                     $amount = round($amount - ($amount / 100 * env('DISCOUNT_INGO')) , 0);
                 }
+
+                $localPrice = (new GreenCardService())->getPrice($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], Ingo::API_NAME);
+                if ($localPrice > 0) {
+                    $amount = $localPrice;
+                }
             }
         } else if ($data['insurance_company'] === TasIns::API_NAME) {
             $calculate = (new TasIns())->greenCardCalculate($data);
@@ -69,6 +75,11 @@ class GreenCardService
 
                 if (! is_null($discount)) {
                     $amount = round($amount - ($amount / 100 * $discount) , 0);
+                }
+
+                $localPrice = (new GreenCardService())->getPrice($data['trip_duration'], $data['trip_country'], $request['transport']['transport_category_id'], TasIns::API_NAME);
+                if ($localPrice > 0) {
+                    $amount = $localPrice;
                 }
             }
         }
@@ -105,6 +116,27 @@ class GreenCardService
         }
 
         $cashback = GreencardCashback::where('months', $months)->where('trip_country', $tripCountry)->where('transport_type', $transportType)->where('insurance_company', $insuranceCompany)->first();
+
+        return $cashback->amount ?? 0;
+    }
+
+    public function getPrice($months, $tripCountry, $transportCategoryID, $insuranceCompany)
+    {
+        $transportCategory = TransportCategory::find($transportCategoryID);
+
+        $transportType = 'default';
+
+        if (!is_null($transportCategory)) {
+            if ($transportCategory->alias === 'bus') {
+                $transportType = 'truck';
+            }
+
+            if (in_array($transportCategory->alias, GreencardCashback::TRANSPORT_TYPE)) {
+                $transportType = $transportCategory->alias;
+            }
+        }
+
+        $cashback = GreenCardPrice::where('months', $months)->where('trip_country', $tripCountry)->where('transport_type', $transportType)->where('insurance_company', $insuranceCompany)->first();
 
         return $cashback->amount ?? 0;
     }
