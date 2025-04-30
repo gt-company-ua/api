@@ -19,7 +19,7 @@ class TasIns
 {
     const GREENCARD_TRANSPORT_CATEGORIES = ['car' => 'A', 'moto' => 'B', 'truck' => 'C', 'trailer' => 'F'];
     const API_NAME = "TAS";
-    const PHONE = '+380639583957';
+    const PHONE = '+380681198007';
     const POST_CODE = '01001';
     const EMAIL = 'greencard.ukraine.online@gmail.com';
     const OSAGO_PERIOD = "13";

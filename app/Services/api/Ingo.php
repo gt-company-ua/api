@@ -25,7 +25,7 @@ class Ingo
 
     const OSAGO_FRANCHISES = [0];
 
-    const PHONE = '+380639583957';
+    const PHONE = '+380681198007';
     const EMAIL = 'greencard.ukraine.online@gmail.com';
 
     const TRAVEL_P6ID = 95;
