@@ -40,9 +40,11 @@
                     <li class="nav-item">
                         <a class="nav-link" id="tariffs-tab" data-toggle="pill" href="#tariffs-content" role="tab" aria-controls="tariffs-content" aria-selected="false">Тарифы</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="cashback-tab" data-toggle="pill" href="#cashback-content" role="tab" aria-controls="cashback-content" aria-selected="false">Cashback</a>
-                    </li>
+                    @foreach(['INGO','TAS'] as $insurance)
+                        <li class="nav-item">
+                            <a class="nav-link" id="cashback-tab-{{ $insurance }}" data-toggle="pill" href="#cashback-content-{{ $insurance }}" role="tab" aria-controls="cashback-content-{{ $insurance }}" aria-selected="false">Cashback {{ $insurance }}</a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
             <div class="card-body">
@@ -217,39 +219,43 @@
                             </section>
                         </form>
                     </div>
-                    <div class="tab-pane fade" id="cashback-content" role="tabpanel" aria-labelledby="cashback-tab">
-                        <form action="{{ route('osago.cashback') }}" method="post">
-                            @csrf
-                            @method('PUT')
-                            <section class="col-lg-12">
-                                <div class="row">
-                                    <section class="col-lg-12">
-                                        <table class="table table-striped">
-                                            <thead>
-                                            <tr class="info">
-                                                <th class="col-md-4">Франшиза</th>
-                                                <th class="col-md-4">Cashback, %</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @foreach (\App\Services\api\Ingo::OSAGO_FRANCHISES as $franchise)
-                                                <tr>
-                                                    <td class="info">{{ $franchise }}</td>
-                                                    <td class="success">
-                                                        <input type="text" name="cashback[{{ $franchise }}]" class="form-control" value="{{ $cashback[$franchise] ?? '' }}" max="99">
-                                                    </td>
+                    @foreach(['INGO','TAS'] as $insurance)
+                        <div class="tab-pane fade" id="cashback-content-{{ $insurance }}" role="tabpanel" aria-labelledby="cashback-tab-{{ $insurance }}">
+                            <form action="{{ route('osago.cashback') }}" method="post">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="insurance_company" value="{{ $insurance }}">
+                                <section class="col-lg-12">
+                                    <div class="row">
+                                        <section class="col-lg-12">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                <tr class="info">
+                                                    <th class="col-md-4">Франшиза</th>
+                                                    <th class="col-md-4">Cashback, %</th>
                                                 </tr>
-                                            @endforeach
-                                            </tbody>
-                                        </table>
-                                    </section>
-                                </div>
-                                <div class="row mt-3">
-                                    <button type="submit" class="btn btn-primary">Сохранить cashback</button>
-                                </div>
-                            </section>
-                        </form>
-                    </div>
+                                                </thead>
+                                                <tbody>
+                                                @foreach (\App\Services\api\Ingo::OSAGO_FRANCHISES as $franchise)
+                                                    <tr>
+                                                        <td class="info">{{ $franchise }}</td>
+                                                        <td class="success">
+                                                            <input type="text" name="cashback[{{ $franchise }}]" class="form-control" value="{{ $cashback[$insurance][$franchise] ?? '' }}" max="99">
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </section>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <button type="submit" class="btn btn-primary">Сохранить cashback</button>
+                                    </div>
+                                </section>
+                            </form>
+                        </div>
+                    @endforeach
+
                 </div>
             </div>
         </div>

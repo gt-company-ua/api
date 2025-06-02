@@ -9,6 +9,7 @@ use App\Models\CarMark;
 use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Order;
+use App\Models\OsagoCashback;
 use App\Models\OsagoCity;
 use App\Models\OsagoCoefficient;
 use App\Models\OsagoTariff;
@@ -303,5 +304,10 @@ class OsagoService
         }
 
         return $order;
+    }
+
+    public function cashback($franchise, $insuranceCompany)
+    {
+        return OsagoCashback::where('franchise', $franchise)->where('insurance_company', $insuranceCompany)->first();
     }
 }

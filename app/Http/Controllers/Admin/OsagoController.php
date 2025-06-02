@@ -13,6 +13,7 @@ use App\Models\OsagoTariff;
 use App\Models\TransportCategory;
 use App\Models\TransportPower;
 use App\Services\api\Ingo;
+use App\Services\api\TasIns;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,8 @@ class OsagoController extends Controller
         $transportCategories = TransportCategory::orderBy('ordering')->with('powers')->get();
         $coefficients = OsagoCoefficient::all();
         $tariffs = OsagoTariff::all();
-        $cashback = OsagoCashback::pluck('amount', 'franchise');
+        $cashback[Ingo::API_NAME] = OsagoCashback::where('insurance_company', Ingo::API_NAME)->pluck('amount', 'franchise');
+        $cashback[TasIns::API_NAME] = OsagoCashback::where('insurance_company', TasIns::API_NAME)->pluck('amount', 'franchise');
 
         return view('osago', compact('transportCategories', 'coefficients', 'tariffs', 'cashback'));
     }
@@ -82,7 +84,7 @@ class OsagoController extends Controller
 
         foreach (Ingo::OSAGO_FRANCHISES as $franchise) {
             OsagoCashback::updateOrCreate(
-                ['franchise' => $franchise],
+                ['franchise' => $franchise, 'insurance_company' => $data['insurance_company']],
                 ['amount' => $data['cashback'][$franchise]]
             );
         }

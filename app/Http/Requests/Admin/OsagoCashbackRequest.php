@@ -24,6 +24,7 @@ class OsagoCashbackRequest extends FormRequest
     public function rules()
     {
         return [
+            'insurance_company' => 'required',
             'cashback.*' => 'nullable|numeric|min:0',
         ];
     }

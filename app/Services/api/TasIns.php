@@ -4,14 +4,11 @@ namespace App\Services\api;
 
 use App\Models\Order;
 use App\Models\OrderContract;
-use App\Models\OsagoCashback;
 use App\Models\OsagoCity;
 use App\Models\TransportCategory;
 use App\Models\TransportPower;
 use App\Services\OrderService;
-use Doctrine\DBAL\ConnectionException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
+use App\Services\OsagoService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -253,7 +250,7 @@ class TasIns
         $response = $this->request('Osago/?operation=calculate', $params);
 
         if (!empty($response['result'])) {
-            $cashback = OsagoCashback::where('franchise', $data['franchise'])->first();
+            $cashback = (new OsagoService())->cashback($data['franchise'], self::API_NAME);
             if (!is_null($cashback)) {
                 $total = round($response['InsPremium'], 2);
                 $response['cashback'] = round($total / 100 * $cashback->amount);
