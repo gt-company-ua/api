@@ -65,7 +65,7 @@ class TasIns
             'DExpAgeID' => "1",
         ];
 
-        return $this->request('GC?operation=calculate', $params);
+        return $this->request('v3/GC?operation=calculate', $params);
     }
 
     public function greenCardRegister(Order $order): array
@@ -108,7 +108,7 @@ class TasIns
         ];
 
         try {
-            $response = $this->request('GC?operation=register', $params, 30);
+            $response = $this->request('v3/GC?operation=register', $params, 30);
 
             Log::debug("Save Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Save Tas GreenCard (order: ".$order->id.") response", $response);
@@ -150,7 +150,7 @@ class TasIns
                 'Otp' => $sms,
             ];
 
-            $response =  $this->request('GC?operation=confirm', $params, 59);
+            $response =  $this->request('v3/GC?operation=confirm', $params, 59);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas GreenCard (order: ".$order->id.") response", $response);
 
@@ -235,7 +235,7 @@ class TasIns
         $params = [
             'agentId' => env('TAS_AGENT_ID'),
             'DPeriodID' => self::OSAGO_PERIOD,
-            'DPrivelegeID' => ($data['discount_check']) ? "1" : "0",
+            'DPrivelegeID' => "0",
             "DCitizenStatusID" => empty($data['foreign_check']) ? "1" : "2",
             "DPersonStatusID" => ($data['insurant']['type'] == Order::INSURANT_JURISTIC) ? "2" : "1",
             $ariaKey => $ariaValue,
@@ -243,11 +243,11 @@ class TasIns
             'ownerBirthYear' => date('Y', strtotime($data['insurant']['birth'])),
             'DVehicleTypeID' => $power->api_id,
             'DSphereUseID' => ($data['use_as_taxi']) ? self::DSphereUseID_TAXI : self::DSphereUseID_REGULAR,
-            'DAgeExpID' => "1",
+            'DExpAgeID' => "1",
             'isUaRegistration' => empty($data['foreign_check']),
         ];
 
-        $response = $this->request('Osago/?operation=calculate', $params);
+        $response = $this->request('v4/Osago/?operation=calculate', $params);
 
         if (!empty($response['result'])) {
             $cashback = (new OsagoService())->cashback($data['franchise'], self::API_NAME);
@@ -300,7 +300,7 @@ class TasIns
         ];
 
         try {
-            $response = $this->request('Osago?operation=register', $params, 20);
+            $response = $this->request('v4/Osago?operation=register', $params, 20);
 
             Log::debug("Save Tas Osago (order: ".$order->id.") request", $params);
             Log::debug("Save Tas Osago (order: ".$order->id.") response", $response);
@@ -341,7 +341,7 @@ class TasIns
                 'Otp' => $sms,
             ];
 
-            $response =  $this->request('GC?operation=signconfirm', $params, 20);
+            $response =  $this->request('v3/Osago?operation=signconfirm', $params, 20);
             Log::debug("Confirm Tas Osago (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas Osago (order: ".$order->id.") response", $response);
 

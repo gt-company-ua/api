@@ -59,6 +59,12 @@
 | Гос. номер | {{ $order->transport->gov_num }} |
 | VIN | {{ $order->transport->vin }} |
 | Следующее ТО | {{ $order->transport->otk_date }} |
+| Объем двигателя | {{ $order->transport->engine_capacity }} |
+| Полная масса | {{ $order->transport->total_weight }} |
+| Масса без загрузки | {{ $order->transport->own_weight }} |
+| Кол-во мест | {{ $order->transport->seats_count }} |
+| Одометр | {{ $order->transport->odometer }} |
+| Мощность, кВт | {{ $order->transport->e_power }} |
 @if(!is_null($order->transport->category))
 | Тип ТС | {{ $order->transport->category->name_ua }} |
 @endif
