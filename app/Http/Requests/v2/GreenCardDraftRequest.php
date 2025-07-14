@@ -65,6 +65,8 @@ class GreenCardDraftRequest extends FormRequest
             'insurant.birth' => 'nullable|date',
             'insurant.doc_number' => 'nullable|string',
             'insurant.doc_series' => 'nullable|string',
+            'insurant.doc_given' => 'nullable|string',
+            'insurant.doc_date' => 'nullable|date|before_or_equal:today',
 
             'ga_id' => 'nullable',
             'with_assist_me' => ['nullable', new Boolean],

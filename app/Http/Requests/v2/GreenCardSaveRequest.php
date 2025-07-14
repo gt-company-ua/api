@@ -65,6 +65,8 @@ class GreenCardSaveRequest extends FormRequest
             'insurant.birth' => 'nullable|required_if:upload_docs,0|date|before_or_equal:18 years ago',
             'insurant.doc_number' => 'required_if:insurance_company,'.TasIns::API_NAME.'|string',
             'insurant.doc_series' => 'required_if:insurance_company,'.TasIns::API_NAME.'|string',
+            'insurant.doc_given' => 'nullable|string',
+            'insurant.doc_date' => 'nullable|date|before_or_equal:today',
 
             'ga_id' => 'nullable',
             'with_assist_me' => ['nullable', new Boolean],
