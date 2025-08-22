@@ -22,6 +22,7 @@ class TasIns
     const OSAGO_PERIOD = "13";
     const DSphereUseID_REGULAR = "1";
     const DSphereUseID_TAXI = "2";
+    const GreenCardKV = "25";
     private function request(string $uri, array $params, $timeout = 10): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
@@ -63,6 +64,7 @@ class TasIns
             'Territory' => $this->greenCardZone($data['trip_country']),
             'DVehicleTypeID' => self::GREENCARD_TRANSPORT_CATEGORIES[$transportCategory->alias] ?? null,
             'DExpAgeID' => "1",
+            'ContractTariffGrid' => self::GreenCardKV
         ];
 
         return $this->request('v3/GC?operation=calculate', $params);
@@ -72,6 +74,7 @@ class TasIns
     {
         $params = [
             'contractId' => 'tas-' . $order->id,
+            'ContractTariffGrid' => self::GreenCardKV,
             "agentId" => env('TAS_AGENT_ID'),
             "StartDate" => date('Y-m-d', strtotime($order->polis_start)),
             "DPeriodID" => (string) $this->periodFormat($order->trip_duration),
