@@ -239,6 +239,7 @@ class GreenCardService
     public function cronGreenCardOffers()
     {
         $orders = Order::where('order_type', Order::ORDER_TYPE_GC)
+            ->where('polis_start', '>=', date('Y-m-d'))
             ->where('upload_docs', false)
             ->where('status_contract', OrderContract::STATUS_CONTRACT_SENT)
             ->where('sent_offer', false)
