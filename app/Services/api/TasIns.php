@@ -270,7 +270,7 @@ class TasIns
         $params = [
             'contractId' => 'tas-' . $order->id,
             "agentId" => env('TAS_AGENT_ID'),
-            "СalcId" => $order->contract_num,
+            "CalcId" => $order->contract_num,
             "StartDate" => date('Y-m-d H:i:s', strtotime($order->polis_start)),
             "PaymentDate" => date('Y-m-d'),
 
