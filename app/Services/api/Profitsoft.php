@@ -39,7 +39,7 @@ class Profitsoft
         ];
 
         try{
-            $response = Http::asForm()->post($requestUrl, $formParams);
+            $response = Http::asForm()->timeout(3)->post($requestUrl, $formParams);
 
             $body = $response->body();
             $code = $response->status();
@@ -67,6 +67,7 @@ class Profitsoft
      */
     private function request(string $uri, array $params): array
     {
+        return [];
         try {
             $token = $this->auth();
         }catch (Exception $e) {
