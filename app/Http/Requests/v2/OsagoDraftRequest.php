@@ -87,6 +87,10 @@ class OsagoDraftRequest extends FormRequest
 
             'promocode' => 'nullable|string',
 
+            'cashback_phone' => 'nullable|string',
+            'cashback_card' => 'nullable|string',
+            'cashback_to_vsu' => ['nullable', new Boolean],
+
             'ga_id' => 'nullable',
             'uuid' => 'exists:App\Models\Order,uuid'
         ];
