@@ -294,13 +294,26 @@ class TasIns
             'AutoDescr' => $order->transport->car_mark . ' ' . $order->transport->car_model,
             "ProdYear" => $order->transport->car_year,
 
-            'DocumentType' => Order::DOC_OSAGO_TAS_API_ID[$order->insurant->doc_type] ?? Order::DOC_FOREIGN_PASSPORT,
+            'DocTypeID' => Order::DOC_TAS_API_ID[$order->insurant->doc_type] ?? Order::DOC_TAS_API_ID[Order::DOC_PASSPORT],
             'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type] ?? Order::DOC_NAMES[Order::DOC_FOREIGN_PASSPORT],
             "DocSeries" => $order->insurant->doc_series,
             "DocNumber" => preg_replace('/\D/', '', $order->insurant->doc_number),
             'DocIssued' => $order->insurant->doc_given,
             'DocIssueDate' => date('Y-m-d',strtotime($order->insurant->doc_date)),
+            'engineCapacity' => $order->transport->engine_capacity,
+            'TotalWeight' => $order->transport->total_weight,
+            'OwnWeight' => $order->transport->own_weight,
+            'SeatsCount' => $order->transport->seats_count,
         ];
+
+        if (!is_null($order->transport->odometer) && $order->transport->odometer != '') {
+            $params['Odometer'] = $order->transport->odometer;
+        }
+
+        if (!is_null($order->transport->e_power) && $order->transport->e_power != '') {
+            $params['ElectrPowerKvt'] = $order->transport->e_power;
+            unset($params['engineCapacity']);
+        }
 
         try {
             $response = $this->request('v4/Osago?operation=register', $params, 20);
@@ -344,7 +357,7 @@ class TasIns
                 'Otp' => $sms,
             ];
 
-            $response =  $this->request('v3/Osago?operation=signconfirm', $params, 20);
+            $response =  $this->request('v4/Osago?operation=signconfirm', $params, 20);
             Log::debug("Confirm Tas Osago (order: ".$order->id.") request", $params);
             Log::debug("Confirm Tas Osago (order: ".$order->id.") response", $response);
 
