@@ -294,7 +294,7 @@ class TasIns
             'AutoDescr' => $order->transport->car_mark . ' ' . $order->transport->car_model,
             "ProdYear" => $order->transport->car_year,
 
-            'DocTypeID' => Order::DOC_TAS_API_ID[$order->insurant->doc_type] ?? Order::DOC_TAS_API_ID[Order::DOC_PASSPORT],
+            'DocumentType' => Order::DOC_TAS_API_ID[$order->insurant->doc_type] ?? Order::DOC_TAS_API_ID[Order::DOC_PASSPORT],
             'DocName' =>  Order::DOC_NAMES[$order->insurant->doc_type] ?? Order::DOC_NAMES[Order::DOC_FOREIGN_PASSPORT],
             "DocSeries" => $order->insurant->doc_series,
             "DocNumber" => preg_replace('/\D/', '', $order->insurant->doc_number),
