@@ -636,10 +636,23 @@ class Ingo
             'vehicleVin' => $order->transport->vin,
             'vehicleYear' => $order->transport->car_year,
 
+            'vehicleWeightTotal' => $order->transport->total_weight,
+            'vehicleWeightG' => $order->transport->own_weight,
+            'vehicleSeats' => $order->transport->seats_count,
+            'vehicleVolume' => $order->transport->engine_capacity,
+
             'phone' => $order->insurant->phone,
             'email' => $order->email,
             'docId' => (string) $order->id
         ];
+
+        if (!is_null($order->transport->odometer) && $order->transport->odometer != '') {
+            $params['vehicleMillage'] = $order->transport->odometer;
+        }
+
+        if (!is_null($order->transport->e_power) && $order->transport->e_power != '') {
+            $params['vehicleVolume'] = $order->transport->e_power;
+        }
 
         if (!is_null($order->transport->otk_date)) {
             $params['nextInspection'] = $order->transport->otk_date;
