@@ -272,8 +272,12 @@ class LiqPay
         return $signature;
     }
 
-    public function checkWaitingStatus(string $status): bool
+    public function checkWaitingStatus(?string $status): bool
     {
+        if (is_null($status)) {
+            return false;
+        }
+
         return in_array($status, ['p24_verify', 'invoice_wait', 'wait_secure']);
     }
 }
