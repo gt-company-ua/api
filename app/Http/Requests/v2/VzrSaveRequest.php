@@ -74,6 +74,13 @@ class VzrSaveRequest extends FormRequest
             'cashback_card' => 'nullable|string',
             'cashback_to_vsu' => ['nullable', new Boolean],
             'is_abroad' => ['nullable', new Boolean],
+
+            'utm_source'   => 'nullable|string|max:255',
+            'utm_medium'   => 'nullable|string|max:255',
+            'utm_campaign' => 'nullable|string|max:255',
+            'utm_content'  => 'nullable|string|max:255',
+            'utm_term'     => 'nullable|string|max:255',
+
         ];
     }
 }

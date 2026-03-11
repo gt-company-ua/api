@@ -261,6 +261,15 @@ class CrmService
             }
         }
 
+        // UTM Attribution
+        if (!empty($this->order->utm_source)) {
+            $fields['UTM_SOURCE']   = $this->order->utm_source;
+            $fields['UTM_MEDIUM']   = $this->order->utm_medium;
+            $fields['UTM_CAMPAIGN'] = $this->order->utm_campaign;
+            $fields['UTM_CONTENT']  = $this->order->utm_content;
+            $fields['UTM_TERM']     = $this->order->utm_term;
+        }
+
         $params = [
             'fields' => $fields,
             'params' => ['REGISTER_SONET_EVENT' => 'Y']

@@ -70,7 +70,14 @@ class GreenCardDraftRequest extends FormRequest
 
             'ga_id' => 'nullable',
             'with_assist_me' => ['nullable', new Boolean],
-            'uuid' => 'exists:App\Models\Order,uuid'
+            'uuid' => 'exists:App\Models\Order,uuid',
+
+            'utm_source'   => 'nullable|string|max:255',
+            'utm_medium'   => 'nullable|string|max:255',
+            'utm_campaign' => 'nullable|string|max:255',
+            'utm_content'  => 'nullable|string|max:255',
+            'utm_term'     => 'nullable|string|max:255',
+
         ];
     }
 }
