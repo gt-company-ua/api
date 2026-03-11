@@ -73,7 +73,7 @@ class AssistMeService
 
             (new OrderService($order))->saveAssistMe($contract);
         } else {
-            Log::error("Liqpay assist payment failed: ", (array)$sendInvoice);
+            Log::error("Liqpay assist payment failed (order: ".$order->id."): ", (array)$sendInvoice);
         }
     }
 }
