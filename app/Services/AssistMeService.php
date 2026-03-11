@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AssistMePrice;
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AssistMeService
@@ -71,6 +72,8 @@ class AssistMeService
             ];
 
             (new OrderService($order))->saveAssistMe($contract);
+        } else {
+            Log::error("Liqpay assist payment failed: ", (array)$sendInvoice);
         }
     }
 }

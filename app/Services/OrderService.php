@@ -266,6 +266,8 @@ class OrderService
             $this->order->payment_id = $sendInvoice->order_id;
             //$this->order->ga_id = (new GoogleAnalytics())->getGaId();
             $this->order->save();
+        } else {
+            Log::error("Liqpay payment failed: ", (array)$sendInvoice);
         }
 
         return (string) $sendInvoice->href ?? '';

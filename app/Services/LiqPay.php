@@ -74,7 +74,7 @@ class LiqPay
      *
      * @return stdClass
      */
-    public function api(string $path, array $params = [], int $timeout = 5)
+    public function api(string $path, array $params = [], int $timeout = 10)
     {
         if ( ! isset($params['version'])) {
             throw new InvalidArgumentException('version is null');
